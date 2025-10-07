@@ -104,6 +104,9 @@ export default function Navbar() {
               </ul>
             </div>
           </div>
+          
+          {/* User Menu */}
+
         </section>
 
         {/* Menú móvil */}
@@ -123,6 +126,8 @@ export default function Navbar() {
               >
                 Embriones
               </Link>
+            </li>
+            <li className="pt-2 border-t border-white/20">
             </li>
           </ul>
         </article>

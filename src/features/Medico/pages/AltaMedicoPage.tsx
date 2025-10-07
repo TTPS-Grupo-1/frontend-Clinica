@@ -1,8 +1,9 @@
-import AltaMedico from "../components/AltaMedico";
+import AltaMedico from "../components/FormularioMedico";
 
 import { useState } from "react";
 
 import type { Medico } from "../../../types/Medico";
+import FormularioMedico from "../components/FormularioMedico";
 
 export default function AltaMedicoPage() {
 	const [medicos, setMedicos] = useState<Medico[]>([]);
@@ -22,7 +23,11 @@ export default function AltaMedicoPage() {
 
 	return (
 	
-			<AltaMedico onRegistrar={onRegistrar} />
+			<FormularioMedico 
+			onRegistrar={onRegistrar} 
+			botonTexto="Registrar Médico"
+			titulo="Alta de Médico"
+			/>
 	
 	);
 }

@@ -1,0 +1,132 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
+
+export default function Navbar() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isEmbrionesOpen, setIsEmbrionesOpen] = useState(false);
+  const navigate = useNavigate();
+
+  return (
+    <nav
+      className="fixed top-0 w-full z-50 bg-[#24222B]/35 backdrop-blur-sm transition-transform duration-300"
+      style={{ minHeight: "60px" }}
+    >
+      <div className="flex items-center justify-between w-full px-4 py-3">
+        {/* Logo: inline medical icon (clickable) */}
+        <button
+          aria-label="Ir al inicio"
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            className="h-10 w-10 text-white"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
+            />
+            <circle cx="12" cy="12" r="3" strokeWidth={1.5} />
+          </svg>
+          <span className="sr-only">Envy Fertilidad</span>
+        </button>
+
+        {/* Botón hamburguesa (móvil) */}
+        <button
+          className="md:hidden ml-auto text-[#CDA053] focus:outline-none"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {isMobileMenuOpen ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </button>
+
+        {/* Enlaces en escritorio (dropdown) */}
+        <div className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
+          <div
+            className="relative z-50"
+            onMouseEnter={() => setIsEmbrionesOpen(true)}
+            onMouseLeave={() => setIsEmbrionesOpen(false)}
+          >
+            <button
+              aria-haspopup="true"
+              aria-expanded={isEmbrionesOpen}
+              onClick={() => setIsEmbrionesOpen((s) => !s)}
+              className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
+            >
+              <ChevronRight className="ml-1 h-4 w-4 text-white" />
+              Embriones
+            </button>
+
+            {/* Dropdown panel */}
+            <div
+              className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-opacity duration-200 ${
+                isEmbrionesOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+              }`}
+            >
+              <ul className="py-1">
+                <li>
+                  <Link
+                    to="/embriones"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Listado de embriones
+                  </Link>
+                </li>
+                {/* Puedes añadir más opciones aquí */}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Menú móvil */}
+        <div
+          className={`md:hidden w-full bg-[#24222B]/90 transition-all duration-300 ease-in-out ${
+            isMobileMenuOpen
+              ? "max-h-[200px] opacity-100 py-4 px-6"
+              : "max-h-0 opacity-0 overflow-hidden"
+          }`}
+        >
+          <ul className="flex flex-col gap-4 text-white text-sm">
+            <li>
+              <Link
+                to="/embriones"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block hover:text-yellow-400"
+              >
+                Embriones
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
+}

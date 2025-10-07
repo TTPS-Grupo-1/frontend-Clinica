@@ -3,6 +3,7 @@ import LandingPage from './features/Landing/LandingPage';
 import EmbryoPage from './features/Embryo/pages/EmbryoPage';
 import AltaMedicoPage from './features/Medico/pages/AltaMedicoPage';
 import EditMedicoPage from './features/Medico/pages/EditMedicoPage';
+import LoginPage from './features/Login/pages/LoginPage';
 
 export default function getAppRoutes() {
   return (
@@ -11,6 +12,7 @@ export default function getAppRoutes() {
       <Route path="/embriones" element={<EmbryoPage />} />
       <Route path="/medicos/alta" element={<AltaMedicoPage />} />
       <Route path="/medicos/editar/:id" element={<EditMedicoPage />} />
+      <Route path="/login" element={<LoginPage />} />
     </>
   );
 }

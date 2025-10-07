@@ -4,6 +4,10 @@ export interface MedicoListProps {
   medicos: Medico[];
 }
 
-export interface AltaMedicoProps {
+export interface FormMedicoProps {
   onRegistrar: (medico: Omit<Medico, "id">) => void;
+  initialValues?: Omit<Medico, "id">;
+  titulo?: string;
+  botonTexto?: string;
 }
+

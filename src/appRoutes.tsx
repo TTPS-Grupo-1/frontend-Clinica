@@ -2,6 +2,7 @@ import { Route } from 'react-router-dom';
 import LandingPage from './features/Landing/LandingPage';
 import EmbryoPage from './features/Embryo/pages/EmbryoPage';
 import AltaMedicoPage from './features/Medico/pages/AltaMedicoPage';
+import ListadoTurnos from './features/Medico/pages/ListadoTurnos';
 
 export default function getAppRoutes() {
   return (
@@ -9,6 +10,7 @@ export default function getAppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/embriones" element={<EmbryoPage />} />
       <Route path="/medicos/alta" element={<AltaMedicoPage />} />
+      <Route path="/medicos/turnos" element={<ListadoTurnos />} />
     </>
   );
 }

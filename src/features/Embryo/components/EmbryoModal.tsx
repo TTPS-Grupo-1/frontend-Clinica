@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { Embryo } from "../../../types/Embryo";
 import type { EmbryoModalProps } from "../../../interfaces/Embryo";
 import { generateEmbryoId } from "../static/utils";
 

@@ -1,5 +1,5 @@
 export type Embryo = {
-  id: number;
+  id: string | number;
   calidad: string;
   pot: string;
   estado: string;

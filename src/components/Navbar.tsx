@@ -12,7 +12,7 @@ export default function Navbar() {
       className="fixed top-0 w-full z-50 bg-[#24222B]/35 backdrop-blur-sm transition-transform duration-300"
       style={{ minHeight: "60px" }}
     >
-      <div className="flex items-center justify-between w-full px-4 py-3">
+      <section className="flex items-center justify-between w-full px-4 py-3">
         {/* Logo: inline medical icon (clickable) */}
         <button
           aria-label="Ir al inicio"
@@ -69,16 +69,13 @@ export default function Navbar() {
         </button>
 
         {/* Enlaces en escritorio (dropdown) */}
-        <div className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
-          <div
-            className="relative z-50"
-            onMouseEnter={() => setIsEmbrionesOpen(true)}
-            onMouseLeave={() => setIsEmbrionesOpen(false)}
-          >
+        <section className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
+          <div className="relative z-50 group">
             <button
               aria-haspopup="true"
               aria-expanded={isEmbrionesOpen}
               onClick={() => setIsEmbrionesOpen((s) => !s)}
+              onMouseEnter={() => setIsEmbrionesOpen(true)}
               className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
             >
               <ChevronRight className="ml-1 h-4 w-4 text-white" />
@@ -87,15 +84,18 @@ export default function Navbar() {
 
             {/* Dropdown panel */}
             <div
-              className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-opacity duration-200 ${
-                isEmbrionesOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+              onMouseEnter={() => setIsEmbrionesOpen(true)}
+              onMouseLeave={() => setIsEmbrionesOpen(false)}
+              className={`absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
+                isEmbrionesOpen ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
               }`}
             >
               <ul className="py-1">
                 <li>
                   <Link
                     to="/embriones"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsEmbrionesOpen(false)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
                   >
                     Listado de embriones
                   </Link>
@@ -104,10 +104,10 @@ export default function Navbar() {
               </ul>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Menú móvil */}
-        <div
+        <article
           className={`md:hidden w-full bg-[#24222B]/90 transition-all duration-300 ease-in-out ${
             isMobileMenuOpen
               ? "max-h-[200px] opacity-100 py-4 px-6"
@@ -125,8 +125,8 @@ export default function Navbar() {
               </Link>
             </li>
           </ul>
-        </div>
-      </div>
+        </article>
+      </section>
     </nav>
   );
 }

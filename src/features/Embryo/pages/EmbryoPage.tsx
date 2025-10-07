@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import EmbryoList from "../components/EmbryoList";
+import EmbryoModal from "../components/EmbryoModal";
 import type { Embryo } from "../../../types/Embryo";
 
 
@@ -14,6 +15,7 @@ export default function EmbryoPage() {
 
 
   const [selectedPaciente, setSelectedPaciente] = useState<number>(pacientes[0].id);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [embryos, setEmbryos] = useState<Embryo[]>([
     {
       id: 1,
@@ -36,26 +38,15 @@ export default function EmbryoPage() {
   ]);
 
 
-  const handleRegistrarEmbrion = () => {
-    // Aquí iría la lógica real de registro
-    const nuevoId = embryos.length + 1;
-    setEmbryos([
-      ...embryos,
-      {
-        id: nuevoId,
-        calidad: "Pendiente",
-        pot: `POT${nuevoId}`,
-        estado: "Pendiente",
-        causaDescarte: "",
-        ovocito: `Ovocito ${nuevoId}`,
-        observaciones: ""
-      },
-    ]);
+  const handleSubmitEmbrion = (newEmbryo: Omit<Embryo, "id"> & { id: string }) => {
+    setEmbryos([...embryos, newEmbryo as Embryo]);
   };
 
+  const selectedPacienteNombre = pacientes.find(p => p.id === selectedPaciente)?.nombre || "";
+
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-      <h1 className="text-2xl font-bold text-black mb-4">Registrar Embriones</h1>
+    <div className="w-full max-w-4xl mx-auto mt-16 md:mt-22 px-4 sm:px-6 py-6 mb-10 bg-white rounded-lg shadow min-h-screen flex flex-col">
+      <h1 className="text-xl sm:text-2xl font-bold text-black mb-4 text-center">Registrar Embriones</h1>
       <div className="mb-4">
         <label htmlFor="paciente" className="block mb-2 font-medium text-black">
           Seleccionar paciente
@@ -74,12 +65,19 @@ export default function EmbryoPage() {
         </select>
       </div>
       <button
-        onClick={handleRegistrarEmbrion}
+        onClick={() => setIsModalOpen(true)}
         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
       >
         Registrar nuevo embrión
       </button>
       <EmbryoList embryos={embryos} />
+      
+      <EmbryoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmitEmbrion}
+        pacienteNombre={selectedPacienteNombre}
+      />
     </div>
   );
 }

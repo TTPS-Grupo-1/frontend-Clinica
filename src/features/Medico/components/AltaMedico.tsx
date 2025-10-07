@@ -8,7 +8,7 @@ export default function AltaMedico({ onRegistrar }: AltaMedicoProps) {
   const [dni, setDni] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [especialidad, setEspecialidad] = useState("");
+ 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +24,6 @@ export default function AltaMedico({ onRegistrar }: AltaMedicoProps) {
     setDni("");
     setEmail("");
     setTelefono("");
-    setEspecialidad("");
   };
 
   return (

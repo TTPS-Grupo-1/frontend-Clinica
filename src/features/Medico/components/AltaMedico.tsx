@@ -5,15 +5,25 @@ import type { AltaMedicoProps } from "../../../interfaces/Medico";
 export default function AltaMedico({ onRegistrar }: AltaMedicoProps) {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
-  const [matricula, setMatricula] = useState("");
+  const [dni, setDni] = useState("");
+  const [email, setEmail] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [especialidad, setEspecialidad] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onRegistrar({ nombre, apellido, matricula, especialidad });
+    onRegistrar({
+      nombre,
+      apellido,
+      dni: Number(dni),
+      email,
+      telefono: Number(telefono),
+    });
     setNombre("");
     setApellido("");
-    setMatricula("");
+    setDni("");
+    setEmail("");
+    setTelefono("");
     setEspecialidad("");
   };
 
@@ -42,23 +52,39 @@ export default function AltaMedico({ onRegistrar }: AltaMedicoProps) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">Matrícula:</label>
+          <label className="block text-sm font-medium mb-1 text-gray-700">DNI:</label>
           <input
             type="text"
-            value={matricula}
-            onChange={e => setMatricula(e.target.value)}
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={dni}
+            onChange={e => setDni(e.target.value.replace(/[^0-9]/g, ""))}
+            required
+            className="w-full px-3 py-2 border border-gray-400 rounded bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-700">Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
             required
             className="w-full px-3 py-2 border border-gray-400 rounded bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">Especialidad:</label>
+          <label className="block text-sm font-medium mb-1 text-gray-700">Teléfono:</label>
           <input
             type="text"
-            value={especialidad}
-            onChange={e => setEspecialidad(e.target.value)}
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={telefono}
+            onChange={e => setTelefono(e.target.value.replace(/[^0-9]/g, ""))}
             required
             className="w-full px-3 py-2 border border-gray-400 rounded bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <button

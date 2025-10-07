@@ -17,17 +17,7 @@ export default function AltaMedicoPage() {
 			},
 		]);
 		// Lógica para enviar los datos al backend
-		try {
-			await fetch("/api/medicos", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ id: nuevoId, ...medico }),
-			});
-		} catch (error) {
-			console.error("Error al registrar médico", error);
-		}
+
 	};
 
 	return (

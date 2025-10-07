@@ -1,9 +1,9 @@
-import AltaMedico from "../components/FormularioMedico";
+import FormularioMedico from "../components/FormularioMedico";
 
 import { useState } from "react";
 
 import type { Medico } from "../../../types/Medico";
-import FormularioMedico from "../components/FormularioMedico";
+
 
 export default function AltaMedicoPage() {
 	const [medicos, setMedicos] = useState<Medico[]>([]);

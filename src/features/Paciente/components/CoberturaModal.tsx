@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { CoberturaModalProps } from '../../../interfaces/Paciente';
 
 const OBRAS_SOCIALES = [
   'OSDE',
@@ -19,11 +20,7 @@ const OBRAS_SOCIALES = [
   'Otros'
 ];
 
-interface CoberturaModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSelect: (cobertura: string) => void;
-}
+
 
 export default function CoberturaModal({ isOpen, onClose, onSelect }: CoberturaModalProps) {
   const [search, setSearch] = useState('');

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import CoberturaModal from './CoberturaModal';
 import type { PacienteFormData } from '../../../types/Paciente';
+import type { PropsPaciente } from '../../../interfaces/Paciente';
 
 const SEXOS = [
   'Femenino',
@@ -9,12 +10,9 @@ const SEXOS = [
   'Otro'
 ];
 
-interface Props {
-  onSubmit: (data: PacienteFormData) => void;
-  initialData?: PacienteFormData;
-}
 
-export default function RegistroForm({ onSubmit, initialData }: Props) {
+
+export default function RegistroForm({ onSubmit, initialData }: PropsPaciente) {
   const [form, setForm] = useState<PacienteFormData>(
     initialData || {
       nombre: '', apellido: '', dni: '', email: '', sexo: '', fechaNacimiento: '', telefono: '', password: '', cobertura: '', numeroCobertura: '',

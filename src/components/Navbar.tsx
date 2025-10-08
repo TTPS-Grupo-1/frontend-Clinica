@@ -3,10 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, User } from "lucide-react";
 
 
+
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isEmbrionesOpen, setIsEmbrionesOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  // Only one dropdown open at a time: 'embriones', 'donaciones', 'profile', or null
+  const [openDropdown, setOpenDropdown] = useState<null | 'embriones' | 'donaciones' | 'profile'>(null);
   const navigate = useNavigate();
 
   return (
@@ -72,31 +73,32 @@ export default function Navbar() {
 
         {/* Enlaces en escritorio (dropdown) */}
         <section className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
+          {/* Embriones Dropdown */}
           <div className="relative z-50 group">
             <button
               aria-haspopup="true"
-              aria-expanded={isEmbrionesOpen}
-              onClick={() => setIsEmbrionesOpen((s) => !s)}
-              onMouseEnter={() => setIsEmbrionesOpen(true)}
+              aria-expanded={openDropdown === 'embriones'}
+              onClick={() => setOpenDropdown(openDropdown === 'embriones' ? null : 'embriones')}
+              onMouseEnter={() => setOpenDropdown('embriones')}
+              onMouseLeave={() => setOpenDropdown(null)}
               className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
             >
               <ChevronRight className="ml-1 h-4 w-4 text-white" />
               Embriones
             </button>
-
             {/* Dropdown panel */}
             <div
-              onMouseEnter={() => setIsEmbrionesOpen(true)}
-              onMouseLeave={() => setIsEmbrionesOpen(false)}
+              onMouseEnter={() => setOpenDropdown('embriones')}
+              onMouseLeave={() => setOpenDropdown(null)}
               className={`absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
-                isEmbrionesOpen ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
+                openDropdown === 'embriones' ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
               }`}
             >
               <ul className="py-1">
                 <li>
                   <Link
                     to="/embriones"
-                    onClick={() => setIsEmbrionesOpen(false)}
+                    onClick={() => setOpenDropdown(null)}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
                   >
                     Listado de embriones
@@ -106,14 +108,48 @@ export default function Navbar() {
               </ul>
             </div>
           </div>
-          
+          {/* Donaciones Dropdown */}
+          <div className="relative z-50 group">
+            <button
+              aria-haspopup="true"
+              aria-expanded={openDropdown === 'donaciones'}
+              onClick={() => setOpenDropdown(openDropdown === 'donaciones' ? null : 'donaciones')}
+              onMouseEnter={() => setOpenDropdown('donaciones')}
+              onMouseLeave={() => setOpenDropdown(null)}
+              className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
+            >
+              <ChevronRight className="ml-1 h-4 w-4 text-white" />
+              Donaciones
+            </button>
+            {/* Dropdown panel */}
+            <div
+              onMouseEnter={() => setOpenDropdown('donaciones')}
+              onMouseLeave={() => setOpenDropdown(null)}
+              className={`absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
+                openDropdown === 'donaciones' ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
+              }`}
+            >
+              <ul className="py-1">
+                <li>
+                  <Link
+                    to="/donaciones"
+                    onClick={() => setOpenDropdown(null)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                  >
+                    Home de donaciones
+                  </Link>
+                </li>
+                {/* Puedes añadir más opciones aquí */}
+              </ul>
+            </div>
+          </div>
           {/* User Menu */}
           <div className="relative z-50 group">
             <button
               aria-haspopup="true"
-              aria-expanded={isProfileOpen}
-              onClick={() => setIsProfileOpen((s) => !s)}
-              onBlur={() => setTimeout(() => setIsProfileOpen(false), 150)}
+              aria-expanded={openDropdown === 'profile'}
+              onClick={() => setOpenDropdown(openDropdown === 'profile' ? null : 'profile')}
+              onBlur={() => setTimeout(() => setOpenDropdown(null), 150)}
               className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
             >
               <User className="h-6 w-6" />
@@ -121,16 +157,14 @@ export default function Navbar() {
             {/* Dropdown perfil */}
             <div
               className={`absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
-                isProfileOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'
+                openDropdown === 'profile' ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'
               }`}
             >
               <ul className="py-1">
                 <li>
                   <button
                     onClick={() => {
-                      // Aquí va tu lógica de logout
-                      // Por ejemplo: logout(); navigate('/login');
-                      setIsProfileOpen(false);
+                      setOpenDropdown(null);
                       navigate('/login');
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
@@ -159,6 +193,15 @@ export default function Navbar() {
                 className="block hover:text-yellow-400"
               >
                 Embriones
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/donaciones"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block hover:text-yellow-400"
+              >
+                Donaciones
               </Link>
             </li>
             <li className="pt-2 border-t border-white/20">

@@ -36,7 +36,7 @@ export default function RegistroForm({ onSubmit, initialData }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full p-6 bg-black rounded-xl shadow space-y-6 border-2 border-gray-400">
+    <form onSubmit={handleSubmit} className="max-w-2xl w-full mx-auto p-6 bg-black rounded-xl shadow space-y-6 border-2 border-gray-400 mt-32">
       <h2 className="text-2xl font-bold mb-4 text-center text-white">Registro de Paciente</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>

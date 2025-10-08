@@ -30,7 +30,7 @@ export default function ListadoMedicosPage() {
 	};
 
 	return (
-		<main className="pt-20 flex flex-col items-center min-h-screen">
+	<main className="pt-28 flex flex-col items-center min-h-screen">
 			<Toaster position="top-center" />
 			<div className="max-w-4xl w-full p-6 bg-white rounded-lg shadow">
 				<h1 className="text-2xl font-bold text-black mb-4">Listado de Médicos</h1>

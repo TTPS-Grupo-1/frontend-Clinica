@@ -53,9 +53,11 @@ export default function MedicoList({ medicos, onEliminar }: MedicoListProps & { 
                   <td className="px-3 py-2 text-gray-100">{medico.telefono}</td>
                   <td className="px-3 py-2">
                     <button
-                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                      className="px-3 py-1 !bg-red- text-white rounded font-semibold relative z-10 shadow-lg hover:!bg-red-700 focus:!bg-red-700 focus:outline-none"
                       onClick={() => handleEliminar(medico)}
-                    >Eliminar</button>
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))

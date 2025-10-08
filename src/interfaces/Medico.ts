@@ -3,6 +3,7 @@ import type { Paciente } from "../types/Paciente";
 import type { ReactNode } from "react";
 export interface MedicoListProps {
   medicos: Medico[];
+  onEliminar?: (medico: Medico) => void;
 }
 
 export interface FormMedicoProps {

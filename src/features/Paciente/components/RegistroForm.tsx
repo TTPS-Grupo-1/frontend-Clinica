@@ -36,9 +36,9 @@ export default function RegistroForm({ onSubmit, initialData }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 bg-black rounded-xl shadow space-y-6 border-2 border-gray-400 mt-32">
+    <form onSubmit={handleSubmit} className="w-full p-6 bg-black rounded-xl shadow space-y-6 border-2 border-gray-400">
       <h2 className="text-2xl font-bold mb-4 text-center text-white">Registro de Paciente</h2>
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-2 text-base font-medium text-white">Nombre</label>
           <input name="nombre" value={form.nombre} onChange={handleChange} className="w-full border border-gray-400 rounded px-3 py-2 text-base bg-black text-white placeholder-gray-400 focus:outline-none focus:border-blue-500" required />
@@ -74,14 +74,14 @@ export default function RegistroForm({ onSubmit, initialData }: Props) {
           <label className="block mb-2 text-base font-medium text-white">Contraseña</label>
           <input name="password" type="password" value={form.password} onChange={handleChange} className="w-full border border-gray-400 rounded px-3 py-2 text-base bg-black text-white placeholder-gray-400 focus:outline-none focus:border-blue-500" required />
         </div>
-        <div>
+        <div className="md:col-span-2">
           <label className="block mb-2 text-base font-medium text-white">Cobertura médica</label>
           <div className="flex gap-2">
             <input name="cobertura" value={form.cobertura} readOnly className="w-full border border-gray-400 rounded px-3 py-2 text-base bg-black text-white placeholder-gray-400 cursor-pointer focus:outline-none focus:border-blue-500" onClick={() => setShowCoberturaModal(true)} placeholder="Seleccionar..." required />
             <button type="button" onClick={() => setShowCoberturaModal(true)} className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">Elegir</button>
           </div>
         </div>
-        <div>
+        <div className="md:col-span-2">
           <label className="block mb-2 text-base font-medium text-white">Número de cobertura</label>
           <input name="numeroCobertura" value={form.numeroCobertura} onChange={handleChange} className="w-full border border-gray-400 rounded px-3 py-2 text-base bg-black text-white placeholder-gray-400 focus:outline-none focus:border-blue-500" required />
         </div>

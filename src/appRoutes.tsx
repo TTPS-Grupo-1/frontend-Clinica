@@ -6,6 +6,7 @@ import EditMedicoPage from './features/Medico/pages/EditMedicoPage';
 import LoginPage from './features/Login/pages/LoginPage';
 import ListadoTurnos from './features/Medico/pages/ListadoTurnos';
 import HomePage from './features/Medico/pages/HomePage';
+import RegistroPage from './features/Paciente/pages/RegistroPage';
 
 export default function getAppRoutes() {
   return (
@@ -17,6 +18,7 @@ export default function getAppRoutes() {
       <Route path="/medicos/editar/:id" element={<EditMedicoPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/medico/turnos" element={<ListadoTurnos />} />
+      <Route path="/registro" element={<RegistroPage />} />
     </>
   );
 }

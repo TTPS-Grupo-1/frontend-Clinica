@@ -14,8 +14,9 @@ export default function LoginPage() {
 
     if (email === fake_email && password === fake_password) {
       dispatch(login());
-      navigate('/home');
-      toast.success('Bienvenido de nuevo!');
+      //este user es un medico 
+      navigate('/medicos');
+      toast.success(`Bienvenido de nuevo!, ${fake_email}`);
     } else {
       toast.error('Error de autenticación. Verifique sus credenciales.');
     }

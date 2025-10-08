@@ -1,20 +1,23 @@
 import LoginForm from '../components/LoginForm';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useDispatch } from 'react-redux';
+import { login } from '../../../store/authSlice';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
 
   const handleLogin = (email: string, password: string) => {
     const fake_email = "hola@gmail.com";
     const fake_password = "password123";
 
     if (email === fake_email && password === fake_password) {
+      dispatch(login());
       navigate('/home');
-      toast['success']('Bienvenido de nuevo!');
+      toast.success('Bienvenido de nuevo!');
     } else {
-      toast['error']('Error de autenticación. Verifique sus credenciales.');
+      toast.error('Error de autenticación. Verifique sus credenciales.');
     }
   };
 

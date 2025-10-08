@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, User } from "lucide-react";
-
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '../store';
+import { logout } from '../store/authSlice';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEmbrionesOpen, setIsEmbrionesOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const dispatch = useDispatch();
 
   return (
     <nav
@@ -108,39 +112,40 @@ export default function Navbar() {
           </div>
           
           {/* User Menu */}
-          <div className="relative z-50 group">
-            <button
-              aria-haspopup="true"
-              aria-expanded={isProfileOpen}
-              onClick={() => setIsProfileOpen((s) => !s)}
-              onBlur={() => setTimeout(() => setIsProfileOpen(false), 150)}
-              className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
-            >
-              <User className="h-6 w-6" />
-            </button>
-            {/* Dropdown perfil */}
-            <div
-              className={`absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
-                isProfileOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'
-              }`}
-            >
-              <ul className="py-1">
-                <li>
-                  <button
-                    onClick={() => {
-                      // Aquí va tu lógica de logout
-                      // Por ejemplo: logout(); navigate('/login');
-                      setIsProfileOpen(false);
-                      navigate('/login');
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                  >
-                    Cerrar sesión
-                  </button>
-                </li>
-              </ul>
+          {isAuthenticated && (
+            <div className="relative z-50 group">
+              <button
+                aria-haspopup="true"
+                aria-expanded={isProfileOpen}
+                onClick={() => setIsProfileOpen((s) => !s)}
+                onBlur={() => setTimeout(() => setIsProfileOpen(false), 150)}
+                className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
+              >
+                <User className="h-6 w-6" />
+              </button>
+              {/* Dropdown perfil */}
+              <div
+                className={`absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
+                  isProfileOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'
+                }`}
+              >
+                <ul className="py-1">
+                  <li>
+                    <button
+                      onClick={() => {
+                        dispatch(logout());
+                        setIsProfileOpen(false);
+                        navigate('/login');
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         {/* Menú móvil */}

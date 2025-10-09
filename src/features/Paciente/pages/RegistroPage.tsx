@@ -2,19 +2,39 @@ import RegistroForm from '../components/RegistroForm';
 import type { PacienteFormData } from '../../../types/Paciente';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { mapSexoToDjango } from '../helpers/utils';
 
 export default function RegistroPage() {
   const navigate = useNavigate();
+   
+  const handleRegistro = async (data: PacienteFormData) => {
+    try {
+      console.log('Datos del formulario:', data);
+      
+      const dataToSend = {
+        nombre: data.nombre,
+        apellido: data.apellido,
+        fecha_nacimiento: data.fechaNacimiento,
+        email: data.email,
+        telefono: data.telefono,
+        obra_social: data.cobertura,
+        sexo: mapSexoToDjango(data.sexo),
+        contraseña: data.password,
+        numero_afiliado: data.numeroCobertura,
+        dni: data.dni,
 
-  const handleRegistro = (data: PacienteFormData) => {
-    // Aquí iría la lógica real de registro (API)
-    if (data.email && data.password) {
-      toast.success('¡Registro exitoso!');
+      };
+      const response = await axios.post('/api/pacientes/', dataToSend);
+      toast.success(response.data.message);
       navigate('/login');
-    } else {
-      toast.error('Por favor complete todos los campos.');
+    } catch (error) {
+      toast.error(error.response.data.message);
+  
     }
   };
+
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

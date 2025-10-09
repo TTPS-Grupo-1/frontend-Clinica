@@ -1,0 +1,32 @@
+import LoginForm from '../components/LoginForm';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useDispatch } from 'react-redux';
+import { login } from '../../../store/authSlice';
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogin = (email: string, password: string) => {
+    const fake_email = "hola@gmail.com";
+    const fake_password = "password123";
+
+    if (email === fake_email && password === fake_password) {
+      dispatch(login());
+      //este user es un medico 
+      navigate('/medicos');
+      toast.success(`Bienvenido de nuevo!, ${fake_email}`);
+    } else {
+      toast.error('Error de autenticación. Verifique sus credenciales.');
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div>
+        <LoginForm onSubmit={handleLogin} />
+      </div>
+    </div>
+  );
+}

@@ -29,9 +29,24 @@ export default function RegistroPage() {
       toast.success(response.data.message);
       navigate('/login');
     } catch (error) {
-      toast.error(error.response.data.message);
-  
-    }
+        if (axios.isAxiosError(error)) {
+          const data = error.response?.data;
+          const message = data?.message || error.message || 'Error en la solicitud';
+          toast.error(message);
+
+          // Mostrar errores de cada campo (si existen)
+          if (data?.errors && typeof data.errors === 'object') {
+            Object.entries(data.errors as Record<string, unknown>).forEach(([campo, errores]) => {
+              const mensajes = Array.isArray(errores) ? errores : [errores];
+              mensajes.forEach((msg) => {
+                toast.error(`${campo}: ${String(msg)}`);
+              });
+            });
+          }
+        } else {
+          toast.error('Ocurrió un error inesperado');
+        }
+      }
   };
 
   

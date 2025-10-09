@@ -1,0 +1,48 @@
+import type { UbicacionBanco } from "../../../interfaces/Donaciones";
+
+interface UbicacionBancoFormProps {
+  value: Partial<UbicacionBanco>;
+  onChange: (value: Partial<UbicacionBanco>) => void;
+}
+
+export default function UbicacionBancoForm({ value, onChange }: UbicacionBancoFormProps) {
+  return (
+    <section className="bg-gray-50 p-6 rounded-xl mb-6">
+      <div className="grid md:grid-cols-3 gap-4">
+        <article>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Tanque *</label>
+          <input
+            type="text"
+            required
+            value={value.tanque || ''}
+            onChange={e => onChange({ ...value, tanque: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="ej: T001"
+          />
+        </article>
+        <article>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Rack *</label>
+          <input
+            type="text"
+            required
+            value={value.rack || ''}
+            onChange={e => onChange({ ...value, rack: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="ej: R12"
+          />
+        </article>
+        <article>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Tubo *</label>
+          <input
+            type="text"
+            required
+            value={value.tubo || ''}
+            onChange={e => onChange({ ...value, tubo: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="ej: 045"
+          />
+        </article>
+      </div>
+    </section>
+  );
+}

@@ -11,7 +11,7 @@ import ResultadosGeneticosForm from "../components/ResultadosGeneticosNew";
 import UbicacionBancoForm from "../components/UbicacionBancoForm";
 import FormPagination from "../../../components/FormPagination";
 
-// Recibe tipo: 'semen' | 'ovocitos' por query param o prop
+
 export default function DonacionPage() {
   const navigate = useNavigate();
   const { tipo } = useParams<{ tipo: 'semen' | 'ovocitos' }>();

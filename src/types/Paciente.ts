@@ -6,3 +6,17 @@ export type Paciente = {
   fechaTurno: string;
   horaTurno: string;
 }
+
+
+export type PacienteFormData = {
+  nombre: string;
+  apellido: string;
+  dni: string;
+  email: string;
+  sexo: string;
+  fechaNacimiento: string;
+  telefono: string;
+  password: string;
+  cobertura: string;
+  numeroCobertura: string;
+}

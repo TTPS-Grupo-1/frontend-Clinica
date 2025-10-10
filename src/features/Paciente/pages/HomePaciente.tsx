@@ -1,48 +1,53 @@
 import { useNavigate } from "react-router-dom";
-import OpcionCard from "../components/OpcionesPaciente";
+import DashboardCard from "../../Medico/components/DashboardCard";
 
 
-const HomePaciente = () => {
+import { CalendarDays, ClipboardList, FileText, ClipboardPlus  } from "lucide-react";
 
+export default function HomePaciente() {
   const navegar = useNavigate();
-  const opciones = [
-    {
-      title: "Sacar Turno",
-      description: "Elegí especialidad, médico y fecha.",
-      //icon: <CalendarDays />,
-      route: "/pacientes/SacarTurno",
-    },
-    {
-      title: "Ver Turnos",
-      description: "Consultá tus turnos programados.",
-      //icon: <ClipboardList />,
-      route: "/pacientes/verTurnos",
-    },
-    {
-      title: "Órdenes Médicas",
-      description: "Descargá las órdenes enviadas por tus médicos.",
-      //icon: <FileText />,
-      route: "/pacientes/ordenesMedicas",
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6 pt-[80px]">
-      <h1 className="text-2xl font-bold mb-6">Bienvenido/a</h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-        {opciones.map((op, idx) => (
-          <OpcionCard
-            key={idx}
-            title={op.title}
-            description={op.description}
-            //icon={op.icon}
-            onClick={() => navegar(op.route)}
+      <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6 pt-[80px]">
+        <h1 className="text-2xl font-bold mb-6">Bienvenido/a</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
+      
+          <DashboardCard
+            title="Sacar Turno"
+            description="Agendá tu próximo turno con un médico"
+            icon={<CalendarDays className="w-6 h-6" />}
+            onClick={() => navegar("/pacientes/sacarTurno")}
+            bgColor="bg-white"
+            iconColor="text-blue-500"
           />
-        ))}
+
+          <DashboardCard
+            title="Mis Turnos"
+            description="Consulta tus próximos turnos"
+            icon={<ClipboardList className="w-6 h-6" />}
+            onClick={() => navegar("/pacientes/misTurnos")}
+            bgColor="bg-white"
+            iconColor="text-green-500"
+            count={2}
+          />
+
+          <DashboardCard
+            title="Mi Historia Clínica"
+            description="Consulta tu historia clínica"
+            icon={<ClipboardPlus className="w-6 h-6" />}
+            onClick={() => console.log("Ir a Ver Turnos")}
+            bgColor="bg-white"
+            iconColor="text-red-500"
+          />
+
+          <DashboardCard
+            title="Órdenes Médicas"
+            description="Descargá tus órdenes médicas"
+            icon={<FileText className="w-6 h-6" />}
+            onClick={() => console.log("Ir a Órdenes Médicas")}
+            bgColor="bg-white"
+            iconColor="text-purple-500"
+          />
       </div>
     </div>
   );
-};
-
-export default HomePaciente;
+}

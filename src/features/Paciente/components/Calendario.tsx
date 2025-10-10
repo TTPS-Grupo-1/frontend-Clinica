@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { DayPicker } from "react-day-picker";
+import { es } from "date-fns/locale";
 import "react-day-picker/dist/style.css";
 
 interface CalendarPickerProps {
@@ -11,12 +12,13 @@ const CalendarPicker: FC<CalendarPickerProps> = ({ selected, onSelect }) => {
   return (
     <div>
       <label className="block text-sm font-medium mb-2">Fecha</label>
-      <div className="border rounded-lg p-3 bg-white">
+      <div className="border rounded-lg p-3 bg-white capitalize">
         <DayPicker
           mode="single"
           selected={selected}
           onSelect={onSelect}
           fromDate={new Date()}
+          locale={es}
         />
       </div>
     </div>

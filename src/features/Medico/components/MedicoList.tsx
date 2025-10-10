@@ -3,8 +3,10 @@ import { useState } from "react";
 import type { Medico } from "../../../types/Medico";
 import toast from "react-hot-toast";
 import Pagination from "../../../components/Pagination";
+import { useNavigate } from "react-router-dom";
 
 export default function MedicoList({ medicos, onEliminar }: MedicoListProps & { onEliminar?: (medico: Medico) => void }) {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
     
@@ -60,12 +62,20 @@ export default function MedicoList({ medicos, onEliminar }: MedicoListProps & { 
                   <td className="px-3 py-2 text-gray-100">{medico.email}</td>
                   <td className="px-3 py-2 text-gray-100">{medico.telefono}</td>
                   <td className="px-3 py-2">
-                    <button
-                      className="px-3 py-1 !bg-red- text-white rounded font-semibold relative z-10 shadow-lg hover:!bg-red-700 focus:!bg-red-700 focus:outline-none"
-                      onClick={() => handleEliminar(medico)}
-                    >
-                      Eliminar
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        className="px-3 py-1 bg-blue-600 text-white rounded font-semibold shadow-lg hover:bg-blue-700 focus:bg-blue-700 focus:outline-none"
+                        onClick={() => navigate(`/medicos/editar/${medico.id}`)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="px-3 py-1 bg-red-600 text-white rounded font-semibold shadow-lg hover:bg-red-700 focus:bg-red-700 focus:outline-none"
+                        onClick={() => handleEliminar(medico)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

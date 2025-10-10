@@ -10,6 +10,7 @@ import ListadoMedicosPage from './features/Medico/pages/ListadoMedicosPage';
 import RegistroPage from './features/Paciente/pages/RegistroPage';
 import DonacionesHomePage from './features/Donaciones/pages/HomePage';
 import DonacionPage from './features/Donaciones/pages/DonacionPage';
+import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
 
 export default function getAppRoutes() {
   return (
@@ -24,8 +25,10 @@ export default function getAppRoutes() {
       <Route path="/medicos/listado" element={<ListadoMedicosPage />} />
       <Route path="/registro" element={<RegistroPage />} />
       <Route path="/donaciones" element={<DonacionesHomePage />} />
+       <Route path="/admin/home" element={<HomePageAdmin />} />
       {/* Para probar la page unificada con param tipo */}
       <Route path="/donaciones/nueva/:tipo" element={<DonacionPage />} />
+     
     </>
   );
 }

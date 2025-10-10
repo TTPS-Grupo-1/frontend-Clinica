@@ -5,24 +5,16 @@ import { Toaster } from "react-hot-toast";
 
 export default function ListadoMedicosPage() {
 	// Simulación de médicos registrados
-	const [medicos, setMedicos] = useState<Medico[]>([
-		{
-			id: 1,
-			nombre: "Juan",
-			apellido: "Pérez",
-			dni: 12345678,
-			email: "juan.perez@ejemplo.com",
-			telefono: 1122334455,
-		},
-		{
-			id: 2,
-			nombre: "Ana",
-			apellido: "García",
-			dni: 87654321,
-			email: "ana.garcia@ejemplo.com",
-			telefono: 2233445566,
-		},
-	]);
+	const [medicos, setMedicos] = useState<Medico[]>(
+		Array.from({ length: 20 }, (_, i) => ({
+			id: i + 1,
+			nombre: `Nombre ${i + 1}`,
+			apellido: `Apellido ${i + 1}`,
+			dni: 10000000 + i,
+			email: `medico${i + 1}@ejemplo.com`,
+			telefono: 1100000000 + i,
+		}))
+	);
 
 
 	const handleEliminar = (medico: Medico) => {

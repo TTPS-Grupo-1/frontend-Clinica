@@ -1,8 +1,16 @@
 import type { MedicoListProps } from "../../../interfaces/Medico";
+import { useState } from "react";
 import type { Medico } from "../../../types/Medico";
 import toast from "react-hot-toast";
+import Pagination from "../../../components/Pagination";
 
 export default function MedicoList({ medicos, onEliminar }: MedicoListProps & { onEliminar?: (medico: Medico) => void }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+    
+  const totalPages = Math.ceil(medicos.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentMedicos = medicos.slice(startIndex, startIndex + itemsPerPage);
   const handleEliminar = (medico: Medico) => {
     toast((t) => (
       <span className="text-black">
@@ -39,12 +47,12 @@ export default function MedicoList({ medicos, onEliminar }: MedicoListProps & { 
             </tr>
           </thead>
           <tbody>
-            {medicos.length === 0 ? (
+            {currentMedicos.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-gray-400 text-center py-4 bg-gray-900">No hay médicos registrados.</td>
               </tr>
             ) : (
-              medicos.map((medico) => (
+              currentMedicos.map((medico) => (
                 <tr key={medico.dni} className="border-b border-gray-700 last:border-b-0 hover:bg-gray-800">
                   <td className="px-3 py-2 text-gray-100">{medico.nombre}</td>
                   <td className="px-3 py-2 text-gray-100">{medico.apellido}</td>
@@ -64,6 +72,13 @@ export default function MedicoList({ medicos, onEliminar }: MedicoListProps & { 
             )}
           </tbody>
         </table>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          totalItems={medicos.length}
+        />
       </div>
     </div>
   );

@@ -2,7 +2,12 @@ import { useState } from "react";
 import type { AltaMedicoProps } from "../../../interfaces/Medico";
 
 
+<<<<<<< Updated upstream:src/features/Medico/components/AltaMedico.tsx
 export default function AltaMedico({ onRegistrar }: AltaMedicoProps) {
+=======
+
+export default function FormularioMedico({ onRegistrar, initialValues, titulo, botonTexto }: FormMedicoProps & { titulo?: string, botonTexto?: string }) {
+>>>>>>> Stashed changes:src/features/Medico/components/FormularioMedico.tsx
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [dni, setDni] = useState("");

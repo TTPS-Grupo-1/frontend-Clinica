@@ -28,3 +28,13 @@ export interface DashboardCardProps {
   iconColor?: string;
   count?: number;
 }
+
+export interface ObjetivoModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSelect: (opcion: string) => void;
+}
+
+export interface AntecedentesGinecologicosProps {
+  doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
+}

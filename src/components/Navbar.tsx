@@ -8,6 +8,7 @@ import { logout } from '../store/authSlice';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   // Only one dropdown open at a time: 'embriones', 'donaciones', 'profile', or null
   const [openDropdown, setOpenDropdown] = useState<null | 'embriones' | 'donaciones' | 'profile'>(null);
   const navigate = useNavigate();

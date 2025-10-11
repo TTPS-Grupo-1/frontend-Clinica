@@ -38,3 +38,30 @@ export interface ObjetivoModalProps {
 export interface AntecedentesGinecologicosProps {
   doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
 }
+
+export interface AntecedenteItemProps {
+  antecedente: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export interface AntecedentesGenitalesProps {
+  visible: boolean;
+}
+
+
+export interface AntecedentesGinecologicosProps {
+  doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
+  titulo1?: string;
+  titulo2?: string;
+}
+
+export interface FenotipoDonacionProps {
+  visible: boolean;
+}
+
+export interface PaginadorProps {
+  paginaActual: number;
+  totalPaginas: number;
+  onPageChange: (nuevaPagina: number) => void;
+}

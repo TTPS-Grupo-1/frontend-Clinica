@@ -1,8 +1,5 @@
 import React from 'react';
-
-interface FenotipoDonacionProps {
-  visible: boolean;
-}
+import type { FenotipoDonacionProps } from '../../../../interfaces/Medico';
 
 const complexiones = ['Delgada', 'Media', 'Robusta'];
 

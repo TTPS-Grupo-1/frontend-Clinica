@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-
-interface AntecedentesGinecologicosProps {
-  doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
-  titulo1?: string;
-  titulo2?: string;
-}
+import type { AntecedentesGinecologicosProps } from '../../../../interfaces/Medico';
 
 const campos = [
   { label: 'Menarca (edad de primera menstruación)', name: 'menarca', type: 'number', placeholder: 'Edad en años' },

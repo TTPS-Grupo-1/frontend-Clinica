@@ -1,10 +1,5 @@
 import React from 'react';
-
-interface PaginadorProps {
-  paginaActual: number;
-  totalPaginas: number;
-  onPageChange: (nuevaPagina: number) => void;
-}
+import type { PaginadorProps } from '../../../../interfaces/Medico';
 
 const Paginador: React.FC<PaginadorProps> = ({ paginaActual, totalPaginas, onPageChange }) => {
   return (

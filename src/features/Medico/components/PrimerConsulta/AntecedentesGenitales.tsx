@@ -1,8 +1,5 @@
 import React from 'react';
-
-interface AntecedentesGenitalesProps {
-  visible: boolean;
-}
+import type { AntecedentesGenitalesProps } from '../../../../interfaces/Medico';
 
 const AntecedentesGenitales: React.FC<AntecedentesGenitalesProps> = ({ visible }) => {
   const [valor, setValor] = React.useState('');

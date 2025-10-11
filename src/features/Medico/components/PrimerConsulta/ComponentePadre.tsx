@@ -153,6 +153,21 @@ const ComponentePadre: React.FC = () => {
           </Card>
         </>
       )}
+
+      {/* Botón Confirmar fijo abajo */}
+      {objetivoSeleccionado && (
+        <div className="flex justify-center fixed bottom-0 left-0 w-full pb-6 z-30 pointer-events-none">
+          <button
+            className="pointer-events-auto bg-black text-white px-10 py-4 rounded-full shadow-xl font-bold text-lg border-2 border-white hover:bg-white hover:text-black transition duration-200"
+            onClick={() => {
+              // TODO: Implementar lógica para enviar los datos al backend
+              alert('Enviar datos al backend');
+            }}
+          >
+            Confirmar
+          </button>
+        </div>
+      )}
     </div>
   );
 };

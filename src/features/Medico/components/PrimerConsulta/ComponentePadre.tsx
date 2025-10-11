@@ -41,7 +41,7 @@ const ComponentePadre: React.FC = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
 
   return (
-    <div className="min-h-screen py-10 px-2" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%)' }}>
+    <div className="min-h-screen py-10 px-2 bg-gradient-to-br from-blue-100 to-blue-300">
       <div className="flex justify-center mt-8 mb-2">
         <button onClick={() => setModalAbierto(true)} className="bg-black text-white px-6 py-3 rounded-lg shadow-lg font-semibold text-lg hover:bg-gray-800 transition">
           Seleccionar objetivo

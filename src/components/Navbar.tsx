@@ -4,6 +4,8 @@ import { ChevronRight, User } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { logout } from '../store/authSlice';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 
 export default function Navbar() {
@@ -14,6 +16,28 @@ export default function Navbar() {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
+
+ const handleLogout = async () => {
+  setIsProfileOpen(false);
+  const token = localStorage.getItem('token');
+
+  try {
+    await axios.post('/api/logout/', {}, {
+      headers: { Authorization: token ? `Token ${token}` : '' }
+    });
+  } catch (err) {
+    console.error('Logout request failed', err);
+    // opcional: mostrar toast de advertencia
+  } finally {
+    // limpiar siempre el cliente
+    dispatch(logout());
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    toast.success('Sesión cerrada');
+    navigate('/login');
+  }
+};
 
   return (
     <nav
@@ -169,11 +193,7 @@ export default function Navbar() {
                 <ul className="py-1">
                   <li>
                     <button
-                      onClick={() => {
-                        dispatch(logout());
-                        setIsProfileOpen(false);
-                        navigate('/login');
-                      }}
+                      onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
                     >
                       Cerrar sesión

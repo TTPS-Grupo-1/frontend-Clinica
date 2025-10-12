@@ -18,7 +18,6 @@ const inicial = Object.fromEntries(campos.map(c => [c.name, '']));
 const AntecedentesGinecologicos: React.FC<AntecedentesGinecologicosProps> = ({ doble = false, titulo1 = 'Datos', titulo2 = 'Mujer 2' }) => {
   const [datos1, setDatos1] = useState({ ...inicial });
   const [datos2, setDatos2] = useState({ ...inicial });
-  const [examenFisico, setExamenFisico] = useState('');
 
   const handleChange = (idx: 1 | 2, name: string, value: string) => {
     if (idx === 1) setDatos1(prev => ({ ...prev, [name]: value }));
@@ -61,16 +60,6 @@ const AntecedentesGinecologicos: React.FC<AntecedentesGinecologicosProps> = ({ d
             ))}
           </div>
         )}
-      </div>
-      <div className="mt-6">
-        <label className="block font-medium mb-1 text-black">Examen físico (campo libre):</label>
-        <textarea
-          className="w-full border border-black rounded px-2 py-1 bg-white text-black"
-          placeholder="Describa los hallazgos del examen físico"
-          value={examenFisico}
-          onChange={e => setExamenFisico(e.target.value)}
-          rows={3}
-        />
       </div>
     </div>
   );

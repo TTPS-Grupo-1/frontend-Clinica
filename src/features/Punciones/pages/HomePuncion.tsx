@@ -22,7 +22,7 @@ export default function HomePuncion() {
     // Form data para los campos principales
     const [formData, setFormData] = useState({
         selectedPacienteId: null as number | null,
-        quirófano: "",
+        quirofano: "",
         fecha: "",
     });
 
@@ -31,6 +31,7 @@ export default function HomePuncion() {
         setLoadingPacientes(true);
         axios.get("/api/pacientes/")
             .then(({ data }) => {
+                console.log(data)
                 setPacientes(Array.isArray(data) ? data : (data.results ?? []));
             })
             .catch(() => setPacientes([]))
@@ -119,8 +120,6 @@ export default function HomePuncion() {
                     <PuncionModal
                         isOpen={modalOpen}
                         onClose={() => setModalOpen(false)}
-                        quirófano={formData.quirófano}
-                        fecha={formData.fecha}
                         paciente={selectedPaciente}
                         ovocitos={[]}
                         onAddOvocito={() => {}}

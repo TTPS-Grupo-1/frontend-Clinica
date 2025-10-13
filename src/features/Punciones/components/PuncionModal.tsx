@@ -20,12 +20,12 @@ export default function PuncionModal({
         ovocitos?: OvocitoModalRow[];
         onAddOvocito?: (nuevo: OvocitoModalRow) => void;
         formData: {
-            quirófano: string;
+            quirofano: string;
             fecha: string;
             selectedPacienteId: number | null;
         };
         setFormData: React.Dispatch<React.SetStateAction<{
-            quirófano: string;
+            quirofano: string;
             fecha: string;
             selectedPacienteId: number | null;
         }>>;
@@ -54,12 +54,12 @@ export default function PuncionModal({
         setError(null);
         try {
             if (!paciente) throw new Error("Paciente no seleccionado");
-            if (!formData.quirófano || !formData.fecha) throw new Error("Completa quirófano y fecha");
+            if (!formData.quirofano || !formData.fecha) throw new Error("Completa quirófano y fecha");
             if (ovocitos.length === 0) throw new Error("Agrega al menos un ovocito");
 
             // Payload ejemplo, ajusta según tu backend
             const payload = {
-                quirófano: formData.quirófano,
+                quirofano: formData.quirofano,
                 fecha: formData.fecha,
                 paciente: paciente.id,
                 ovocitos: ovocitos.map(o => ({
@@ -67,6 +67,7 @@ export default function PuncionModal({
                     estado: o.estado.replace(/\s/g, "_"),
                     cripreservar: o.cripreservar,
                     descartado: o.descartado,
+                    paciente: paciente.id,
                 }))
             };
             await axios.post("/api/punciones/", payload);
@@ -88,17 +89,17 @@ export default function PuncionModal({
                 )}
                 <div className="flex gap-4">
                     <div className="flex-1">
-                        <label className="block text-sm font-medium mb-2">Quirófano</label>
+                        <label className="block text-sm font-medium text-black mb-2">Quirófano</label>
                         <input
                             type="text"
-                            value={formData.quirófano}
-                            onChange={e => setFormData(fd => ({ ...fd, quirófano: e.target.value }))}
+                            value={formData.quirofano}
+                            onChange={e => setFormData(fd => ({ ...fd, quirofano: e.target.value }))}
                             className="w-full border rounded text-black px-2 py-1"
                             placeholder="Ej: Q1"
                         />
                     </div>
                     <div className="flex-1">
-                        <label className="block text-sm font-medium mb-2">Fecha</label>
+                        <label className="block text-sm text-black font-medium mb-2">Fecha</label>
                         <input
                             type="date"
                             value={formData.fecha}

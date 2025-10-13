@@ -7,9 +7,10 @@ interface Campo {
 
 interface AntecedentesHormonalesProps {
   onSeleccionChange?: (seleccionados: string[]) => void;
+  onDataChange?: (data: any) => void;
 }
 
-const AntecedentesHormonales: React.FC<AntecedentesHormonalesProps> = ({ onSeleccionChange }) => {
+const AntecedentesHormonales: React.FC<AntecedentesHormonalesProps> = ({ onSeleccionChange, onDataChange }) => {
   const [campos, setCampos] = useState<Campo[]>([]);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
 
@@ -35,6 +36,7 @@ const AntecedentesHormonales: React.FC<AntecedentesHormonalesProps> = ({ onSelec
     setSeleccionados((prev) => {
       const nuevos = prev.includes(nombre) ? prev.filter((n) => n !== nombre) : [...prev, nombre];
       onSeleccionChange?.(nuevos);
+      onDataChange?.({ seleccionados: nuevos });
       return nuevos;
     });
   };

@@ -53,17 +53,20 @@ export interface AntecedenteItemClinicoProps {
 
 export interface AntecedentesGenitalesProps {
   visible: boolean;
+  onDataChange?: (data: any) => void;
 }
 
 
 export interface AntecedentesGinecologicosProps {
   doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
+  onDataChange?: (data: any) => void;
   titulo1?: string;
   titulo2?: string;
 }
 
 export interface FenotipoDonacionProps {
   visible: boolean;
+  onDataChange?: (data: any) => void;
 }
 
 export interface PaginadorProps {

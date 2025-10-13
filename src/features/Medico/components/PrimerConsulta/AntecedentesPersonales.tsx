@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 
-const AntecedentesPersonales: React.FC<{ titulo?: string }> = ({ titulo }) => {
+const AntecedentesPersonales: React.FC<{ titulo?: string; onDataChange?: (data: any) => void }> = ({ titulo, onDataChange }) => {
   const [fuma, setFuma] = useState('');
   const [alcohol, setAlcohol] = useState('');
   const [drogas, setDrogas] = useState('');
   const [observaciones, setObservaciones] = useState('');
+
+  React.useEffect(() => {
+    onDataChange?.({ fuma, alcohol, drogas, observaciones });
+  }, [fuma, alcohol, drogas, observaciones, onDataChange]);
 
 
   return (

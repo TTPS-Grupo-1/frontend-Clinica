@@ -3,7 +3,7 @@ import type { FenotipoDonacionProps } from '../../../../interfaces/Medico';
 
 const complexiones = ['Delgada', 'Media', 'Robusta'];
 
-const FenotipoDonacion: React.FC<FenotipoDonacionProps> = ({ visible }) => {
+const FenotipoDonacion: React.FC<FenotipoDonacionProps> = ({ visible, onDataChange }) => {
   const [fenotipo, setFenotipo] = React.useState({
     ojos: '',
     peloColor: '',
@@ -12,6 +12,10 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps> = ({ visible }) => {
     complexion: '',
     etnia: '',
   });
+
+  React.useEffect(() => {
+    onDataChange?.(fenotipo);
+  }, [fenotipo, onDataChange]);
 
   if (!visible) return null;
 

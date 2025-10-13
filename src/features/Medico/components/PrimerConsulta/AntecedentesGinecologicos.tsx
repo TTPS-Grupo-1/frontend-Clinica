@@ -15,9 +15,13 @@ const campos = [
 
 const inicial = Object.fromEntries(campos.map(c => [c.name, '']));
 
-const AntecedentesGinecologicos: React.FC<AntecedentesGinecologicosProps> = ({ doble = false, titulo1 = 'Datos', titulo2 = 'Mujer 2' }) => {
+const AntecedentesGinecologicos: React.FC<AntecedentesGinecologicosProps> = ({ doble = false, titulo1 = 'Datos', titulo2 = 'Mujer 2', onDataChange }) => {
   const [datos1, setDatos1] = useState({ ...inicial });
   const [datos2, setDatos2] = useState({ ...inicial });
+
+  React.useEffect(() => {
+    onDataChange?.({ datos1, datos2: doble ? datos2 : undefined });
+  }, [datos1, datos2, doble, onDataChange]);
 
   const handleChange = (idx: 1 | 2, name: string, value: string) => {
     if (idx === 1) setDatos1(prev => ({ ...prev, [name]: value }));

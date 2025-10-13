@@ -1,8 +1,9 @@
 import React from 'react';
 import type { AntecedentesGenitalesProps } from '../../../../interfaces/Medico';
 
-const AntecedentesGenitales: React.FC<AntecedentesGenitalesProps> = ({ visible }) => {
+const AntecedentesGenitales: React.FC<AntecedentesGenitalesProps> = ({ visible, onDataChange }) => {
   const [tieneAntecedentes, setTieneAntecedentes] = React.useState(false);
+  React.useEffect(() => { onDataChange?.({ tieneAntecedentes }); }, [tieneAntecedentes, onDataChange]);
   if (!visible) return null;
 
   return (

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
 import ObjetivoModal from './ObjetivoModal';
 import AntecedentesClinicos from './AntecedentesClinicos';
 import AntecedentesQuirurgicos from './AntecedentesQuirurgicos';
@@ -71,6 +73,12 @@ const ComponentePadre: React.FC = () => {
 
   // 🔹 Nuevo estado para los antecedentes familiares
   const [familiares, setFamiliares] = useState<string>('');
+  // Estado global del formulario: cada sección actualizará su parte
+  const [formData, setFormData] = useState<any>({});
+
+  const updateSection = (key: string, data: any) => {
+    setFormData((prev: any) => ({ ...prev, [key]: data }));
+  };
 
   return (
     <div className="min-h-screen py-10 px-2 bg-gradient-to-br from-blue-100 to-blue-300">
@@ -102,35 +110,35 @@ const ComponentePadre: React.FC = () => {
 
       {/* Contenido dinámico */}
       {objetivoSeleccionado && (
-        <>
+  <>
           {/* Antecedentes Clínicos */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
               <Card title="Antecedentes Clínicos" icon={icons.clinicos}>
-                <AntecedentesClinicos titulo= "Mujer 1" />
+                <AntecedentesClinicos titulo= "Mujer 1" onDataChange={(d) => updateSection('clinicos_mujer1', d)} />
               </Card>
               <Card title="Antecedentes Clínicos" icon={icons.clinicos}>
-                <AntecedentesClinicos titulo= "Mujer 2" />
+                <AntecedentesClinicos titulo= "Mujer 2" onDataChange={(d) => updateSection('clinicos_mujer2', d)} />
               </Card>
             </>
           ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
             <>
               <Card title="Antecedentes Clínicos - Mujer" icon={icons.clinicos}>
-                <AntecedentesClinicos titulo= "Mujer" />
+                <AntecedentesClinicos titulo= "Mujer" onDataChange={(d) => updateSection('clinicos_mujer', d)} />
               </Card>
               <Card title="Antecedentes Clínicos - Hombre" icon={icons.clinicos}>
-                <AntecedentesClinicos titulo= "Hombre" />
+                <AntecedentesClinicos titulo= "Hombre" onDataChange={(d) => updateSection('clinicos_hombre', d)} />
               </Card>
             </>
           ) : (
             <Card title="Antecedentes Clínicos" icon={icons.clinicos}>
-              <AntecedentesClinicos />
+              <AntecedentesClinicos onDataChange={(d) => updateSection('clinicos', d)} />
             </Card>
           )}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
               <Card title="Antecedentes Familiares - Mujer 1" icon={icons.familiares}>
-                <AntecedentesFamiliares onDataChange={setFamiliares}/>
+                <AntecedentesFamiliares onDataChange={(d) => { setFamiliares(d); updateSection('familiares_mujer1', d); }} />
               </Card>
               <Card title="Antecedentes Familiares - Mujer 2" icon={icons.familiares}>
                 <AntecedentesFamiliares onDataChange={setFamiliares}/>
@@ -159,58 +167,58 @@ const ComponentePadre: React.FC = () => {
               </Card>
             </>
           ) : (
-            <Card title="Antecedentes Ginecológicos" icon={icons.ginecologicos}>
-              <AntecedentesGinecologicos />
-            </Card>
+              <Card title="Antecedentes Ginecológicos" icon={icons.ginecologicos}>
+                <AntecedentesGinecologicos onDataChange={(d) => updateSection('ginecologicos', d)} />
+              </Card>
 
           )}
           {/* Antecedentes Quirúrgicos */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
               <Card title="Antecedentes Quirúrgicos - Mujer 1" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos titulo= "Mujer 1" />
+                <AntecedentesQuirurgicos titulo= "Mujer 1" onDataChange={(d) => updateSection('quirurgicos_mujer1', d)} />
               </Card>
               <Card title="Antecedentes Quirúrgicos - Mujer 2" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos titulo= "Mujer 2" />
+                <AntecedentesQuirurgicos titulo= "Mujer 2" onDataChange={(d) => updateSection('quirurgicos_mujer2', d)} />
               </Card>
             </>
           ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
             <>
               <Card title="Antecedentes Quirúrgicos - Mujer" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos titulo= "Mujer" />
+                <AntecedentesQuirurgicos titulo= "Mujer" onDataChange={(d) => updateSection('quirurgicos_mujer', d)} />
               </Card>
               <Card title="Antecedentes Quirúrgicos - Hombre" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos titulo= "Hombre" />
+                <AntecedentesQuirurgicos titulo= "Hombre" onDataChange={(d) => updateSection('quirurgicos_hombre', d)} />
               </Card>
             </>
           ) : (
-            <Card title="Antecedentes Quirúrgicos" icon={icons.quirurgicos}>
-              <AntecedentesQuirurgicos />
-            </Card>
+              <Card title="Antecedentes Quirúrgicos" icon={icons.quirurgicos}>
+                <AntecedentesQuirurgicos onDataChange={(d) => updateSection('quirurgicos', d)} />
+              </Card>
           )}
           {/* Antecedentes Personales */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
               <Card title="Antecedentes Personales - Mujer 1" icon={icons.personales}>
-                <AntecedentesPersonales titulo= "Mujer 1" />
+                <AntecedentesPersonales titulo= "Mujer 1" onDataChange={(d) => updateSection('personales_mujer1', d)} />
               </Card>
               <Card title="Antecedentes Personales - Mujer 2" icon={icons.personales}>
-                <AntecedentesPersonales titulo= "Mujer 2" />
+                <AntecedentesPersonales titulo= "Mujer 2" onDataChange={(d) => updateSection('personales_mujer2', d)} />
               </Card>
             </>
           ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
             <>
               <Card title="Antecedentes Personales - Mujer" icon={icons.personales}>
-                <AntecedentesPersonales titulo= "Mujer" />
+                <AntecedentesPersonales titulo= "Mujer" onDataChange={(d) => updateSection('personales_mujer', d)} />
               </Card>
               <Card title="Antecedentes Personales - Hombre" icon={icons.personales}>
-                <AntecedentesPersonales titulo= "Hombre" />
+                <AntecedentesPersonales titulo= "Hombre" onDataChange={(d) => updateSection('personales_hombre', d)} />
               </Card>
             </>
           ) : (
-            <Card title="Antecedentes Personales" icon={icons.personales}>
-              <AntecedentesPersonales />
-            </Card>
+              <Card title="Antecedentes Personales" icon={icons.personales}>
+                <AntecedentesPersonales onDataChange={(d) => updateSection('personales', d)} />
+              </Card>
           )}
           {/* Examen Físico */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
@@ -232,8 +240,8 @@ const ComponentePadre: React.FC = () => {
               </Card>
             </>
           ) : (
-            <Card title="Examen Físico" icon={icons.personales}>
-              <ExamenFisico />
+              <Card title="Examen Físico" icon={icons.personales}>
+              <ExamenFisico onDataChange={(d) => updateSection('examen_fisico', d)} />
             </Card>
           )}
           {/* Antecedentes Ginecológicos vía API */}
@@ -249,19 +257,19 @@ const ComponentePadre: React.FC = () => {
           ) : (
             <>
               <Card title="Antecedentes Ginecológicos API" icon={icons.ginecologicos}>
-                <AntecedentesGinecologicosAPI />
+                <AntecedentesGinecologicosAPI onDataChange={(d) => updateSection('ginecologicos_api', d)} />
               </Card>
             </>
           )}
 
 
           {/* Fenotipo y Genitales */}
-          <Card title="Fenotipo (solo para donación)" icon={icons.fenotipo}>
-            <FenotipoDonacion visible={objetivoSeleccionado === 'mujer_sola_donacion' || objetivoSeleccionado === 'pareja_femenina_donacion'} />
+            <Card title="Fenotipo (solo para donación)" icon={icons.fenotipo}>
+            <FenotipoDonacion visible={objetivoSeleccionado === 'mujer_sola_donacion' || objetivoSeleccionado === 'pareja_femenina_donacion'} onDataChange={(d) => updateSection('fenotipo', d)} />
           </Card>
 
-          <Card title="Antecedentes Genitales" icon={icons.genitales}>
-            <AntecedentesGenitales visible={objetivoSeleccionado === 'pareja_heterosexual'} />
+            <Card title="Antecedentes Genitales" icon={icons.genitales}>
+            <AntecedentesGenitales visible={objetivoSeleccionado === 'pareja_heterosexual'} onDataChange={(d) => updateSection('genitales', d)} />
           </Card>
 
           {/* Antecedentes hormonales */}
@@ -284,8 +292,8 @@ const ComponentePadre: React.FC = () => {
               </Card>
             </>
           ) : (
-            <Card title="Antecedentes Hormonales" icon={icons.clinicos}>
-              <AntecedentesHormonales />
+              <Card title="Antecedentes Hormonales" icon={icons.clinicos}>
+              <AntecedentesHormonales onDataChange={(d) => updateSection('hormonales', d)} />
             </Card>
           )}
 
@@ -293,17 +301,56 @@ const ComponentePadre: React.FC = () => {
       )}
 
       {/* Confirmar */}
-      {objetivoSeleccionado && (
+          {objetivoSeleccionado && (
         <div className="flex justify-center fixed bottom-0 left-0 w-full pb-6 z-30 pointer-events-none">
           <button
             className="pointer-events-auto bg-black text-white px-10 py-4 rounded-full shadow-xl font-bold text-lg border-2 border-white hover:bg-white hover:text-black transition duration-200"
-            onClick={() => {
+            onClick={async () => {
+              const errors: string[] = [];
+              const fd = formData || {};
+
+              // Ginecológicos: require menarca if the section exists
+              if (fd.ginecologicos?.datos1) {
+                const menarca = fd.ginecologicos.datos1.menarca;
+                if (!menarca || menarca.toString().trim() === '') {
+                  errors.push('Complete Menarca en Antecedentes Ginecológicos.');
+                }
+              }
+
+              // Personales: at least one field filled
+              if (fd.personales) {
+                const p = fd.personales;
+                const anyFilled = [p.fuma, p.alcohol, p.drogas, p.observaciones].some(v => v && v.toString().trim() !== '');
+                if (!anyFilled) errors.push('Complete al menos un campo en Antecedentes Personales.');
+              }
+
+              // Clínicos: at least one non-empty value in any clinico section
+              const clinicoSections = ['clinicos', 'clinicos_mujer1', 'clinicos_mujer2', 'clinicos_mujer'];
+              const anyClinico = clinicoSections.some(k => {
+                const sec = fd[k];
+                return sec && Object.values(sec).some(v => v !== undefined && v !== null && v.toString().trim() !== '');
+              });
+              if (!anyClinico) {
+                errors.push('Complete al menos un antecedente clínico.');
+              }
+
+              if (errors.length > 0) {
+                errors.forEach(e => toast.error(e));
+                return;
+              }
+
               const datos = {
                 objetivo: objetivoSeleccionado,
-                familiares, // 🔹 incluido en el envío
+                familiares,
+                form: formData,
               };
-              console.log('Enviar datos al backend:', datos);
-              alert('Enviar datos al backend:\n' + JSON.stringify(datos, null, 2));
+              try {
+                await axios.post('/api/primer-consulta/', datos, { withCredentials: true });
+                toast.success('Datos enviados correctamente');
+              } catch (err: any) {
+                console.error('Error enviando datos', err);
+                toast.error(err.response?.data?.message || 'Error al enviar datos');
+              }
             }}
           >
             Confirmar

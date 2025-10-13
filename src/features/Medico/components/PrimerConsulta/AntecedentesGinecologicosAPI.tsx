@@ -7,9 +7,10 @@ interface Campo {
 
 interface AntecedentesGinecologicosAPIProps {
   onSeleccionChange?: (seleccionados: string[]) => void;
+  onDataChange?: (data: any) => void;
 }
 
-const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> = ({ onSeleccionChange }) => {
+const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> = ({ onSeleccionChange, onDataChange }) => {
   const [campos, setCampos] = useState<Campo[]>([]);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
 
@@ -42,6 +43,7 @@ const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> 
         ? prev.filter(item => item !== nombre)
         : [...prev, nombre];
       onSeleccionChange?.(nuevos);
+      onDataChange?.({ seleccionados: nuevos });
       return nuevos;
     });
   };

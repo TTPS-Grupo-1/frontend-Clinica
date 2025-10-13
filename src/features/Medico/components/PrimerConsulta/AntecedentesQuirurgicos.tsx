@@ -26,7 +26,7 @@ const ANTECEDENTES_QUIRURGICOS = [
 
 const ANTECEDENTES_POR_PAGINA = 7;
 
-const AntecedentesQuirurgicos: React.FC<{ titulo?: string }> = ({ titulo }) => {
+const AntecedentesQuirurgicos: React.FC<{ titulo?: string; onDataChange?: (data: any) => void }> = ({ titulo, onDataChange }) => {
   const [pagina, setPagina] = useState(1);
   const [valores, setValores] = useState<{ [key: string]: boolean }>({});
 
@@ -35,7 +35,11 @@ const AntecedentesQuirurgicos: React.FC<{ titulo?: string }> = ({ titulo }) => {
   const antecedentesPagina = ANTECEDENTES_QUIRURGICOS.slice(inicio, inicio + ANTECEDENTES_POR_PAGINA);
 
   const handleChange = (antecedente: string, value: boolean) => {
-    setValores((prev) => ({ ...prev, [antecedente]: value }));
+    setValores((prev) => {
+      const next = { ...prev, [antecedente]: value };
+      onDataChange?.(next);
+      return next;
+    });
   };
 
   return (

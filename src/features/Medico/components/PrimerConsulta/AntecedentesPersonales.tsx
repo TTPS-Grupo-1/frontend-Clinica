@@ -8,7 +8,7 @@ const AntecedentesPersonales: React.FC<{ titulo?: string; onDataChange?: (data: 
 
   React.useEffect(() => {
     onDataChange?.({ fuma, alcohol, drogas, observaciones });
-  }, [fuma, alcohol, drogas, observaciones, onDataChange]);
+  }, [fuma, alcohol, drogas, observaciones]);
 
 
   return (

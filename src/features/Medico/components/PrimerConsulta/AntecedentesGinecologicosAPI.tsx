@@ -10,11 +10,13 @@ interface AntecedentesGinecologicosAPIProps {
   onDataChange?: (data: any) => void;
 }
 
-const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> = ({ onSeleccionChange, onDataChange }) => {
+const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> = ({
+  onSeleccionChange,
+  onDataChange
+}) => {
   const [campos, setCampos] = useState<Campo[]>([]);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
 
-  // 🔹 Datos hardcodeados (simulan respuesta de API)
   const camposBase: Campo[] = [
     { id: 1, nombre: 'Uso de anticonceptivos' },
     { id: 2, nombre: 'Endometriosis' },
@@ -27,10 +29,8 @@ const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> 
     { id: 9, nombre: 'Infecciones ginecológicas recurrentes' },
   ];
 
-  // 🔸 Simula carga desde API
   useEffect(() => {
     const fetchCamposSimulado = async () => {
-      // Podés simular un delay si querés que parezca un fetch real
       await new Promise(res => setTimeout(res, 300));
       setCampos(camposBase);
     };
@@ -38,19 +38,24 @@ const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> 
   }, []);
 
   const handleCheckbox = (nombre: string) => {
-    setSeleccionados(prev => {
-      const nuevos = prev.includes(nombre)
+    setSeleccionados(prev =>
+      prev.includes(nombre)
         ? prev.filter(item => item !== nombre)
-        : [...prev, nombre];
-      onSeleccionChange?.(nuevos);
-      onDataChange?.({ seleccionados: nuevos });
-      return nuevos;
-    });
+        : [...prev, nombre]
+    );
   };
+
+  // ✅ Notificar al padre solo después de que se actualice el estado
+  useEffect(() => {
+    onSeleccionChange?.(seleccionados);
+    onDataChange?.({ seleccionados });
+  }, [seleccionados]);
 
   return (
     <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
-      <h2 className="text-2xl font-bold mb-4 text-center">Antecedentes Ginecológicos Adicionales</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        Antecedentes Ginecológicos Adicionales
+      </h2>
       {campos.length === 0 ? (
         <p className="text-center text-gray-600">Cargando antecedentes...</p>
       ) : (

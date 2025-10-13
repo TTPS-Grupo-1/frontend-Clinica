@@ -15,7 +15,7 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps> = ({ visible, onDataChan
 
   React.useEffect(() => {
     onDataChange?.(fenotipo);
-  }, [fenotipo, onDataChange]);
+  }, [fenotipo]);
 
   if (!visible) return null;
 

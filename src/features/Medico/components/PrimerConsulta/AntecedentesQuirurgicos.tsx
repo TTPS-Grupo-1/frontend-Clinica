@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AntecedenteItem from './AntecedenteItem';
 import Paginador from './Paginador';
 
-// Lista hardcodeada de antecedentes quirúrgicos (puedes reemplazar por fetch en el futuro)
 const ANTECEDENTES_QUIRURGICOS = [
   'Apendicectomía',
   'Colecistectomía',
@@ -26,7 +25,10 @@ const ANTECEDENTES_QUIRURGICOS = [
 
 const ANTECEDENTES_POR_PAGINA = 7;
 
-const AntecedentesQuirurgicos: React.FC<{ titulo?: string; onDataChange?: (data: any) => void }> = ({ titulo, onDataChange }) => {
+const AntecedentesQuirurgicos: React.FC<{ titulo?: string; onDataChange?: (data: any) => void }> = ({
+  titulo,
+  onDataChange,
+}) => {
   const [pagina, setPagina] = useState(1);
   const [valores, setValores] = useState<{ [key: string]: boolean }>({});
 
@@ -35,16 +37,19 @@ const AntecedentesQuirurgicos: React.FC<{ titulo?: string; onDataChange?: (data:
   const antecedentesPagina = ANTECEDENTES_QUIRURGICOS.slice(inicio, inicio + ANTECEDENTES_POR_PAGINA);
 
   const handleChange = (antecedente: string, value: boolean) => {
-    setValores((prev) => {
-      const next = { ...prev, [antecedente]: value };
-      onDataChange?.(next);
-      return next;
-    });
+    setValores((prev) => ({ ...prev, [antecedente]: value }));
   };
+
+  // ✅ notifica al padre solo después de renderizar los cambios
+  useEffect(() => {
+    onDataChange?.(valores);
+  }, [valores]);
 
   return (
     <div className="max-w-xl mx-auto rounded shadow p-6 border-2 border-black bg-white text-black">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">{titulo || 'Antecedentes Quirúrgicos'}</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center text-black">
+        {titulo || 'Antecedentes Quirúrgicos'}
+      </h2>
       <div>
         {antecedentesPagina.map((ant) => (
           <AntecedenteItem

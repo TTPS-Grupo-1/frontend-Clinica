@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AntecedenteItem from './AntecedenteItemClinico';
 import Paginador from './Paginador';
 
-// Lista hardcodeada de antecedentes clínicos (puedes reemplazar por fetch en el futuro)
 const ANTECEDENTES = [
   'Diabetes',
   'Hipertensión arterial',
@@ -38,12 +37,13 @@ const AntecedentesClinicos: React.FC<{ titulo?: string; onDataChange?: (data: an
   const antecedentesPagina = ANTECEDENTES.slice(inicio, inicio + ANTECEDENTES_POR_PAGINA);
 
   const handleChange = (antecedente: string, value: string) => {
-    setValores((prev) => {
-      const next = ({ ...prev, [antecedente]: value });
-      onDataChange?.(next);
-      return next;
-    });
+    setValores((prev) => ({ ...prev, [antecedente]: value }));
   };
+
+  // ✅ Este efecto se ejecuta después de cada render en que cambian los valores
+  useEffect(() => {
+    onDataChange?.(valores);
+  }, [valores]);
 
   return (
     <div className="max-w-xl mx-auto rounded shadow p-6 border-2 border-black bg-white text-black">

@@ -345,8 +345,10 @@ const ComponentePadre: React.FC = () => {
                 form: formData,
               };
               try {
+                console.log('🧾 Datos listos para enviar:', datos);
                 await axios.post('/api/primer-consulta/', datos, { withCredentials: true });
                 toast.success('Datos enviados correctamente');
+
               } catch (err: any) {
                 console.error('Error enviando datos', err);
                 toast.error(err.response?.data?.message || 'Error al enviar datos');

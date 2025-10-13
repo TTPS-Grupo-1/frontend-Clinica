@@ -10,7 +10,10 @@ interface AntecedentesHormonalesProps {
   onDataChange?: (data: any) => void;
 }
 
-const AntecedentesHormonales: React.FC<AntecedentesHormonalesProps> = ({ onSeleccionChange, onDataChange }) => {
+const AntecedentesHormonales: React.FC<AntecedentesHormonalesProps> = ({
+  onSeleccionChange,
+  onDataChange
+}) => {
   const [campos, setCampos] = useState<Campo[]>([]);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
 
@@ -32,14 +35,20 @@ const AntecedentesHormonales: React.FC<AntecedentesHormonalesProps> = ({ onSelec
     fetchSimulado();
   }, []);
 
+  // ✅ Solo cambia el estado local acá
   const handleCheckbox = (nombre: string) => {
-    setSeleccionados((prev) => {
-      const nuevos = prev.includes(nombre) ? prev.filter((n) => n !== nombre) : [...prev, nombre];
-      onSeleccionChange?.(nuevos);
-      onDataChange?.({ seleccionados: nuevos });
-      return nuevos;
-    });
+    setSeleccionados((prev) =>
+      prev.includes(nombre)
+        ? prev.filter((n) => n !== nombre)
+        : [...prev, nombre]
+    );
   };
+
+  // ✅ Notificar al padre después del render
+  useEffect(() => {
+    onSeleccionChange?.(seleccionados);
+    onDataChange?.({ seleccionados });
+  }, [seleccionados]);
 
   return (
     <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">

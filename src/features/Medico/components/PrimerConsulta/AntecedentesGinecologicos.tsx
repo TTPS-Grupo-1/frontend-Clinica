@@ -21,7 +21,7 @@ const AntecedentesGinecologicos: React.FC<AntecedentesGinecologicosProps> = ({ d
 
   React.useEffect(() => {
     onDataChange?.({ datos1, datos2: doble ? datos2 : undefined });
-  }, [datos1, datos2, doble, onDataChange]);
+  }, [datos1, datos2, doble]);
 
   const handleChange = (idx: 1 | 2, name: string, value: string) => {
     if (idx === 1) setDatos1(prev => ({ ...prev, [name]: value }));

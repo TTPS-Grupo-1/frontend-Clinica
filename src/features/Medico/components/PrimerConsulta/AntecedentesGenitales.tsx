@@ -3,7 +3,7 @@ import type { AntecedentesGenitalesProps } from '../../../../interfaces/Medico';
 
 const AntecedentesGenitales: React.FC<AntecedentesGenitalesProps> = ({ visible, onDataChange }) => {
   const [tieneAntecedentes, setTieneAntecedentes] = React.useState(false);
-  React.useEffect(() => { onDataChange?.({ tieneAntecedentes }); }, [tieneAntecedentes, onDataChange]);
+  React.useEffect(() => { onDataChange?.({ tieneAntecedentes }); }, [tieneAntecedentes]);
   if (!visible) return null;
 
   return (

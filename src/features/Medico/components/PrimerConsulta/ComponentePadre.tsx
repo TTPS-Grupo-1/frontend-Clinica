@@ -8,6 +8,8 @@ import FenotipoDonacion from './FenotipoDonacion';
 import AntecedentesGenitales from './AntecedentesGenitales';
 import AntecedentesFamiliares from './AntecedentesFamiliares';
 import ExamenFisico from './ExamenFisico';
+import AntecedentesGinecologicosAPI from './AntecedentesGinecologicosAPI';
+
 
 // Iconos
 const icons = {

@@ -9,6 +9,7 @@ import AntecedentesGenitales from './AntecedentesGenitales';
 import AntecedentesFamiliares from './AntecedentesFamiliares';
 import ExamenFisico from './ExamenFisico';
 import AntecedentesGinecologicosAPI from './AntecedentesGinecologicosAPI';
+import AntecedentesHormonales from './AntecedentesHormonales';
 
 
 // Iconos
@@ -103,26 +104,191 @@ const ComponentePadre: React.FC = () => {
       {objetivoSeleccionado && (
         <>
           {/* Antecedentes Clínicos */}
-          {/* ... aquí todo lo tuyo igual ... */}
-
-          {/* 🔹 Antecedentes Familiares */}
-          <Card title="Antecedentes Familiares" icon={icons.familiares}>
-            <AntecedentesFamiliares onDataChange={setFamiliares} />
-          </Card>
+          {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
+            <>
+              <Card title="Antecedentes Clínicos" icon={icons.clinicos}>
+                <AntecedentesClinicos titulo= "Mujer 1" />
+              </Card>
+              <Card title="Antecedentes Clínicos" icon={icons.clinicos}>
+                <AntecedentesClinicos titulo= "Mujer 2" />
+              </Card>
+            </>
+          ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
+            <>
+              <Card title="Antecedentes Clínicos - Mujer" icon={icons.clinicos}>
+                <AntecedentesClinicos titulo= "Mujer" />
+              </Card>
+              <Card title="Antecedentes Clínicos - Hombre" icon={icons.clinicos}>
+                <AntecedentesClinicos titulo= "Hombre" />
+              </Card>
+            </>
+          ) : (
+            <Card title="Antecedentes Clínicos" icon={icons.clinicos}>
+              <AntecedentesClinicos />
+            </Card>
+          )}
+          {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
+            <>
+              <Card title="Antecedentes Familiares - Mujer 1" icon={icons.familiares}>
+                <AntecedentesFamiliares onDataChange={setFamiliares}/>
+              </Card>
+              <Card title="Antecedentes Familiares - Mujer 2" icon={icons.familiares}>
+                <AntecedentesFamiliares onDataChange={setFamiliares}/>
+              </Card>
+            </>
+          ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
+            <>
+              <Card title="Antecedentes Familiares - Mujer" icon={icons.familiares}>
+                <AntecedentesFamiliares onDataChange={setFamiliares}/>
+              </Card>
+              <Card title="Antecedentes Familiares - Hombre" icon={icons.familiares}>
+                <AntecedentesFamiliares onDataChange={setFamiliares}/>
+              </Card>
+            </>
+          ) : (
+            <Card title="Antecedentes Familiares" icon={icons.familiares}>
+              <AntecedentesFamiliares onDataChange={setFamiliares}/>
+            </Card>
+          )}
 
           {/* Antecedentes Ginecológicos */}
-          <Card title="Antecedentes Ginecológicos" icon={icons.ginecologicos}>
-            <AntecedentesGinecologicos doble={objetivoSeleccionado === 'pareja_femenina_ropa'} />
-          </Card>
+          {objetivoSeleccionado === 'pareja_femenina_ropa' ? (
+            <>
+              <Card title="Antecedentes Ginecológicos" icon={icons.ginecologicos}>
+                <AntecedentesGinecologicos doble={objetivoSeleccionado === 'pareja_femenina_ropa'} />
+              </Card>
+            </>
+          ) : (
+            <Card title="Antecedentes Ginecológicos" icon={icons.ginecologicos}>
+              <AntecedentesGinecologicos />
+            </Card>
+
+          )}
+          {/* Antecedentes Quirúrgicos */}
+          {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
+            <>
+              <Card title="Antecedentes Quirúrgicos - Mujer 1" icon={icons.quirurgicos}>
+                <AntecedentesQuirurgicos titulo= "Mujer 1" />
+              </Card>
+              <Card title="Antecedentes Quirúrgicos - Mujer 2" icon={icons.quirurgicos}>
+                <AntecedentesQuirurgicos titulo= "Mujer 2" />
+              </Card>
+            </>
+          ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
+            <>
+              <Card title="Antecedentes Quirúrgicos - Mujer" icon={icons.quirurgicos}>
+                <AntecedentesQuirurgicos titulo= "Mujer" />
+              </Card>
+              <Card title="Antecedentes Quirúrgicos - Hombre" icon={icons.quirurgicos}>
+                <AntecedentesQuirurgicos titulo= "Hombre" />
+              </Card>
+            </>
+          ) : (
+            <Card title="Antecedentes Quirúrgicos" icon={icons.quirurgicos}>
+              <AntecedentesQuirurgicos />
+            </Card>
+          )}
+          {/* Antecedentes Personales */}
+          {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
+            <>
+              <Card title="Antecedentes Personales - Mujer 1" icon={icons.personales}>
+                <AntecedentesPersonales titulo= "Mujer 1" />
+              </Card>
+              <Card title="Antecedentes Personales - Mujer 2" icon={icons.personales}>
+                <AntecedentesPersonales titulo= "Mujer 2" />
+              </Card>
+            </>
+          ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
+            <>
+              <Card title="Antecedentes Personales - Mujer" icon={icons.personales}>
+                <AntecedentesPersonales titulo= "Mujer" />
+              </Card>
+              <Card title="Antecedentes Personales - Hombre" icon={icons.personales}>
+                <AntecedentesPersonales titulo= "Hombre" />
+              </Card>
+            </>
+          ) : (
+            <Card title="Antecedentes Personales" icon={icons.personales}>
+              <AntecedentesPersonales />
+            </Card>
+          )}
+          {/* Examen Físico */}
+          {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
+            <>
+              <Card title="Examen Físico - Mujer 1" icon={icons.personales}>
+                <ExamenFisico/>
+              </Card>
+              <Card title="Examen Físico - Mujer 2" icon={icons.personales}>
+                <ExamenFisico/>
+              </Card>
+            </>
+          ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
+            <>
+              <Card title="Examen Físico - Mujer" icon={icons.personales}>
+                <ExamenFisico/>
+              </Card>
+              <Card title="Examen Físico - Hombre" icon={icons.personales}>
+                <ExamenFisico/>
+              </Card>
+            </>
+          ) : (
+            <Card title="Examen Físico" icon={icons.personales}>
+              <ExamenFisico />
+            </Card>
+          )}
+          {/* Antecedentes Ginecológicos vía API */}
+          {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
+            <>
+              <Card title="Antecedentes Ginecológicos API - Mujer 1" icon={icons.ginecologicos}>
+                <AntecedentesGinecologicosAPI />
+              </Card>
+              <Card title="Antecedentes Ginecológicos API - Mujer 2" icon={icons.ginecologicos}>
+                <AntecedentesGinecologicosAPI />
+              </Card>
+            </>
+          ) : (
+            <>
+              <Card title="Antecedentes Ginecológicos API" icon={icons.ginecologicos}>
+                <AntecedentesGinecologicosAPI />
+              </Card>
+            </>
+          )}
+
 
           {/* Fenotipo y Genitales */}
           <Card title="Fenotipo (solo para donación)" icon={icons.fenotipo}>
-            <FenotipoDonacion visible={objetivoSeleccionado === 'mujer_sola_donacion'} />
+            <FenotipoDonacion visible={objetivoSeleccionado === 'mujer_sola_donacion' || objetivoSeleccionado === 'pareja_femenina_donacion'} />
           </Card>
 
           <Card title="Antecedentes Genitales" icon={icons.genitales}>
             <AntecedentesGenitales visible={objetivoSeleccionado === 'pareja_heterosexual'} />
           </Card>
+
+          {/* Antecedentes hormonales */}
+          {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
+            <>
+              <Card title="Antecedentes Hormonales - Mujer 1" icon={icons.clinicos}>
+                <AntecedentesHormonales />
+              </Card>
+              <Card title="Antecedentes Hormonales - Mujer 2" icon={icons.clinicos}>
+                <AntecedentesHormonales />
+              </Card>
+            </>
+          ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
+            <>
+              <Card title="Antecedentes Hormonales - Mujer" icon={icons.clinicos}>
+                <AntecedentesHormonales/>
+              </Card>
+              <Card title="Antecedentes Hormonales - Hombre" icon={icons.clinicos}>  
+                <AntecedentesHormonales/>
+              </Card>
+            </>
+          ) : (
+            <Card title="Antecedentes Hormonales" icon={icons.clinicos}>
+              <AntecedentesHormonales />
+            </Card>
+          )}
+
         </>
       )}
 

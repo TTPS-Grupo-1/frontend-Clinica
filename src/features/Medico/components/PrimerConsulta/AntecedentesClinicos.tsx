@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AntecedenteItem from './AntecedenteItem';
+import AntecedenteItem from './AntecedenteItemClinico';
 import Paginador from './Paginador';
 
 // Lista hardcodeada de antecedentes clínicos (puedes reemplazar por fetch en el futuro)

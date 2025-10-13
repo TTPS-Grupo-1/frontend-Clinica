@@ -41,6 +41,12 @@ export interface AntecedentesGinecologicosProps {
 
 export interface AntecedenteItemProps {
   antecedente: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}
+
+export interface AntecedenteItemClinicoProps {
+  antecedente: string;
   value: string;
   onChange: (value: string) => void;
 }

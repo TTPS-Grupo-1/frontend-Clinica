@@ -28,13 +28,13 @@ const ANTECEDENTES_POR_PAGINA = 7;
 
 const AntecedentesQuirurgicos: React.FC<{ titulo?: string }> = ({ titulo }) => {
   const [pagina, setPagina] = useState(1);
-  const [valores, setValores] = useState<{ [key: string]: string }>({});
+  const [valores, setValores] = useState<{ [key: string]: boolean }>({});
 
   const totalPaginas = Math.ceil(ANTECEDENTES_QUIRURGICOS.length / ANTECEDENTES_POR_PAGINA);
   const inicio = (pagina - 1) * ANTECEDENTES_POR_PAGINA;
   const antecedentesPagina = ANTECEDENTES_QUIRURGICOS.slice(inicio, inicio + ANTECEDENTES_POR_PAGINA);
 
-  const handleChange = (antecedente: string, value: string) => {
+  const handleChange = (antecedente: string, value: boolean) => {
     setValores((prev) => ({ ...prev, [antecedente]: value }));
   };
 
@@ -46,7 +46,7 @@ const AntecedentesQuirurgicos: React.FC<{ titulo?: string }> = ({ titulo }) => {
           <AntecedenteItem
             key={ant}
             antecedente={ant}
-            value={valores[ant] || ''}
+            value={!!valores[ant]}
             onChange={(v) => handleChange(ant, v)}
           />
         ))}

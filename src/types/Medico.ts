@@ -5,4 +5,5 @@ export type Medico = {
   dni: number;
   email: string;
   telefono: number;
+  password?: string;  // Opcional porque no se devuelve en listados
 };

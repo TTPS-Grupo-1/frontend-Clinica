@@ -80,49 +80,50 @@ export default function PuncionModal({
     };
 
     return (
-        <section className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40">
-            <article className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
-                <h2 className="text-xl text-black font-bold mb-4 text-center">Registrar Punción</h2>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-                {error && (
-                    <div className="text-red-600 text-sm mb-2" role="alert">{error}</div>
-                )}
-                <div className="flex gap-4">
-                    <div className="flex-1">
-                        <label className="block text-sm font-medium text-black mb-2">Quirófano</label>
-                        <input
-                            type="text"
-                            value={formData.quirofano}
-                            onChange={e => setFormData(fd => ({ ...fd, quirofano: e.target.value }))}
-                            className="w-full border rounded text-black px-2 py-1"
-                            placeholder="Ej: Q1"
-                        />
+        <section className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-30 backdrop-blur-sm transition-all duration-200">
+            <article className="bg-white rounded-xl shadow-2xl p-4 sm:p-8 w-full max-w-lg sm:max-w-2xl animate-fade-in">
+                <h2 className="text-2xl text-pink-700 font-bold mb-6 text-center tracking-tight">Registrar Punción</h2>
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="text-red-600 text-sm mb-2 animate-pulse" role="alert">{error}</div>
+                    )}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium text-black mb-2">Quirófano</label>
+                            <input
+                                type="text"
+                                value={formData.quirofano}
+                                onChange={e => setFormData(fd => ({ ...fd, quirofano: e.target.value }))}
+                                className="w-full border border-pink-300 rounded text-black px-2 py-1 focus:ring-2 focus:ring-pink-200"
+                                placeholder="Ej: Q1"
+                                autoFocus
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <label className="block text-sm text-black font-medium mb-2">Fecha</label>
+                            <input
+                                type="date"
+                                value={formData.fecha}
+                                onChange={e => setFormData(fd => ({ ...fd, fecha: e.target.value }))}
+                                className="w-full border border-pink-300 rounded text-black px-2 py-1 focus:ring-2 focus:ring-pink-200"
+                            />
+                        </div>
                     </div>
-                    <div className="flex-1">
-                        <label className="block text-sm text-black font-medium mb-2">Fecha</label>
-                        <input
-                            type="date"
-                            value={formData.fecha}
-                            onChange={e => setFormData(fd => ({ ...fd, fecha: e.target.value }))}
-                            className="w-full border rounded text-black px-2 py-1"
-                        />
-                    </div>
-                </div>
                     <div>
                         <label className="block text-sm font-medium mb-2">Paciente</label>
                         <input
                             type="text"
                             value={paciente ? `${paciente.apellido}, ${paciente.nombre}` : ""}
                             readOnly
-                            className="w-full border rounded text-black px-2 py-1 bg-gray-100"
+                            className="w-full border border-pink-200 rounded text-black px-2 py-1 bg-gray-100"
                         />
                     </div>
                     <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-2">Ovocitos agregados</h3>
+                        <h3 className="text-lg font-semibold mb-2 text-pink-700">Ovocitos agregados</h3>
                         <button
                             type="button"
                             onClick={() => setOvocitoModalOpen(true)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mb-2"
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mb-2 transition-all duration-150"
                         >
                             Agregar ovocito
                         </button>
@@ -133,14 +134,14 @@ export default function PuncionModal({
                             nombreDonante={paciente?.nombre || ""}
                             apellidoDonante={paciente?.apellido || ""}
                         />
-                        <div className="mt-2">
-                            <table className="min-w-full border rounded-lg overflow-hidden bg-gray-100">
+                        <div className="mt-2 overflow-x-auto">
+                            <table className="min-w-full border rounded-lg overflow-hidden bg-gray-100 text-xs sm:text-sm">
                                 <thead className="bg-blue-300">
                                     <tr>
-                                        <th className="px-4 py-2 text-left">Identificador</th>
-                                        <th className="px-4 py-2 text-left">Estado</th>
-                                        <th className="px-4 py-2 text-left">Cripreservado</th>
-                                        <th className="px-4 py-2 text-left">Descartado</th>
+                                        <th className="px-2 sm:px-4 py-2 text-left">Identificador</th>
+                                        <th className="px-2 sm:px-4 py-2 text-left">Estado</th>
+                                        <th className="px-2 sm:px-4 py-2 text-left">Cripreservado</th>
+                                        <th className="px-2 sm:px-4 py-2 text-left">Descartado</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -149,12 +150,12 @@ export default function PuncionModal({
                                             <td colSpan={4} className="text-center py-4 text-gray-500">No hay ovocitos agregados.</td>
                                         </tr>
                                     ) : (
-                                        ovocitos.map((o, idx) => (
-                                            <tr key={o.identificador} className="border-b text-black">
-                                                <td className="px-4 py-2">{o.identificador}</td>
-                                                <td className="px-4 py-2">{o.estado}</td>
-                                                <td className="px-4 py-2 text-center">{o.cripreservar ? "Sí" : "No"}</td>
-                                                <td className="px-4 py-2 text-center">{o.descartado ? "Sí" : "No"}</td>
+                                        ovocitos.map((o) => (
+                                            <tr key={o.identificador} className="border-b text-black hover:bg-blue-50 transition-all duration-100">
+                                                <td className="px-2 sm:px-4 py-2 font-mono break-all max-w-[120px] sm:max-w-[200px]">{o.identificador}</td>
+                                                <td className="px-2 sm:px-4 py-2">{o.estado}</td>
+                                                <td className="px-2 sm:px-4 py-2 text-center">{o.cripreservar ? "Sí" : "No"}</td>
+                                                <td className="px-2 sm:px-4 py-2 text-center">{o.descartado ? "Sí" : "No"}</td>
                                             </tr>
                                         ))
                                     )}
@@ -162,21 +163,21 @@ export default function PuncionModal({
                             </table>
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2 mt-6">
+                    <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100"
+                            className="px-4 py-2 border border-pink-300 rounded text-gray-700 hover:bg-gray-100 transition-all duration-150"
                         >
                             Cancelar
                         </button>
-                                    <button
-                                        type="submit"
-                                        disabled={submitting}
-                                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed"
-                                    >
-                                        {submitting ? "Registrando..." : "Registrar punción"}
-                                    </button>
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150"
+                        >
+                            {submitting ? "Registrando..." : "Registrar punción"}
+                        </button>
                     </div>
                 </form>
             </article>

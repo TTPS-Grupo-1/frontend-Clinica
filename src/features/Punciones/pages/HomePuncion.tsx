@@ -68,42 +68,45 @@ export default function HomePuncion() {
     const selectedPaciente = pacientes.find(p => p.id === formData.selectedPacienteId);
 
     return (
-        <main className="w-full max-w-4xl mx-auto mt-16 md:mt-22 px-4 sm:px-6 py-6 mb-10 min-h-screen flex flex-col rounded-lg shadow" style={{ background: "linear-gradient(135deg, #ffe4ec 0%, #f8bbd0 100%)" }}>
-            <h1 className="text-xl sm:text-2xl font-bold text-pink-700 mb-4 text-center drop-shadow">Página de Punciones</h1>
+        <main className="w-full max-w-4xl mx-auto mt-8 md:mt-16 px-2 sm:px-6 py-4 mb-10 min-h-screen flex flex-col rounded-lg shadow-lg bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200">
+            <h1 className="text-2xl sm:text-3xl font-bold text-pink-700 mb-6 text-center drop-shadow-lg tracking-tight">Punciones</h1>
             <section className="mb-6">
                 <label className="block mb-2 text-pink-800 font-medium" htmlFor="paciente-select">Seleccionar paciente</label>
-                {loadingPacientes ? (
-                    <div className="h-10 w-full bg-pink-100 animate-pulse rounded" />
-                ) : (
-                    <select
-                        id="paciente-select"
-                        value={formData.selectedPacienteId ?? ""}
-                        onChange={e => setFormData(fd => ({ ...fd, selectedPacienteId: Number(e.target.value) }))}
-                        className="border border-pink-300 text-pink-900 rounded px-3 py-2 w-full bg-white focus:ring-2 focus:ring-pink-300"
-                    >
-                        <option value="">-- Selecciona un paciente --</option>
-                        {pacientes.map(p => (
-                            <option key={p.id} value={p.id}>{p.apellido}, {p.nombre}</option>
-                        ))}
-                    </select>
-                )}
+                <div className="flex flex-col sm:flex-row gap-2 items-center">
+                    {loadingPacientes ? (
+                        <div className="h-10 w-full bg-pink-100 animate-pulse rounded" />
+                    ) : (
+                        <select
+                            id="paciente-select"
+                            value={formData.selectedPacienteId ?? ""}
+                            onChange={e => setFormData(fd => ({ ...fd, selectedPacienteId: Number(e.target.value) }))}
+                            className="border border-pink-300 text-pink-900 rounded px-3 py-2 w-full sm:w-80 bg-white focus:ring-2 focus:ring-pink-300 shadow-sm"
+                        >
+                            <option value="">-- Selecciona un paciente --</option>
+                            {pacientes.map(p => (
+                                <option key={p.id} value={p.id}>{p.apellido}, {p.nombre}</option>
+                            ))}
+                        </select>
+                    )}
+                </div>
             </section>
             {formData.selectedPacienteId && (
                 <>
-                    <section className="mb-4 flex justify-between items-center">
-                        <h2 className="text-lg text-pink-800 font-semibold">Ovocitos de {selectedPaciente?.nombre} {selectedPaciente?.apellido}</h2>
+                    <section className="mb-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+                        <h2 className="text-lg sm:text-xl text-pink-800 font-semibold text-center sm:text-left">Ovocitos de <span className="font-bold">{selectedPaciente?.nombre} {selectedPaciente?.apellido}</span></h2>
                         <button
                             onClick={() => setModalOpen(true)}
-                            className="px-4 py-2 bg-pink-500 text-white rounded shadow hover:bg-pink-600 transition"
+                            className="px-4 py-2 bg-pink-500 text-white rounded shadow hover:bg-pink-600 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-pink-400"
                         >
-                            Registrar punción
+                            <span className="hidden sm:inline">Registrar punción</span>
+                            <span className="sm:hidden">+</span>
                         </button>
                     </section>
                     <section className="overflow-x-auto rounded-lg shadow min-h-[220px] bg-white/80">
                         {loadingOvocitos ? (
                             <OvocitosTableSkeleton rows={ITEMS_PER_PAGE} />
                         ) : errorOvocitos ? (
-                            <div className="p-4 text-red-700">{errorOvocitos}</div>
+                            <div className="p-4 text-red-700 animate-pulse">{errorOvocitos}</div>
                         ) : (
                             <>
                                 <OvocitosTable ovocitos={paginatedOvocitos} />

@@ -86,7 +86,7 @@ export default function DonacionPage() {
       console.log("Donación de ovocitos:", donacionData);
       alert("Donación de ovocitos registrada exitosamente");
     }
-    navigate("/donaciones");
+    navigate("/operador/donaciones");
   };
 
   const generateId = (prefix: 's' | 'o') => {
@@ -101,7 +101,7 @@ export default function DonacionPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="mb-8">
             <button
-              onClick={() => navigate("/donaciones")}
+              onClick={() => navigate("/operador/donaciones")}
               className={`flex items-center mb-4 ${tipo === 'semen' ? 'text-blue-600 hover:text-blue-800' : 'text-pink-600 hover:text-pink-800'}`}
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

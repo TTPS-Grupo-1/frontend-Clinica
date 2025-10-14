@@ -137,7 +137,7 @@ export default function Navbar() {
               </ul>
             </div>
           </div>
-          {/* Donaciones Dropdown */}
+          {/* Operador Dropdown */}
           <div className="relative z-50 group">
             <button
               aria-haspopup="true"
@@ -148,27 +148,45 @@ export default function Navbar() {
               className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
             >
               <ChevronRight className="ml-1 h-4 w-4 text-white" />
-              Donaciones
+              Operador
             </button>
             {/* Dropdown panel */}
             <div
               onMouseEnter={() => setOpenDropdown('donaciones')}
               onMouseLeave={() => setOpenDropdown(null)}
-              className={`absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
+              className={`absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
                 openDropdown === 'donaciones' ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
               }`}
             >
               <ul className="py-1">
                 <li>
                   <Link
-                    to="/donaciones"
+                    to="/operador"
                     onClick={() => setOpenDropdown(null)}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
                   >
-                    Home de donaciones
+                    Home
                   </Link>
                 </li>
-                {/* Puedes añadir más opciones aquí */}
+                <li>
+                  <Link
+                    to="/operador/donaciones"
+                    onClick={() => setOpenDropdown(null)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                  >
+                    Donaciones
+                  </Link>
+                </li>
+                
+                <li>
+                  <Link
+                    to="/operador/punciones"
+                    onClick={() => setOpenDropdown(null)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                  >
+                    Punciones
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
@@ -225,11 +243,20 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                to="/donaciones"
+                to="/operador/donaciones"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block hover:text-yellow-400"
               >
                 Donaciones
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/operador/punciones"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block hover:text-yellow-400"
+              >
+                Punciones
               </Link>
             </li>
             <li className="pt-2 border-t border-white/20">

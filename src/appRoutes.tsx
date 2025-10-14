@@ -14,7 +14,8 @@ import DonacionesHomePage from './features/Donaciones/pages/HomePage';
 import DonacionPage from './features/Donaciones/pages/DonacionPage';
 import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage'
 import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
-
+import HomePuncion from './features/Punciones/pages/HomePuncion';
+import HomeLaboratorio from './features/Operador/pages/HomeLaboratorio';
 export default function getAppRoutes() {
   return (
     <>
@@ -29,13 +30,13 @@ export default function getAppRoutes() {
       <Route path="/medico/turnos" element={<ListadoTurnos />} />
       <Route path="/medicos/listado" element={<ListadoMedicosPage />} />
       <Route path="/registro" element={<RegistroPage />} />
-      <Route path="/donaciones" element={<DonacionesHomePage />} />
-       <Route path="/admin/home" element={<HomePageAdmin />} />
+      <Route path="/admin/home" element={<HomePageAdmin />} />
       {/* Para probar la page unificada con param tipo */}
-      <Route path="/donaciones/nueva/:tipo" element={<DonacionPage />} />
-      <Route path="/pacientes/misTurnos" element={<TurnosPacientePage/>} />
-
-     
+      <Route path="/operador/donaciones/nueva/:tipo" element={<DonacionPage />} />
+      <Route path="/pacientes/turnos" element={<TurnosPacientePage />} />
+      <Route path="/operador" element={<HomeLaboratorio />} />
+      <Route path="/operador/donaciones" element={<DonacionesHomePage />} />
+      <Route path="/operador/punciones" element={<HomePuncion />} />
     </>
   );
 }

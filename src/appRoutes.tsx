@@ -22,7 +22,7 @@ export default function getAppRoutes() {
       <Route path="/medico/home" element={<HomePage />} />
       <Route path="/embriones" element={<EmbryoPage />} />
       <Route path="/medicos/alta" element={<AltaMedicoPage />} />
-      <Route path="/medicos/editar/:id" element={<EditMedicoPage />} />
+      <Route path="/medicos/editar/:dni" element={<EditMedicoPage />} />
       <Route path="/pacientes/home" element={<HomePaciente />} />
       <Route path="/pacientes/sacarTurno" element={<SacarTurno />} />
       <Route path="/login" element={<LoginPage />} />

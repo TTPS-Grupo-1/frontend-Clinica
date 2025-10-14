@@ -65,7 +65,7 @@ export default function MedicoList({ medicos, onEliminar }: MedicoListProps & { 
                     <div className="flex gap-2">
                       <button
                         className="px-3 py-1 bg-blue-600 text-white rounded font-semibold shadow-lg hover:bg-blue-700 focus:bg-blue-700 focus:outline-none"
-                        onClick={() => navigate(`/medicos/editar/${medico.id}`)}
+                        onClick={() => navigate(`/medicos/editar/${medico.dni}`)}
                       >
                         Editar
                       </button>

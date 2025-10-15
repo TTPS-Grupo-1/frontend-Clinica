@@ -1,51 +1,46 @@
 import { useState } from "react";
-import type { EmbryoModalProps } from "../../../interfaces/Embryo";
-import { generateEmbryoId } from "../static/utils";
+import type { EmbryoModalAdaptedProps } from "../../../interfaces/Embryo";
+import { generateUniqueId } from "../../../shared/utils/generateUniqueId";
 
-export default function EmbryoModal({ isOpen, onClose, onSubmit, pacienteNombre = "" }: EmbryoModalProps) {
+
+export default function EmbryoModal({ isOpen, onClose, onSubmit, pacientes, ovocitos, selectedPacienteId }: EmbryoModalAdaptedProps) {
   const [formData, setFormData] = useState({
     calidad: "3",
     pot: "OK",
-    estado: "maduro",
+    estado: "transferido", // Valor válido por defecto
     causaDescarte: "",
-    ovocito: "OV001",
-    observaciones: ""
+    ovocito: "",
+    observaciones: "",
+    fecha_fertilizacion: "",
+    tecnica: "",
+    tecnico_laboratorio: "",
+    info_semen: "",
+    fecha_baja: ""
   });
 
-  // Ovocitos hardcodeados disponibles
-  const ovocitosDisponibles = [
-    "OV001",
-    "OV002", 
-    "OV003",
-    "OV004",
-    "OV005",
-    "OV006",
-    "OV007",
-    "OV008",
-    "OV009",
-    "OV010"
-  ];
-
+  const paciente = pacientes.find(p => p.id === selectedPacienteId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const embryoId = generateEmbryoId(pacienteNombre);
-    
+    const [apellido = "APE", nombre = "NOM"] = paciente ? [paciente.apellido, paciente.nombre] : ["APE", "NOM"];
+    const embryoId = generateUniqueId({ prefix: "EMB", nombre, apellido });
     onSubmit({
       ...formData,
       id: embryoId
     });
-    
-    // Reset form
     setFormData({
       calidad: "3",
       pot: "OK", 
-      estado: "maduro",
+      estado: "transferido",
       causaDescarte: "",
-      ovocito: "OV001",
-      observaciones: ""
+      ovocito: "",
+      observaciones: "",
+      fecha_fertilizacion: "",
+      tecnica: "",
+      tecnico_laboratorio: "",
+      info_semen: "",
+      fecha_baja: ""
     });
-    
     onClose();
   };
 
@@ -57,8 +52,7 @@ export default function EmbryoModal({ isOpen, onClose, onSubmit, pacienteNombre 
       <div 
         className="absolute inset-0 bg-opacity-50 backdrop-blur-sm"
         onClick={onClose}
-      />
-      
+      ></div>
       {/* Modal */}
       <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
@@ -73,29 +67,99 @@ export default function EmbryoModal({ isOpen, onClose, onSubmit, pacienteNombre 
             </svg>
           </button>
         </div>
-
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Ovocito selector dinámico */}
+          <div>
+            <label htmlFor="ovocito" className="block text-sm font-medium text-gray-700 mb-1">Ovocito relacionado</label>
+            <select
+              id="ovocito"
+              value={formData.ovocito}
+              onChange={e => setFormData({ ...formData, ovocito: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black font-medium"
+              required
+              disabled={!selectedPacienteId}
+            >
+              <option value="" className="text-black">-- Selecciona un ovocito --</option>
+              {ovocitos.map(o => (
+                <option key={o.id_ovocito} value={o.id_ovocito}>{o.identificador}</option>
+              ))}
+            </select>
+          </div>
           {/* ID Preview */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Identificador (autogenerado)
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Identificador (autogenerado)</label>
             <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm text-gray-600">
-              {generateEmbryoId(pacienteNombre)}
+              {generateUniqueId({ prefix: "EMB", nombre: paciente?.nombre || "NOM", apellido: paciente?.apellido || "APE" })}
             </div>
           </div>
-
+          {/* Fecha de fertilización */}
+          <div>
+            <label htmlFor="fecha_fertilizacion" className="block text-sm font-medium text-gray-700 mb-1">Fecha de fertilización</label>
+            <input
+              type="date"
+              id="fecha_fertilizacion"
+              value={formData.fecha_fertilizacion}
+              onChange={e => setFormData({ ...formData, fecha_fertilizacion: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              required
+            />
+          </div>
+          {/* Técnica */}
+          <div>
+            <label htmlFor="tecnica" className="block text-sm font-medium text-gray-700 mb-1">Técnica utilizada</label>
+            <input
+              type="text"
+              id="tecnica"
+              value={formData.tecnica}
+              onChange={e => setFormData({ ...formData, tecnica: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              required
+            />
+          </div>
+          {/* Técnico de laboratorio */}
+          <div>
+            <label htmlFor="tecnico_laboratorio" className="block text-sm font-medium text-gray-700 mb-1">Técnico de laboratorio</label>
+            <input
+              type="text"
+              id="tecnico_laboratorio"
+              value={formData.tecnico_laboratorio}
+              onChange={e => setFormData({ ...formData, tecnico_laboratorio: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              required
+            />
+          </div>
+          {/* Información del semen */}
+          <div>
+            <label htmlFor="info_semen" className="block text-sm font-medium text-gray-700 mb-1">Información del semen</label>
+            <textarea
+              id="info_semen"
+              value={formData.info_semen}
+              onChange={e => setFormData({ ...formData, info_semen: e.target.value })}
+              rows={2}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              required
+            />
+          </div>
+          {/* Fecha de baja */}
+          <div>
+            <label htmlFor="fecha_baja" className="block text-sm font-medium text-gray-700 mb-1">Fecha de baja (opcional)</label>
+            <input
+              type="date"
+              id="fecha_baja"
+              value={formData.fecha_baja}
+              onChange={e => setFormData({ ...formData, fecha_baja: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            />
+          </div>
           {/* Calidad */}
           <div>
-            <label htmlFor="calidad" className="block text-sm font-medium text-gray-700 mb-1">
-              Calidad (1-5)
-            </label>
+            <label htmlFor="calidad" className="block text-sm font-medium text-gray-700 mb-1">Calidad (1-5)</label>
             <select
               id="calidad"
               value={formData.calidad}
-              onChange={(e) => setFormData({ ...formData, calidad: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 font-medium"
+              onChange={e => setFormData({ ...formData, calidad: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black font-medium"
               required
             >
               <option value="1">1 - Muy baja</option>
@@ -105,92 +169,58 @@ export default function EmbryoModal({ isOpen, onClose, onSubmit, pacienteNombre 
               <option value="5">5 - Excelente</option>
             </select>
           </div>
-
           {/* PGT */}
           <div>
-            <label htmlFor="pot" className="block text-sm font-medium text-gray-700 mb-1">
-              PGT
-            </label>
+            <label htmlFor="pot" className="block text-sm font-medium text-gray-700 mb-1">PGT</label>
             <select
               id="pot"
               value={formData.pot}
-              onChange={(e) => setFormData({ ...formData, pot: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 font-medium"
+              onChange={e => setFormData({ ...formData, pot: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black font-medium"
               required
             >
               <option value="OK">OK</option>
               <option value="NOT OK">NOT OK</option>
             </select>
           </div>
-
           {/* Estado del embrión */}
           <div>
-            <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">
-              Estado del embrión
-            </label>
+            <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">Estado del embrión</label>
             <select
               id="estado"
               value={formData.estado}
-              onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 font-medium"
+              onChange={e => setFormData({ ...formData, estado: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black font-medium"
               required
             >
-              <option value="maduro">Maduro</option>
-              <option value="inmaduro">Inmaduro</option>
-              <option value="muy inmaduro">Muy inmaduro</option>
+              <option value="transferido">Transferido</option>
+              <option value="no_transferido">No transferido</option>
             </select>
           </div>
-
           {/* Causa de descarte */}
           <div>
-            <label htmlFor="causaDescarte" className="block text-sm font-medium text-gray-700 mb-1">
-              Causa de descarte
-            </label>
+            <label htmlFor="causaDescarte" className="block text-sm font-medium text-gray-700 mb-1">Causa de descarte</label>
             <input
               type="text"
               id="causaDescarte"
               value={formData.causaDescarte}
-              onChange={(e) => setFormData({ ...formData, causaDescarte: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={e => setFormData({ ...formData, causaDescarte: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               placeholder="Opcional - especifica la causa si aplica"
             />
           </div>
-
-          {/* Ovocito */}
-          <div>
-            <label htmlFor="ovocito" className="block text-sm font-medium text-gray-700 mb-1">
-              Ovocito relacionado
-            </label>
-            <select
-              id="ovocito"
-              value={formData.ovocito}
-              onChange={(e) => setFormData({ ...formData, ovocito: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 font-medium"
-              required
-            >
-              {ovocitosDisponibles.map((ovocito) => (
-                <option key={ovocito} value={ovocito}>
-                  {ovocito}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Observaciones */}
           <div>
-            <label htmlFor="observaciones" className="block text-sm font-medium text-gray-700 mb-1">
-              Observaciones
-            </label>
+            <label htmlFor="observaciones" className="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
             <textarea
               id="observaciones"
               value={formData.observaciones}
-              onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
+              onChange={e => setFormData({ ...formData, observaciones: e.target.value })}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               placeholder="Notas adicionales sobre el embrión"
             />
           </div>
-
           {/* Buttons */}
           <div className="flex justify-end space-x-3 pt-4 border-t">
             <button

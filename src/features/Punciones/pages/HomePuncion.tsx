@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import type { Paciente } from "../../../types/Paciente";
-import type { OvocitoModalRow } from "../../../types/Ovocito";
+import { useState } from "react";
+import { usePacientesFetch } from "../../../shared/hooks/usePacientesFetch";
+import { useOvocitosFetch } from "../../../shared/hooks/useOvocitosFetch";;
 import Pagination from "../../../components/Pagination";
 import OvocitosTableSkeleton from "../../../components/OvocitosTableSkeleton";
 import OvocitosTable from "../../../components/OvocitosTable";
@@ -12,54 +11,16 @@ import PuncionModal from "../components/PuncionModal";
 const ITEMS_PER_PAGE = 6;
 
 export default function HomePuncion() {
-    const [pacientes, setPacientes] = useState<Paciente[]>([]);
-    const [loadingPacientes, setLoadingPacientes] = useState(true);
-    const [ovocitos, setOvocitos] = useState<OvocitoModalRow[]>([]);
-    const [loadingOvocitos, setLoadingOvocitos] = useState(false);
-    const [errorOvocitos, setErrorOvocitos] = useState<string | null>(null);
+    const { pacientes, loading: loadingPacientes, error: errorPacientes } = usePacientesFetch();
     const [currentPage, setCurrentPage] = useState(1);
     const [modalOpen, setModalOpen] = useState(false);
-    // Form data para los campos principales
     const [formData, setFormData] = useState({
         selectedPacienteId: null as number | null,
         quirofano: "",
         fecha: "",
     });
+    const { ovocitos, loading: loadingOvocitos, error: errorOvocitos, setOvocitos } = useOvocitosFetch(formData.selectedPacienteId);
 
-    // Fetch pacientes al montar
-    useEffect(() => {
-        setLoadingPacientes(true);
-        axios.get("/api/pacientes/")
-            .then(({ data }) => {
-                console.log(data)
-                setPacientes(Array.isArray(data) ? data : (data.results ?? []));
-            })
-            .catch(() => setPacientes([]))
-            .finally(() => setLoadingPacientes(false));
-    }, []);
-
-    // Fetch ovocitos al seleccionar paciente
-    useEffect(() => {
-        if (!formData.selectedPacienteId) return;
-        setLoadingOvocitos(true);
-        setErrorOvocitos(null);
-        axios.get(`/api/ovocitos/?paciente=${formData.selectedPacienteId}`)
-            .then(({ data }) => {
-                const items = Array.isArray(data) ? data : (data.results ?? []);
-                setOvocitos(items.map((o: any) => ({
-                    identificador: o.identificador,
-                    estado: (o.estado || "").replace(/_/g, " "),
-                    cripreservar: !!o.cripreservar,
-                    descartado: !!o.descartado,
-                })));
-                setCurrentPage(1);
-            })
-            .catch((err) => {
-                setErrorOvocitos(err?.response?.data?.detail || err?.message || "Error al cargar ovocitos");
-                setOvocitos([]);
-            })
-            .finally(() => setLoadingOvocitos(false));
-    }, [formData.selectedPacienteId]);
 
     // Paginación
     const totalPages = Math.ceil(ovocitos.length / ITEMS_PER_PAGE);

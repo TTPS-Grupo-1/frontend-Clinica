@@ -10,7 +10,7 @@ interface AntecedentesGinecologicosAPIProps {
   onDataChange?: (data: any) => void;
 }
 
-const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> = ({
+const EstudioGinecologico: React.FC<AntecedentesGinecologicosAPIProps> = ({
   onSeleccionChange,
   onDataChange
 }) => {
@@ -54,7 +54,7 @@ const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> 
   return (
     <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
       <h2 className="text-2xl font-bold mb-4 text-center">
-        Antecedentes Ginecológicos Adicionales
+        Realizar Estudios Ginecológicos 
       </h2>
       {campos.length === 0 ? (
         <p className="text-center text-gray-600">Cargando antecedentes...</p>
@@ -77,4 +77,4 @@ const AntecedentesGinecologicosAPI: React.FC<AntecedentesGinecologicosAPIProps> 
   );
 };
 
-export default AntecedentesGinecologicosAPI;
+export default EstudioGinecologico;

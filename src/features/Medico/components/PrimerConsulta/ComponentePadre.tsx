@@ -3,15 +3,15 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import ObjetivoModal from './ObjetivoModal';
 import AntecedentesClinicos from './AntecedentesClinicos';
+import EstudiosPrequirurgicos from './EstudioPrequirugico';
 import AntecedentesQuirurgicos from './AntecedentesQuirurgicos';
-import AntecedentesPersonales from './AntecedentesPersonales';
 import AntecedentesGinecologicos from './AntecedentesGinecologicos';
 import FenotipoDonacion from './FenotipoDonacion';
-import AntecedentesGenitales from './AntecedentesGenitales';
 import AntecedentesFamiliares from './AntecedentesFamiliares';
 import ExamenFisico from './ExamenFisico';
-import AntecedentesGinecologicosAPI from './AntecedentesGinecologicosAPI';
 import AntecedentesHormonales from './AntecedentesHormonales';
+import EstudioSemen from './EstudioSemen';
+import EstudioGinecologico from './EstudioGinecologico';
 
 
 // Iconos
@@ -71,8 +71,7 @@ const ComponentePadre: React.FC = () => {
   const [objetivoSeleccionado, setObjetivoSeleccionado] = useState<string | null>(null);
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  // 🔹 Nuevo estado para los antecedentes familiares
-  const [familiares, setFamiliares] = useState<string>('');
+  
   // Estado global del formulario: cada sección actualizará su parte
   const [formData, setFormData] = useState<any>({});
 
@@ -138,24 +137,24 @@ const ComponentePadre: React.FC = () => {
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
               <Card title="Antecedentes Familiares - Mujer 1" icon={icons.familiares}>
-                <AntecedentesFamiliares onDataChange={(d) => { setFamiliares(d); updateSection('familiares_mujer1', d); }} />
+                <AntecedentesFamiliares onDataChange={(d) => updateSection('familiares_mujer1', d)} />
               </Card>
               <Card title="Antecedentes Familiares - Mujer 2" icon={icons.familiares}>
-                <AntecedentesFamiliares onDataChange={setFamiliares}/>
+                <AntecedentesFamiliares onDataChange={(d) => updateSection('familiares_mujer2', d)} />
               </Card>
             </>
           ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
             <>
               <Card title="Antecedentes Familiares - Mujer" icon={icons.familiares}>
-                <AntecedentesFamiliares onDataChange={setFamiliares}/>
+                <AntecedentesFamiliares onDataChange={(d) => updateSection('familiares_mujer', d)} />
               </Card>
               <Card title="Antecedentes Familiares - Hombre" icon={icons.familiares}>
-                <AntecedentesFamiliares onDataChange={setFamiliares}/>
+                <AntecedentesFamiliares onDataChange={(d) => updateSection('familiares_hombre', d)} />
               </Card>
             </>
           ) : (
             <Card title="Antecedentes Familiares" icon={icons.familiares}>
-              <AntecedentesFamiliares onDataChange={setFamiliares}/>
+              <AntecedentesFamiliares onDataChange={(d) => updateSection('familiares', d)} />
             </Card>
           )}
 
@@ -163,7 +162,10 @@ const ComponentePadre: React.FC = () => {
           {objetivoSeleccionado === 'pareja_femenina_ropa' ? (
             <>
               <Card title="Antecedentes Ginecológicos" icon={icons.ginecologicos}>
-                <AntecedentesGinecologicos doble={objetivoSeleccionado === 'pareja_femenina_ropa'} />
+                <AntecedentesGinecologicos onDataChange={(d) => updateSection('ginecologicos_mujer1', d)} />
+              </Card>
+              <Card title="Antecedentes Ginecológicos" icon={icons.ginecologicos}>
+                <AntecedentesGinecologicos onDataChange={(d) => updateSection('ginecologicos_mujer2', d)} />
               </Card>
             </>
           ) : (
@@ -175,68 +177,68 @@ const ComponentePadre: React.FC = () => {
           {/* Antecedentes Quirúrgicos */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
-              <Card title="Antecedentes Quirúrgicos - Mujer 1" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos titulo= "Mujer 1" onDataChange={(d) => updateSection('quirurgicos_mujer1', d)} />
+              <Card title="Estudios Prequirúrgicos - Mujer 1" icon={icons.quirurgicos}>
+                <EstudiosPrequirurgicos titulo= "Mujer 1" onDataChange={(d) => updateSection('quirurgicos_mujer1', d)} />
               </Card>
-              <Card title="Antecedentes Quirúrgicos - Mujer 2" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos titulo= "Mujer 2" onDataChange={(d) => updateSection('quirurgicos_mujer2', d)} />
+              <Card title="Estudios Prequirúrgicos - Mujer 2" icon={icons.quirurgicos}>
+                <EstudiosPrequirurgicos titulo= "Mujer 2" onDataChange={(d) => updateSection('quirurgicos_mujer2', d)} />
               </Card>
             </>
           ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
             <>
-              <Card title="Antecedentes Quirúrgicos - Mujer" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos titulo= "Mujer" onDataChange={(d) => updateSection('quirurgicos_mujer', d)} />
+              <Card title="Estudios Prequirúrgicos - Mujer" icon={icons.quirurgicos}>
+                <EstudiosPrequirurgicos titulo= "Mujer" onDataChange={(d) => updateSection('quirurgicos_mujer', d)} />
               </Card>
-              <Card title="Antecedentes Quirúrgicos - Hombre" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos titulo= "Hombre" onDataChange={(d) => updateSection('quirurgicos_hombre', d)} />
+              <Card title="Estudios Prequirúrgicos - Hombre" icon={icons.quirurgicos}>
+                <EstudiosPrequirurgicos titulo= "Hombre" onDataChange={(d) => updateSection('quirurgicos_hombre', d)} />
               </Card>
             </>
           ) : (
-              <Card title="Antecedentes Quirúrgicos" icon={icons.quirurgicos}>
-                <AntecedentesQuirurgicos onDataChange={(d) => updateSection('quirurgicos', d)} />
+              <Card title="Estudios Prequirúrgicos" icon={icons.quirurgicos}>
+                <EstudiosPrequirurgicos onDataChange={(d) => updateSection('quirurgicos', d)} />
               </Card>
           )}
           {/* Antecedentes Personales */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
-              <Card title="Antecedentes Personales - Mujer 1" icon={icons.personales}>
-                <AntecedentesPersonales titulo= "Mujer 1" onDataChange={(d) => updateSection('personales_mujer1', d)} />
+              <Card title="Antecedentes Quirúrgicos - Mujer 1" icon={icons.personales}>
+                <AntecedentesQuirurgicos titulo= "Mujer 1" onDataChange={(d) => updateSection('quirurgicos_mujer1', d)} />
               </Card>
-              <Card title="Antecedentes Personales - Mujer 2" icon={icons.personales}>
-                <AntecedentesPersonales titulo= "Mujer 2" onDataChange={(d) => updateSection('personales_mujer2', d)} />
+              <Card title="Antecedentes Quirúrgicos - Mujer 2" icon={icons.personales}>
+                <AntecedentesQuirurgicos titulo= "Mujer 2" onDataChange={(d) => updateSection('quirurgicos_mujer2', d)} />
               </Card>
             </>
           ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
             <>
-              <Card title="Antecedentes Personales - Mujer" icon={icons.personales}>
-                <AntecedentesPersonales titulo= "Mujer" onDataChange={(d) => updateSection('personales_mujer', d)} />
+              <Card title="Antecedentes Quirúrgicos - Mujer" icon={icons.personales}>
+                <AntecedentesQuirurgicos titulo= "Mujer" onDataChange={(d) => updateSection('quirurgicos_mujer', d)} />
               </Card>
-              <Card title="Antecedentes Personales - Hombre" icon={icons.personales}>
-                <AntecedentesPersonales titulo= "Hombre" onDataChange={(d) => updateSection('personales_hombre', d)} />
+              <Card title="Antecedentes Quirúrgicos - Hombre" icon={icons.personales}>
+                <AntecedentesQuirurgicos titulo= "Hombre" onDataChange={(d) => updateSection('quirurgicos_hombre', d)} />
               </Card>
             </>
           ) : (
-              <Card title="Antecedentes Personales" icon={icons.personales}>
-                <AntecedentesPersonales onDataChange={(d) => updateSection('personales', d)} />
+              <Card title="Antecedentes Quirúrgicos" icon={icons.personales}>
+                <AntecedentesQuirurgicos onDataChange={(d) => updateSection('quirurgicos', d)} />
               </Card>
           )}
           {/* Examen Físico */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
               <Card title="Examen Físico - Mujer 1" icon={icons.personales}>
-                <ExamenFisico/>
+                <ExamenFisico onDataChange={(d) => updateSection('examen_fisico_mujer1', d)} />
               </Card>
               <Card title="Examen Físico - Mujer 2" icon={icons.personales}>
-                <ExamenFisico/>
+                <ExamenFisico onDataChange={(d) => updateSection('examen_fisico_mujer2', d)} />
               </Card>
             </>
           ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
             <>
               <Card title="Examen Físico - Mujer" icon={icons.personales}>
-                <ExamenFisico/>
+                <ExamenFisico onDataChange={(d) => updateSection('examen_fisico_mujer', d)} />
               </Card>
               <Card title="Examen Físico - Hombre" icon={icons.personales}>
-                <ExamenFisico/>
+                <ExamenFisico onDataChange={(d) => updateSection('examen_fisico_hombre', d)} />
               </Card>
             </>
           ) : (
@@ -247,17 +249,17 @@ const ComponentePadre: React.FC = () => {
           {/* Antecedentes Ginecológicos vía API */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
-              <Card title="Antecedentes Ginecológicos API - Mujer 1" icon={icons.ginecologicos}>
-                <AntecedentesGinecologicosAPI />
+              <Card title="Estudios Ginecológicos - Mujer 1" icon={icons.ginecologicos}>
+                <EstudioGinecologico onDataChange={(d) => updateSection('estudios_ginecologicos_mujer1', d)} />
               </Card>
-              <Card title="Antecedentes Ginecológicos API - Mujer 2" icon={icons.ginecologicos}>
-                <AntecedentesGinecologicosAPI />
+              <Card title="Estudios Ginecológicos - Mujer 2" icon={icons.ginecologicos}>
+                <EstudioGinecologico onDataChange={(d) => updateSection('estudios_ginecologicos_mujer2', d)} />
               </Card>
             </>
           ) : (
             <>
-              <Card title="Antecedentes Ginecológicos API" icon={icons.ginecologicos}>
-                <AntecedentesGinecologicosAPI onDataChange={(d) => updateSection('ginecologicos_api', d)} />
+              <Card title="Estudios Ginecológicos" icon={icons.ginecologicos}>
+                <EstudioGinecologico onDataChange={(d) => updateSection('estudios_ginecologicos', d)} />
               </Card>
             </>
           )}
@@ -268,27 +270,27 @@ const ComponentePadre: React.FC = () => {
             <FenotipoDonacion visible={objetivoSeleccionado === 'mujer_sola_donacion' || objetivoSeleccionado === 'pareja_femenina_donacion'} onDataChange={(d) => updateSection('fenotipo', d)} />
           </Card>
 
-            <Card title="Antecedentes Genitales" icon={icons.genitales}>
-            <AntecedentesGenitales visible={objetivoSeleccionado === 'pareja_heterosexual'} onDataChange={(d) => updateSection('genitales', d)} />
+            <Card title="Estudio de Semen" icon={icons.genitales}>
+            <EstudioSemen visible={objetivoSeleccionado === 'pareja_heterosexual'} onDataChange={(d) => updateSection('genitales', d)} />
           </Card>
 
           {/* Antecedentes hormonales */}
           {(objetivoSeleccionado === 'pareja_femenina_ropa') ? (
             <>
               <Card title="Antecedentes Hormonales - Mujer 1" icon={icons.clinicos}>
-                <AntecedentesHormonales />
+                <AntecedentesHormonales onDataChange={(d) => updateSection('hormonales_mujer1', d)} />
               </Card>
               <Card title="Antecedentes Hormonales - Mujer 2" icon={icons.clinicos}>
-                <AntecedentesHormonales />
+                <AntecedentesHormonales onDataChange={(d) => updateSection('hormonales_mujer2', d)} />
               </Card>
             </>
           ) : objetivoSeleccionado === 'pareja_heterosexual' ? (
             <>
               <Card title="Antecedentes Hormonales - Mujer" icon={icons.clinicos}>
-                <AntecedentesHormonales/>
+                <AntecedentesHormonales onDataChange={(d) => updateSection('hormonales_mujer', d)} />
               </Card>
-              <Card title="Antecedentes Hormonales - Hombre" icon={icons.clinicos}>  
-                <AntecedentesHormonales/>
+              <Card title="Antecedentes Hormonales - Hombre" icon={icons.clinicos}>
+                <AntecedentesHormonales onDataChange={(d) => updateSection('hormonales_hombre', d)} />
               </Card>
             </>
           ) : (
@@ -341,7 +343,6 @@ const ComponentePadre: React.FC = () => {
 
               const datos = {
                 objetivo: objetivoSeleccionado,
-                familiares,
                 form: formData,
               };
               try {

@@ -22,7 +22,7 @@ export default function HomePaciente() {
 
           <DashboardCard
             title="Mis Turnos"
-            description="Consulta tus próximos turnos"
+            description="Consultá tus próximos turnos"
             icon={<ClipboardList className="w-6 h-6" />}
             onClick={() => navegar("/pacientes/misTurnos")}
             bgColor="bg-white"
@@ -32,7 +32,7 @@ export default function HomePaciente() {
 
           <DashboardCard
             title="Mi Historia Clínica"
-            description="Consulta tu historia clínica"
+            description="Consultá tu historia clínica"
             icon={<ClipboardPlus className="w-6 h-6" />}
             onClick={() => console.log("Ir a Ver Turnos")}
             bgColor="bg-white"
@@ -43,7 +43,7 @@ export default function HomePaciente() {
             title="Órdenes Médicas"
             description="Descargá tus órdenes médicas"
             icon={<FileText className="w-6 h-6" />}
-            onClick={() => console.log("Ir a Órdenes Médicas")}
+            onClick={() => navegar("/pacientes/verOrdenesMedicas")}
             bgColor="bg-white"
             iconColor="text-purple-500"
           />

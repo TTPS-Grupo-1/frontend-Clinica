@@ -1,4 +1,5 @@
 import type { TurnoCardProps } from "../../../interfaces/Paciente";
+import { CircleX } from "lucide-react";
 
 export default function TurnoCard({ turno, onCancelar }: TurnoCardProps) {
   return (
@@ -40,10 +41,9 @@ export default function TurnoCard({ turno, onCancelar }: TurnoCardProps) {
       {/* Botón cancelar */}
       <div className="flex flex-col gap-2">
         <button
-          onClick={() => onCancelar(turno.id)}
-          className="w-full bg-red-600 text-black py-2 px-4 rounded-md font-medium"
-        >
+          onClick={() => onCancelar(turno.id)} className="mx-auto flex items-center justify-center gap-2 bg-white text-black border border-gray-400 py-2 px-6 rounded-md font-medium hover:bg-gray-100 transition">
           Cancelar Turno
+          <CircleX size={18} />
         </button>
       </div>
     </div>

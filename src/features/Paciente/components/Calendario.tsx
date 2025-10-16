@@ -12,7 +12,7 @@ const CalendarPicker: FC<CalendarPickerProps> = ({ selected, onSelect }) => {
   return (
     <div>
       <label className="block text-sm font-medium mb-2">Fecha</label>
-      <div className="border rounded-lg p-3 bg-white capitalize">
+      <div className="border rounded-lg bg-white flex justify-center items-center py-4 capitalize">
         <DayPicker
           mode="single"
           selected={selected}

@@ -14,6 +14,7 @@ import DonacionesHomePage from './features/Donaciones/pages/HomePage';
 import DonacionPage from './features/Donaciones/pages/DonacionPage';
 import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage'
 import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
+import VerOrdenesMedicas from './features/Paciente/pages/VerOrdenesMedicasPage';
 
 export default function getAppRoutes() {
   return (
@@ -34,6 +35,8 @@ export default function getAppRoutes() {
       {/* Para probar la page unificada con param tipo */}
       <Route path="/donaciones/nueva/:tipo" element={<DonacionPage />} />
       <Route path="/pacientes/misTurnos" element={<TurnosPacientePage/>} />
+      <Route path="/pacientes/verOrdenesMedicas" element={<VerOrdenesMedicas/>} />
+
 
      
     </>

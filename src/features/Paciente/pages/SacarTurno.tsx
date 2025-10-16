@@ -8,7 +8,6 @@ const SacarTurno = () => {
   const [fecha, setFecha] = useState<Date | undefined>();
   const [horarioSeleccionado, setHorarioSeleccionado] = useState<string | null>(null);
 
-  const medicos = ["Dra. Pérez", "Dr. Gómez", "Dra. Fernandez"];
   const horariosMock = ["09:00", "09:30", "10:00", "10:30", "11:00"];
 
   const handleConfirmar = () => {
@@ -24,7 +23,7 @@ const SacarTurno = () => {
       <h1 className="text-2xl font-bold mb-6">Sacar Turno</h1>
 
       <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-lg space-y-6">
-        <SelectMedico medicos={medicos} selected={medico} onChange={setMedico} />
+        <SelectMedico selected={medico} onChange={setMedico} />
         <Calendario selected={fecha} onSelect={setFecha} />
 
         {fecha && (
@@ -34,7 +33,7 @@ const SacarTurno = () => {
         {horarioSeleccionado && (
           <button
             onClick={handleConfirmar}
-            className="bg-blue-500 hover:bg-blue-700 text-black font-bold rounded"
+            className="mx-auto flex items-center justify-center gap-2 bg-white text-black border border-gray-400 py-2 px-6 rounded-md font-medium hover:bg-gray-100 transition"
           >
             Confirmar Turno
           </button>

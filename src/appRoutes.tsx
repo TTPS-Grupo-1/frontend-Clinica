@@ -16,6 +16,8 @@ import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage'
 import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
 import VerOrdenesMedicas from './features/Paciente/pages/VerOrdenesMedicasPage';
 
+import HomePuncion from './features/Punciones/pages/HomePuncion';
+import HomeLaboratorio from './features/Operador/pages/HomeLaboratorio';
 export default function getAppRoutes() {
   return (
     <>
@@ -23,15 +25,14 @@ export default function getAppRoutes() {
       <Route path="/medico/home" element={<HomePage />} />
       <Route path="/embriones" element={<EmbryoPage />} />
       <Route path="/medicos/alta" element={<AltaMedicoPage />} />
-      <Route path="/medicos/editar/:id" element={<EditMedicoPage />} />
+      <Route path="/medicos/editar/:dni" element={<EditMedicoPage />} />
       <Route path="/pacientes/home" element={<HomePaciente />} />
       <Route path="/pacientes/sacarTurno" element={<SacarTurno />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/medico/turnos" element={<ListadoTurnos />} />
       <Route path="/medicos/listado" element={<ListadoMedicosPage />} />
       <Route path="/registro" element={<RegistroPage />} />
-      <Route path="/donaciones" element={<DonacionesHomePage />} />
-       <Route path="/admin/home" element={<HomePageAdmin />} />
+      <Route path="/admin/home" element={<HomePageAdmin />} />
       {/* Para probar la page unificada con param tipo */}
       <Route path="/donaciones/nueva/:tipo" element={<DonacionPage />} />
       <Route path="/pacientes/misTurnos" element={<TurnosPacientePage/>} />
@@ -39,6 +40,11 @@ export default function getAppRoutes() {
 
 
      
+      <Route path="/operador/donaciones/nueva/:tipo" element={<DonacionPage />} />
+      <Route path="/pacientes/turnos" element={<TurnosPacientePage />} />
+      <Route path="/operador" element={<HomeLaboratorio />} />
+      <Route path="/operador/donaciones" element={<DonacionesHomePage />} />
+      <Route path="/operador/punciones" element={<HomePuncion />} />
     </>
   );
 }

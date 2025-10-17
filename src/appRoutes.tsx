@@ -16,6 +16,7 @@ import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage'
 import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
 import HomePuncion from './features/Punciones/pages/HomePuncion';
 import HomeLaboratorio from './features/Operador/pages/HomeLaboratorio';
+import FertilizacionPage from './features/Fertilizacion/pages/FertilizacionPage';
 export default function getAppRoutes() {
   return (
     <>
@@ -37,6 +38,7 @@ export default function getAppRoutes() {
       <Route path="/operador" element={<HomeLaboratorio />} />
       <Route path="/operador/donaciones" element={<DonacionesHomePage />} />
       <Route path="/operador/punciones" element={<HomePuncion />} />
+      <Route path="/operador/fertilizaciones" element={<FertilizacionPage />} />
     </>
   );
 }

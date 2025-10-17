@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Paginador from '../Paginador'; // ✅ Asegurate de tenerlo importado
+import axios from 'axios';
+import Paginador from '../Paginador';
 
 interface Campo {
   id: number;
@@ -20,33 +21,54 @@ const EstudiosHormonales: React.FC<AntecedentesHormonalesProps> = ({
   const [campos, setCampos] = useState<Campo[]>([]);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [pagina, setPagina] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // ✅ Datos simulados (futuro: obtener de API)
-  const camposBase: Campo[] = [
-    { id: 1, nombre: 'Tiroxina' },
-    { id: 2, nombre: 'Corticoides' },
-    { id: 3, nombre: 'Insulina' },
-    { id: 4, nombre: 'Terapia hormonal' },
-    { id: 5, nombre: 'Anticonceptivos' },
-    { id: 6, nombre: 'Hormona de crecimiento' },
-    { id: 7, nombre: 'Prolactina' },
-    { id: 8, nombre: 'Andrógenos' },
-  ];
+  const API_URL = 'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_hormonales';
 
-  // Simula carga asincrónica
+  // 🔹 Llamada real a la API de Supabase con Axios
   useEffect(() => {
-    const fetchSimulado = async () => {
-      await new Promise((res) => setTimeout(res, 200));
-      setCampos(camposBase);
+    const fetchCampos = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await axios.get(API_URL, {
+          headers: {
+            'Content-Type': 'application/json',
+            // Si tu función requiere autenticación:
+            // 'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        // 🧩 Si la función devuelve { data: [...] }
+        const data = Array.isArray(response.data.data)
+          ? response.data.data
+          : response.data;
+
+        setCampos(data || []);
+      } catch (err: any) {
+        console.error('Error al obtener estudios hormonales:', err);
+        setError('No se pudieron cargar los estudios hormonales.');
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchSimulado();
+
+    fetchCampos();
   }, []);
 
+  // 🔄 Notificar al padre cuando cambien los seleccionados
+  useEffect(() => {
+    onSeleccionChange?.(seleccionados);
+    onDataChange?.({ seleccionados });
+  }, [seleccionados]);
+
+  // 📦 Paginación
   const totalPaginas = Math.ceil(campos.length / ANTECEDENTES_POR_PAGINA);
   const inicio = (pagina - 1) * ANTECEDENTES_POR_PAGINA;
   const camposPagina = campos.slice(inicio, inicio + ANTECEDENTES_POR_PAGINA);
 
-  // ✅ Manejo de selección
   const handleCheckbox = (nombre: string) => {
     setSeleccionados((prev) =>
       prev.includes(nombre)
@@ -55,20 +77,18 @@ const EstudiosHormonales: React.FC<AntecedentesHormonalesProps> = ({
     );
   };
 
-  // ✅ Notificar al padre cuando cambien los seleccionados
-  useEffect(() => {
-    onSeleccionChange?.(seleccionados);
-    onDataChange?.({ seleccionados });
-  }, [seleccionados]);
-
   return (
     <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
       <h2 className="text-2xl font-bold mb-4 text-center">
         Antecedentes Hormonales
       </h2>
 
-      {campos.length === 0 ? (
-        <p className="text-center text-gray-600">Cargando antecedentes...</p>
+      {loading ? (
+        <p className="text-center text-gray-600">Cargando estudios...</p>
+      ) : error ? (
+        <p className="text-center text-red-600">{error}</p>
+      ) : campos.length === 0 ? (
+        <p className="text-center text-gray-600">No hay estudios disponibles.</p>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-3">

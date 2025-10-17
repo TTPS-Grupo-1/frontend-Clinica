@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 interface Campo {
   id: number;
@@ -16,51 +17,74 @@ const EstudioGinecologico: React.FC<AntecedentesGinecologicosAPIProps> = ({
 }) => {
   const [campos, setCampos] = useState<Campo[]>([]);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const camposBase: Campo[] = [
-    { id: 1, nombre: 'Uso de anticonceptivos' },
-    { id: 2, nombre: 'Endometriosis' },
-    { id: 3, nombre: 'Menopausia' },
-    { id: 4, nombre: 'Dismenorrea severa' },
-    { id: 5, nombre: 'Quistes ováricos' },
-    { id: 6, nombre: 'Miomas uterinos' },
-    { id: 7, nombre: 'Síndrome de ovario poliquístico (SOP)' },
-    { id: 8, nombre: 'Cirugías ginecológicas previas' },
-    { id: 9, nombre: 'Infecciones ginecológicas recurrentes' },
-  ];
+  const API_URL = 'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_ginecologico';
 
+  // 🔹 Llamada real a la Edge Function con Axios
   useEffect(() => {
-    const fetchCamposSimulado = async () => {
-      await new Promise(res => setTimeout(res, 300));
-      setCampos(camposBase);
+    const fetchCampos = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await axios.get(API_URL, {
+          headers: {
+            'Content-Type': 'application/json',
+            // Si tu función requiere autenticación:
+            // 'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        // 🧩 Si la respuesta de la función tiene formato { data: [...] }
+        const data = Array.isArray(response.data.data)
+          ? response.data.data
+          : response.data;
+
+        setCampos(data || []);
+      } catch (err: any) {
+        console.error('Error al obtener estudios ginecológicos:', err);
+        setError('No se pudieron cargar los estudios.');
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchCamposSimulado();
+
+    fetchCampos();
   }, []);
 
+  // ✅ Manejo de selección
   const handleCheckbox = (nombre: string) => {
-    setSeleccionados(prev =>
+    setSeleccionados((prev) =>
       prev.includes(nombre)
-        ? prev.filter(item => item !== nombre)
+        ? prev.filter((n) => n !== nombre)
         : [...prev, nombre]
     );
   };
 
-  // ✅ Notificar al padre solo después de que se actualice el estado
+  // ✅ Notificar al padre
   useEffect(() => {
     onSeleccionChange?.(seleccionados);
     onDataChange?.({ seleccionados });
   }, [seleccionados]);
 
+  // 🔹 Render
   return (
     <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
       <h2 className="text-2xl font-bold mb-4 text-center">
-        Realizar Estudios Ginecológicos 
+        Realizar Estudios Ginecológicos
       </h2>
-      {campos.length === 0 ? (
-        <p className="text-center text-gray-600">Cargando antecedentes...</p>
+
+      {loading ? (
+        <p className="text-center text-gray-600">Cargando estudios...</p>
+      ) : error ? (
+        <p className="text-center text-red-600">{error}</p>
+      ) : campos.length === 0 ? (
+        <p className="text-center text-gray-600">No hay estudios disponibles.</p>
       ) : (
         <div className="grid grid-cols-1 gap-3">
-          {campos.map(c => (
+          {campos.map((c) => (
             <label key={c.id} className="flex items-center space-x-2">
               <input
                 type="checkbox"

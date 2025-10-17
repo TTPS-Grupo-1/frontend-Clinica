@@ -42,6 +42,10 @@ const ObjetivoMujerSola: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
         <EstudiosHormonales onDataChange={(d) => onDataChange('hormonales', d)} />
       </Card>
 
+      <Card title="Estudios Prequirúrgicos">
+        <EstudiosHormonales onDataChange={(d) => onDataChange('prequirurgicos', d)} />
+      </Card>
+
       <Card title="Fenotipo Donación">
         <FenotipoDonacion visible onDataChange={(d) => onDataChange('fenotipo', d)} />
       </Card>

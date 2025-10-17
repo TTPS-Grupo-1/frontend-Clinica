@@ -3,19 +3,19 @@ import type { ObjetivoModalProps } from '../../../../interfaces/Medico';
 
 const opciones = [
   {
-    label: 'Pareja hombre y mujer → Embarazo con gametos propios (ovocito de la mujer, espermatozoide del hombre)',
+    label: 'Pareja hombre y mujer',
     value: 'pareja_heterosexual',
   },
   {
-    label: 'Pareja de dos femeninas (ovocitos de la mujer, espermatozoide donado)',
+    label: 'Pareja de dos femeninas',
     value: 'pareja_femenina_donacion',
   },
   {
-    label: 'Pareja de dos femeninas → método ROPA (una aporta ovocito y la otra el útero, el embrión se implanta en el útero de la 2da)',
+    label: 'Pareja de dos femeninas (Metodo ROPA)',
     value: 'pareja_femenina_ropa',
   },
   {
-    label: 'Mujer sin pareja (espermatozoide donado)',
+    label: 'Mujer sin pareja',
     value: 'mujer_sola_donacion',
   },
 ];

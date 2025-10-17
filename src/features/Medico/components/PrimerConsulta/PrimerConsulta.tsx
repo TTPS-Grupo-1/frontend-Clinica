@@ -45,6 +45,21 @@ const PrimerConsulta: React.FC = () => {
         return null;
     }
   };
+  const mapObjetivo = (key: string) => {
+  switch (key) {
+    case "mujer_sola_donacion":
+      return "Mujer sola con donación";
+    case "pareja_heterosexual":
+      return "Pareja heterosexual";
+    case "pareja_femenina_donacion":
+      return "Pareja femenina (donación)";
+    case "pareja_femenina_ropa":
+      return "Pareja femenina (ROPA)";
+    default:
+      return key;
+  }
+};
+
 
   return (
     <div className="min-h-screen py-10 px-2 bg-gradient-to-br from-blue-100 to-blue-300">
@@ -56,7 +71,18 @@ const PrimerConsulta: React.FC = () => {
           Seleccionar objetivo
         </button>
       </div>
-
+      {objetivoSeleccionado && (
+  <div className="flex justify-center mb-6">
+    <div className="bg-white px-6 py-3 rounded-lg shadow-md text-center">
+      <p className="text-lg font-semibold text-gray-800">
+        Objetivo seleccionado:{" "}
+        <span className="text-blue-600 capitalize">
+          {mapObjetivo(objetivoSeleccionado)}
+        </span>
+      </p>
+    </div>
+  </div>
+)}
       <ObjetivoModal
         isOpen={modalAbierto}
         onClose={() => setModalAbierto(false)}

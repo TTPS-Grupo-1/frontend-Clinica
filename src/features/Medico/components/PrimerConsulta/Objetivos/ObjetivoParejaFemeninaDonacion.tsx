@@ -10,6 +10,7 @@ import EstudioGinecologico from '../Estudios/EstudioGinecologico';
 import FenotipoDonacion from '../FenotipoDonacion';
 import AntecedentesGinecologicos from '../Antecedentes/AntecedentesGinecologicos';
 import type { ObjetivoXProps } from '../../../../../interfaces/Medico';
+import EstudiosPrequirurgicos from '../Estudios/EstudioPrequirugico';
 
 const ObjetivoParejaFemeninaDonacion: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
   return (
@@ -40,6 +41,10 @@ const ObjetivoParejaFemeninaDonacion: React.FC<ObjetivoXProps> = ({ onDataChange
 
       <Card title="Estudios Hormonales">
         <EstudiosHormonales onDataChange={(d) => onDataChange('hormonales', d)} />
+      </Card>
+
+      <Card title="Estudios Prequirúrgicos">
+        <EstudiosPrequirurgicos onDataChange={(d) => onDataChange('prequirurgicos', d)} />
       </Card>
 
       <Card title="Examen Físico">

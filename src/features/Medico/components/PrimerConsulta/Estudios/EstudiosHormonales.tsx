@@ -72,7 +72,7 @@ const EstudiosHormonales: React.FC<AntecedentesXProps> = ({
   return (
     <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
       <h2 className="text-2xl font-bold mb-4 text-center">
-        Antecedentes Hormonales
+        Estudios Hormonales
       </h2>
 
       {loading ? (

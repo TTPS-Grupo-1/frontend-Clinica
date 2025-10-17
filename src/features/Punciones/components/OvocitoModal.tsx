@@ -1,17 +1,7 @@
 import { useState } from "react";
 import type { EstadoOvocito } from "../../../types/Ovocito";
 import type { OvocitoModalProps } from "../../../types/Ovocito";
-
-function generarIdentificador(nombre: string, apellido: string): string {
-    const fecha = new Date();
-    const year = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-    const dia = String(fecha.getDate()).padStart(2, "0");
-    const letrasAp = apellido.slice(0, 3).toUpperCase();
-    const letrasNom = nombre.slice(0, 3).toUpperCase();
-    const random = Math.floor(Math.random() * 10000000);
-    return `OVO_${year}${mes}${dia}_${letrasAp}_${letrasNom}_${random}`;
-}
+import { generateUniqueId } from "../../../shared/utils/generateUniqueId";
 
 export default function OvocitoModal({ open, onClose, onAdd, nombreDonante, apellidoDonante }: OvocitoModalProps) {
     const [estado, setEstado] = useState<EstadoOvocito>("maduro");
@@ -20,7 +10,11 @@ export default function OvocitoModal({ open, onClose, onAdd, nombreDonante, apel
 
     if (!open) return null;
 
-    const identificador = generarIdentificador(nombreDonante, apellidoDonante);
+    const identificador = generateUniqueId({
+        prefix: "OVO",
+        nombre: nombreDonante,
+        apellido: apellidoDonante,
+    });
 
     const handleAdd = () => {
         onAdd({ identificador, estado, cripreservar, descartado });

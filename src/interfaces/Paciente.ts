@@ -1,5 +1,5 @@
 import type { PacienteFormData } from '../types/Paciente';
-
+import type { Paciente } from "../types/Paciente";
 export interface CoberturaModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,4 +23,11 @@ export interface Turno {
 export interface TurnoCardProps {
   turno: Turno;
   onCancelar: (id: number) => void;
+}
+
+export interface UsePacientesFetchResult {
+    pacientes: Paciente[];
+    loading: boolean;
+    error: string | null;
+    setPacientes: React.Dispatch<React.SetStateAction<Paciente[]>>;
 }

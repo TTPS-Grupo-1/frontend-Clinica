@@ -11,15 +11,9 @@ import EstudioGinecologico from '../Estudios/EstudioGinecologico';
 import EstudioSemen from '../Estudios/EstudioSemen';
 import AntecedentesGinecologicos from '../Antecedentes/AntecedentesGinecologicos';
 import AntecedentesGenitales from '../Antecedentes/AntecedentesGenitales';
+import type { ObjetivoXProps } from '../../../../../interfaces/Medico';
 
-
-
-
-interface Props {
-  onDataChange: (key: string, data: any) => void;
-}
-
-const ObjetivoParejaHeterosexual: React.FC<Props> = ({ onDataChange }) => {
+const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
   return (
     <>
       <Card title="Antecedentes Clínicos - Mujer" >

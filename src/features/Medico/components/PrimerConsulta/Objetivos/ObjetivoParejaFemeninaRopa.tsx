@@ -9,13 +9,9 @@ import EstudiosHormonales from '../Estudios/EstudiosHormonales';
 import EstudioGinecologico from '../Estudios/EstudioGinecologico';
 import EstudiosPrequirurgicos from '../Estudios/EstudioPrequirugico';
 import AntecedentesGinecologicos from '../Antecedentes/AntecedentesGinecologicos';
+import type { ObjetivoXProps } from '../../../../../interfaces/Medico';
 
-
-interface Props {
-  onDataChange: (key: string, data: any) => void;
-}
-
-const ObjetivoParejaFemeninaRopa: React.FC<Props> = ({ onDataChange }) => {
+const ObjetivoParejaFemeninaRopa: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
   return (
     <>
       <Card title="Antecedentes Clínicos - Mujer 1" >

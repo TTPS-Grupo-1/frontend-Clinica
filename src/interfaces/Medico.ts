@@ -74,3 +74,11 @@ export interface PaginadorProps {
   totalPaginas: number;
   onPageChange: (nuevaPagina: number) => void;
 }
+
+export interface ObjetivoXProps {
+  onDataChange: (key: string, data: any) => void;
+}
+
+
+
+

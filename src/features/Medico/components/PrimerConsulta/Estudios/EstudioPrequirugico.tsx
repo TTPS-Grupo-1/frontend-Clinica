@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AntecedenteItem from '../Antecedentes/AntecedenteItem';
 import Paginador from '../Paginador';
-
-interface Estudio {
-  id: number;
-  nombre: string;
-}
+import type { Estudio } from '../../../../../interfaces/Medico';
 
 const ESTUDIOS_POR_PAGINA = 7;
 

@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import type { Estudio} from '../../../../../interfaces/Medico';
+import type { AntecedentesXProps } from '../../../../../interfaces/Medico';
 
-interface Campo {
-  id: number;
-  nombre: string;
-}
-
-interface AntecedentesGinecologicosAPIProps {
-  onSeleccionChange?: (seleccionados: string[]) => void;
-  onDataChange?: (data: any) => void;
-}
-
-const EstudioGinecologico: React.FC<AntecedentesGinecologicosAPIProps> = ({
+const EstudioGinecologico: React.FC<AntecedentesXProps> = ({
   onSeleccionChange,
   onDataChange
 }) => {
-  const [campos, setCampos] = useState<Campo[]>([]);
+  const [campos, setCampos] = useState<Estudio[]>([]);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

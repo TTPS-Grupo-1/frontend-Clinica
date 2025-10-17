@@ -1,10 +1,7 @@
 import React from 'react';
+import type { AntecedentesFamiliaresProps } from '../../../../interfaces/Medico';
 
-interface ExamenFisicoProps {
-	onDataChange?: (data: string) => void;
-}
-
-const ExamenFisico: React.FC<ExamenFisicoProps> = ({ onDataChange }) => {
+const ExamenFisico: React.FC<AntecedentesFamiliaresProps> = ({ onDataChange }) => {
 	const [valor, setValor] = React.useState('');
 
 	React.useEffect(() => {

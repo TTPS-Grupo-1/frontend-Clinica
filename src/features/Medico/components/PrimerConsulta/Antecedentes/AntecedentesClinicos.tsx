@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Paginador from '../Paginador';
-
+import type { AntecedenteClinicosProps } from '../../../../../interfaces/Medico';
 const ANTECEDENTES = [
   'Diabetes',
   'Hipertensión arterial',
@@ -27,12 +27,9 @@ const ANTECEDENTES = [
 
 const ANTECEDENTES_POR_PAGINA = 7;
 
-interface Props {
-  titulo?: string;
-  onDataChange?: (seleccionados: string[]) => void;
-}
 
-const AntecedentesClinicos: React.FC<Props> = ({ titulo, onDataChange }) => {
+
+const AntecedentesClinicos: React.FC<AntecedenteClinicosProps> = ({ titulo, onDataChange }) => {
   const [pagina, setPagina] = useState(1);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
 

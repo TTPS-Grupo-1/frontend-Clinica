@@ -1,8 +1,5 @@
 import React from 'react';
-
-interface AntecedentesFamiliaresProps {
-  onDataChange?: (data: string) => void;
-}
+import type { AntecedentesFamiliaresProps } from '../../../../../interfaces/Medico';
 
 const AntecedentesFamiliares: React.FC<AntecedentesFamiliaresProps> = ({ onDataChange }) => {
   const [valor, setValor] = React.useState('');

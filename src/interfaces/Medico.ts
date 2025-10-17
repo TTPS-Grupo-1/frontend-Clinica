@@ -80,5 +80,29 @@ export interface ObjetivoXProps {
 }
 
 
+export interface Estudio {
+  id: number;
+  nombre: string;
+}
+
+
+export interface AntecedentesXProps {
+  onSeleccionChange?: (seleccionados: string[]) => void;
+  onDataChange?: (data: any) => void;
+}
+
+export interface AntecedentesQuirurgicosProps {
+  onDataChange?: (data: { descripcion: string }) => void;
+  visible?: boolean;
+}
+
+export interface AntecedentesFamiliaresProps {
+  onDataChange?: (data: string) => void;
+}
+
+export interface AntecedenteClinicosProps {
+  titulo?: string;
+  onDataChange?: (seleccionados: string[]) => void;
+}
 
 

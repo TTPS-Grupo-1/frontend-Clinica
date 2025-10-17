@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import type { AntecedentesQuirurgicosProps } from '../../../../../interfaces/Medico';
 
-interface AntecedentesGenitalesProps {
-  onDataChange?: (data: { descripcion: string }) => void;
-  visible?: boolean;
-}
-
-const AntecedentesGenitales: React.FC<AntecedentesGenitalesProps> = ({
+const AntecedentesGenitales: React.FC<AntecedentesQuirurgicosProps> = ({
   onDataChange,
   visible = true,
 }) => {

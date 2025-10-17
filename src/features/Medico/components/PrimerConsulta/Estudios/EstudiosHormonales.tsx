@@ -1,24 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Paginador from '../Paginador';
-
-interface Campo {
-  id: number;
-  nombre: string;
-}
-
-interface AntecedentesHormonalesProps {
-  onSeleccionChange?: (seleccionados: string[]) => void;
-  onDataChange?: (data: any) => void;
-}
+import type { Estudio } from '../../../../../interfaces/Medico';
+import type { AntecedentesXProps } from '../../../../../interfaces/Medico';
 
 const ANTECEDENTES_POR_PAGINA = 4;
 
-const EstudiosHormonales: React.FC<AntecedentesHormonalesProps> = ({
+const EstudiosHormonales: React.FC<AntecedentesXProps> = ({
   onSeleccionChange,
   onDataChange
 }) => {
-  const [campos, setCampos] = useState<Campo[]>([]);
+  const [campos, setCampos] = useState<Estudio[]>([]);
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [pagina, setPagina] = useState(1);
   const [loading, setLoading] = useState(true);

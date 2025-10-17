@@ -2,7 +2,6 @@
 import { useState } from "react";
 import axios from "axios";
 import EmbryoList from "../components/EmbryoList";
-import EmbryoModal from "../components/EmbryoModal";
 import { useEmbryoFetch } from "../../../shared/hooks/useEmbryoFetch";
 import { usePacientesFetch } from "../../../shared/hooks/usePacientesFetch";
 import { useOvocitosFetch } from "../../../shared/hooks/useOvocitosFetch";
@@ -55,24 +54,9 @@ export default function EmbryoPage() {
             <option key={p.id} value={p.id}>{p.apellido}, {p.nombre}</option>
           ))}
         </select>
-  {selectedPacienteId && ovocitos.length > 0 && (
-          <button
-            className="ml-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            onClick={() => setIsModalOpen(true)}
-          >
-            Registrar nuevo embrión
-          </button>
-        )}
+        
       </div>
   <EmbryoList embryos={embriones} selectedPacienteId={selectedPacienteId} />
-      <EmbryoModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmitEmbrion}
-        pacientes={pacientes}
-        ovocitos={ovocitos}
-        selectedPacienteId={selectedPacienteId}
-      />
     </div>
   );
 }

@@ -27,3 +27,10 @@ export interface EmbryoModalAdaptedProps extends EmbryoModalProps {
   ovocitos: any[];
   selectedPacienteId: number | null;
 }
+
+export interface EmbryoNewModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: any) => void;
+  initialValues?: any;
+};

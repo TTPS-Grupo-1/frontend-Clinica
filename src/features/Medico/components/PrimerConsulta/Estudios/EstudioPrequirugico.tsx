@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import AntecedenteItem from './AntecedenteItem';
-import Paginador from './Paginador';
+import AntecedenteItem from '../Antecedentes/AntecedenteItem';
+import Paginador from '../Paginador';
 
 const ANTECEDENTES_QUIRURGICOS = [
   'Apendicectomía',

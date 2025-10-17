@@ -1,0 +1,40 @@
+import React, { useState, useEffect } from 'react';
+
+interface AntecedentesGenitalesProps {
+  onDataChange?: (data: { descripcion: string }) => void;
+  visible?: boolean;
+}
+
+const AntecedentesGenitales: React.FC<AntecedentesGenitalesProps> = ({
+  onDataChange,
+  visible = true,
+}) => {
+  const [descripcion, setDescripcion] = useState('');
+
+  // 🔄 Notificar cambios al componente padre
+  useEffect(() => {
+    onDataChange?.({ descripcion });
+  }, [descripcion]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        Antecedentes Genitales
+      </h2>
+
+      <label className="block mb-2 font-medium text-black">
+        Describa los antecedentes genitales relevantes:
+      </label>
+      <textarea
+        value={descripcion}
+        onChange={(e) => setDescripcion(e.target.value)}
+        placeholder="Ejemplo: Varicocele tratado, infección previa, malformación congénita..."
+        className="w-full h-32 border border-black rounded p-2 text-black focus:outline-none focus:ring-2 focus:ring-black"
+      />
+    </div>
+  );
+};
+
+export default AntecedentesGenitales;

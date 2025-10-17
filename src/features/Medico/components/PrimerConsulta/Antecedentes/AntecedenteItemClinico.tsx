@@ -1,5 +1,5 @@
 import React from 'react';
-import type { AntecedenteItemClinicoProps } from '../../../../interfaces/Medico';
+import type { AntecedenteItemClinicoProps } from '../../../../../interfaces/Medico';
 
 const AntecedenteItemClinico: React.FC<AntecedenteItemClinicoProps> = ({ antecedente, value, onChange }) => {
   return (

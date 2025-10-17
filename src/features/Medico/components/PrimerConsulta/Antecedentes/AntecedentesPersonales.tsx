@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AntecedentesQuirurgicos: React.FC<{ titulo?: string; onDataChange?: (data: any) => void }> = ({ titulo, onDataChange }) => {
+const AntecedentesPersonales: React.FC<{ titulo?: string; onDataChange?: (data: any) => void }> = ({ titulo, onDataChange }) => {
   const [fuma, setFuma] = useState('');
   const [alcohol, setAlcohol] = useState('');
   const [drogas, setDrogas] = useState('');
@@ -58,4 +58,4 @@ const AntecedentesQuirurgicos: React.FC<{ titulo?: string; onDataChange?: (data:
   );
 };
 
-export default AntecedentesQuirurgicos;
+export default AntecedentesPersonales;

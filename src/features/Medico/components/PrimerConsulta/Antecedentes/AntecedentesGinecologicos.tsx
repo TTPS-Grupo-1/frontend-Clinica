@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { AntecedentesGinecologicosProps } from '../../../../interfaces/Medico';
+import type { AntecedentesGinecologicosProps } from '../../../../../interfaces/Medico';
 
 const campos = [
   { label: 'Menarca (edad de primera menstruación)', name: 'menarca', type: 'number', placeholder: 'Edad en años' },

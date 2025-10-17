@@ -15,6 +15,7 @@ import DonacionPage from './features/Donaciones/pages/DonacionPage';
 import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage'
 import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
 import VerOrdenesMedicas from './features/Paciente/pages/VerOrdenesMedicasPage';
+import PrimeraConsultaPage from './features/Medico/pages/PrimeraConsultaPage';
 
 import HomePuncion from './features/Punciones/pages/HomePuncion';
 import HomeLaboratorio from './features/Operador/pages/HomeLaboratorio';
@@ -40,6 +41,7 @@ export default function getAppRoutes() {
 
 
      
+      <Route path="/pacientes/:pacienteId/primeraConsulta" element={<PrimeraConsultaPage />} />
       <Route path="/operador/donaciones/nueva/:tipo" element={<DonacionPage />} />
       <Route path="/pacientes/turnos" element={<TurnosPacientePage />} />
       <Route path="/operador" element={<HomeLaboratorio />} />

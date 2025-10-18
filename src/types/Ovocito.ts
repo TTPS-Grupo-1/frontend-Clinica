@@ -13,6 +13,7 @@ export type OvocitoModalProps = {
     apellidoDonante: string;
 };
 export type OvocitoModalRow = {
+    id_ovocito: number;
     identificador: string;
     estado: EstadoOvocito;
     cripreservar: boolean;

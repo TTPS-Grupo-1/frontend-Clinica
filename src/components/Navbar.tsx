@@ -101,95 +101,77 @@ export default function Navbar() {
         </button>
 
         {/* Enlaces en escritorio (dropdown) */}
-        <section className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
-          {/* Embriones Dropdown */}
-          <div className="relative z-50 group">
-            <button
-              aria-haspopup="true"
-              aria-expanded={openDropdown === 'embriones'}
-              onClick={() => setOpenDropdown(openDropdown === 'embriones' ? null : 'embriones')}
-              onMouseEnter={() => setOpenDropdown('embriones')}
-              onMouseLeave={() => setOpenDropdown(null)}
-              className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
-            >
-              <ChevronRight className="ml-1 h-4 w-4 text-white" />
-              Embriones
-            </button>
-            {/* Dropdown panel */}
-            <div
-              onMouseEnter={() => setOpenDropdown('embriones')}
-              onMouseLeave={() => setOpenDropdown(null)}
-              className={`absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
-                openDropdown === 'embriones' ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
-              }`}
-            >
-              <ul className="py-1">
-                <li>
-                  <Link
-                    to="/embriones"
-                    onClick={() => setOpenDropdown(null)}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                  >
-                    Listado de embriones
-                  </Link>
-                </li>
-                {/* Puedes añadir más opciones aquí */}
-              </ul>
+          <section className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
+            {/* Operador Dropdown (ahora incluye embriones y fertilizaciones) */}
+            <div className="relative z-50 group">
+              <button
+                aria-haspopup="true"
+                aria-expanded={openDropdown === 'donaciones'}
+                onClick={() => setOpenDropdown(openDropdown === 'donaciones' ? null : 'donaciones')}
+                onMouseEnter={() => setOpenDropdown('donaciones')}
+                onMouseLeave={() => setOpenDropdown(null)}
+                className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
+              >
+                <ChevronRight className="ml-1 h-4 w-4 text-white" />
+                Operador
+              </button>
+              {/* Dropdown panel */}
+              <div
+                onMouseEnter={() => setOpenDropdown('donaciones')}
+                onMouseLeave={() => setOpenDropdown(null)}
+                className={`absolute right-0 mt-1 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
+                  openDropdown === 'donaciones' ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
+                }`}
+              >
+                <ul className="py-1">
+                  <li>
+                    <Link
+                      to="/operador"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                    >
+                      Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/operador/donaciones"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                    >
+                      Donaciones
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/operador/punciones"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                    >
+                      Punciones
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/embriones"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                    >
+                      Listado de embriones
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="operador/fertilizaciones"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                    >
+                      Fertilizaciones
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
-          {/* Operador Dropdown */}
-          <div className="relative z-50 group">
-            <button
-              aria-haspopup="true"
-              aria-expanded={openDropdown === 'donaciones'}
-              onClick={() => setOpenDropdown(openDropdown === 'donaciones' ? null : 'donaciones')}
-              onMouseEnter={() => setOpenDropdown('donaciones')}
-              onMouseLeave={() => setOpenDropdown(null)}
-              className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
-            >
-              <ChevronRight className="ml-1 h-4 w-4 text-white" />
-              Operador
-            </button>
-            {/* Dropdown panel */}
-            <div
-              onMouseEnter={() => setOpenDropdown('donaciones')}
-              onMouseLeave={() => setOpenDropdown(null)}
-              className={`absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
-                openDropdown === 'donaciones' ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
-              }`}
-            >
-              <ul className="py-1">
-                <li>
-                  <Link
-                    to="/operador"
-                    onClick={() => setOpenDropdown(null)}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/operador/donaciones"
-                    onClick={() => setOpenDropdown(null)}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                  >
-                    Donaciones
-                  </Link>
-                </li>
-                
-                <li>
-                  <Link
-                    to="/operador/punciones"
-                    onClick={() => setOpenDropdown(null)}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                  >
-                    Punciones
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
           {/* User Menu */}
           {isAuthenticated && (
             <div className="relative z-50 group">
@@ -224,45 +206,63 @@ export default function Navbar() {
         </section>
 
         {/* Menú móvil */}
-        <article
-          className={`md:hidden w-full bg-[#24222B]/90 transition-all duration-300 ease-in-out ${
-            isMobileMenuOpen
-              ? "max-h-[200px] opacity-100 py-4 px-6"
-              : "max-h-0 opacity-0 overflow-hidden"
-          }`}
-        >
-          <ul className="flex flex-col gap-4 text-white text-sm">
-            <li>
-              <Link
-                to="/embriones"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block hover:text-yellow-400"
-              >
-                Embriones
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/operador/donaciones"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block hover:text-yellow-400"
-              >
-                Donaciones
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/operador/punciones"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block hover:text-yellow-400"
-              >
-                Punciones
-              </Link>
-            </li>
-            <li className="pt-2 border-t border-white/20">
-            </li>
-          </ul>
-        </article>
+          <article
+            className={`md:hidden w-full bg-[#24222B]/90 transition-all duration-300 ease-in-out ${
+              isMobileMenuOpen
+                ? "max-h-[300px] opacity-100 py-4 px-6"
+                : "max-h-0 opacity-0 overflow-hidden"
+            }`}
+          >
+            <ul className="flex flex-col gap-4 text-white text-sm">
+              <li>
+                <Link
+                  to="/operador"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block hover:text-yellow-400"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/operador/donaciones"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block hover:text-yellow-400"
+                >
+                  Donaciones
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/operador/punciones"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block hover:text-yellow-400"
+                >
+                  Punciones
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/embriones"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block hover:text-yellow-400"
+                >
+                  Listado de embriones
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="operador/fertilizaciones"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block hover:text-yellow-400"
+                >
+                  Fertilizaciones
+                </Link>
+              </li>
+              <li className="pt-2 border-t border-white/20">
+              </li>
+            </ul>
+          </article>
       </section>
     </nav>
   );

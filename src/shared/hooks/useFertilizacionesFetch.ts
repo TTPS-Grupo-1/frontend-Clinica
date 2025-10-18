@@ -15,10 +15,22 @@ export function useFertilizacionesFetch(pacienteId: number | null) {
     }
     setLoading(true);
     setError(null);
-    axios.get(`/api/fertilizaciones/?paciente=${pacienteId}`)
-      .then(({ data }) => {
-        const items = Array.isArray(data) ? data : (data.results ?? []);
-        setFertilizaciones(items);
+    Promise.all([
+      axios.get(`/api/fertilizacion/?paciente=${pacienteId}`),
+      axios.get(`/api/ovocitos/?paciente=${pacienteId}`)
+    ])
+      .then(([fertRes, ovoRes]) => {
+        const fertItems = Array.isArray(fertRes.data) ? fertRes.data : (fertRes.data.results ?? []);
+        const ovoItems = Array.isArray(ovoRes.data) ? ovoRes.data : (ovoRes.data.results ?? []);
+        // Mapear fertilizaciones para incluir el identificador del ovocito
+        const fertilizacionesConOvocito = fertItems.map((f: any) => {
+          const ovocito = ovoItems.find((o: any) => o.id_ovocito === f.ovocito);
+          return {
+            ...f,
+            ovocito: ovocito ? { identificador: ovocito.identificador, id_ovocito: ovocito.id_ovocito } : f.ovocito
+          };
+        });
+        setFertilizaciones(fertilizacionesConOvocito);
       })
       .catch((err) => {
         setError(err?.response?.data?.detail || err?.message || "Error al cargar fertilizaciones");

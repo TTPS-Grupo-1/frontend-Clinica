@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import DashboardCard from "../components/DashboardCard";
-import GenerarRecetaConFirma from "../components/GenerarRecetaConFirma";
 import GenerarOrdenEstudioForm from "../components/GenerarOrdenEstudioForm";
 
 export default function HomePage() {

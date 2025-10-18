@@ -1,24 +1,43 @@
-import LoginForm from '../components/LoginForm';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { useDispatch } from 'react-redux';
-import { login } from '../../../store/authSlice';
+import LoginForm from "../components/LoginForm";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { login } from "../../../store/authSlice";
+import axios from "axios";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin = (email: string, password: string) => {
-    const fake_email = "hola@gmail.com";
-    const fake_password = "password123";
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      // Petición al backend
+      const response = await axios.post("/api/login/", {
+        username: email,
+        password: password,
+      });
 
-    if (email === fake_email && password === fake_password) {
-      dispatch(login());
-      //este user es un medico 
-      navigate('/medicos');
-      toast.success(`Bienvenido de nuevo!, ${fake_email}`);
-    } else {
-      toast.error('Error de autenticación. Verifique sus credenciales.');
+      const { token, user, role } = response.data;
+
+      // Guardar en Redux y localStorage
+      dispatch(login({ token, user }));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      if (role) {
+        localStorage.setItem("role", JSON.stringify(role));
+      }
+
+      // Redirigir según rol
+      if (role === "MEDICO") navigate("/medicos");
+      else if (role === "paciente") navigate("/pacientes");
+      else navigate("/dashboard");
+
+      toast.success(`Bienvenido, ${user.username}`);
+    } catch (error: any) {
+      const msg =
+        error.response?.data?.message ||
+        "Error de autenticación. Verifique sus credenciales.";
+      toast.error(msg);
     }
   };
 

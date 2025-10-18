@@ -1,21 +1,18 @@
-import type { EstadoOvocito } from "../types/Ovocito";
-import type { Ovocito } from "../types/Ovocito";
+import type { MadurezOvocito, TipoEstadoOvocito, OvocitoModalRow } from "../types/Ovocito";
 
 export interface OvocitosTableProps {
-  ovocitos: Ovocito[];
-  onEstadoChange?: (id: string, estado: EstadoOvocito) => void;
-  onCriopreservarChange?: (id: string, value: boolean) => void;
-  onDescartadoChange?: (id: string, value: boolean) => void;
+  ovocitos: OvocitoModalRow[];
+  onMadurezChange?: (id: string, madurez: MadurezOvocito) => void;
+  onTipoEstadoChange?: (id: string, tipo_estado: TipoEstadoOvocito) => void;
 }
 
 export interface OvocitoModalFormProps {
   open: boolean;
   onClose: () => void;
   onAdd: (ovocito: {
-    identificador_ovocito: string;
-    estado: EstadoOvocito;
-    criopreservar: boolean;
-    descartado: boolean;
+    identificador: string;
+    madurez: MadurezOvocito;
+    tipo_estado: TipoEstadoOvocito;
   }) => void;
   nombreDonante: string;
   apellidoDonante: string;

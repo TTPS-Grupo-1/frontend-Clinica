@@ -3,6 +3,7 @@ import type { Paciente } from "../types/Paciente";
 import type { ReactNode } from "react";
 export interface MedicoListProps {
   medicos: Medico[];
+  onEliminar?: (medico: Medico) => void;
 }
 
 export interface FormMedicoProps {
@@ -27,3 +28,81 @@ export interface DashboardCardProps {
   iconColor?: string;
   count?: number;
 }
+
+export interface ObjetivoModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSelect: (opcion: string) => void;
+}
+
+export interface AntecedentesGinecologicosProps {
+  doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
+}
+
+export interface AntecedenteItemProps {
+  antecedente: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}
+
+export interface AntecedenteItemClinicoProps {
+  antecedente: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export interface AntecedentesGenitalesProps {
+  visible: boolean;
+  onDataChange?: (data: any) => void;
+}
+
+
+export interface AntecedentesGinecologicosProps {
+  doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
+  onDataChange?: (data: any) => void;
+  titulo1?: string;
+  titulo2?: string;
+}
+
+export interface FenotipoDonacionProps {
+  visible: boolean;
+  onDataChange?: (data: any) => void;
+}
+
+export interface PaginadorProps {
+  paginaActual: number;
+  totalPaginas: number;
+  onPageChange: (nuevaPagina: number) => void;
+}
+
+export interface ObjetivoXProps {
+  onDataChange: (key: string, data: any) => void;
+}
+
+
+export interface Estudio {
+  id: number;
+  nombre: string;
+}
+
+
+export interface AntecedentesXProps {
+  onSeleccionChange?: (seleccionados: string[]) => void;
+  onDataChange?: (data: any) => void;
+}
+
+export interface AntecedentesQuirurgicosProps {
+  onDataChange?: (data: { descripcion: string }) => void;
+  visible?: boolean;
+}
+
+export interface AntecedentesFamiliaresProps {
+  onDataChange?: (data: string) => void;
+}
+
+export interface AntecedenteClinicosProps {
+  titulo?: string;
+  onDataChange?: (seleccionados: string[]) => void;
+}
+
+

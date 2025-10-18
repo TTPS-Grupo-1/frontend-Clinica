@@ -8,7 +8,6 @@ import DonantesForm from "../components/DonantesForm";
 import FenotipoForm from "../components/FenotipoFormNew";
 import AntecedentesForm from "../components/AntecedentesNew";
 import ResultadosGeneticosForm from "../components/ResultadosGeneticosNew";
-import UbicacionBancoForm from "../components/UbicacionBancoForm";
 import FormPagination from "../../../components/FormPagination";
 
 
@@ -23,7 +22,6 @@ export default function DonacionPage() {
     datosMedicos: {},
     resultadosGeneticos: {},
     aptoParaUso: true,
-    ubicacionBanco: {},
     estado: 'Disponible',
     // Solo ovocitos
     datosObtencion: {},
@@ -32,7 +30,7 @@ export default function DonacionPage() {
   });
   // Paginación
   const [currentSection, setCurrentSection] = useState(1);
-  const totalSections = tipo === 'semen' ? 5 : 6;
+  const totalSections = tipo === 'semen' ? 4 : 5;
 
   // Submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,7 +71,6 @@ export default function DonacionPage() {
         datos_obtencion: formData.datosObtencion,
         datos_geneticos: formData.resultadosGeneticos,
         estado_ovocitos: estadosOvo,
-        ubicacion: formData.ubicacionBanco,
         destino: formData.destino,
         historial_acciones: [{
           fecha: new Date().toISOString(),
@@ -86,7 +83,7 @@ export default function DonacionPage() {
       console.log("Donación de ovocitos:", donacionData);
       alert("Donación de ovocitos registrada exitosamente");
     }
-    navigate("/donaciones");
+    navigate("/operador/donaciones");
   };
 
   const generateId = (prefix: 's' | 'o') => {
@@ -101,7 +98,7 @@ export default function DonacionPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="mb-8">
             <button
-              onClick={() => navigate("/donaciones")}
+              onClick={() => navigate("/operador/donaciones")}
               className={`flex items-center mb-4 ${tipo === 'semen' ? 'text-blue-600 hover:text-blue-800' : 'text-pink-600 hover:text-pink-800'}`}
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,51 +187,6 @@ export default function DonacionPage() {
                   </div>
                 </div>
               </section>
-            )}
-
-            {currentSection === totalSections && (
-              <>
-                <UbicacionBancoForm
-                  value={formData.ubicacionBanco}
-                  onChange={ubicacionBanco => setFormData(f => ({ ...f, ubicacionBanco }))}
-                />
-                {tipo === 'semen' ? (
-                  <section className="bg-gray-50 p-6 rounded-xl">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Estado Actual</h2>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Estado *</label>
-                      <select
-                        required
-                        value={formData.estado}
-                        onChange={e => setFormData(f => ({ ...f, estado: e.target.value as 'Disponible' | 'En uso' | 'Descartado' | 'Donado' }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="Disponible">Disponible</option>
-                        <option value="En uso">En uso</option>
-                        <option value="Descartado">Descartado</option>
-                        <option value="Donado">Donado</option>
-                      </select>
-                    </div>
-                  </section>
-                ) : (
-                  <section className="bg-gray-50 p-6 rounded-xl">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Destino</h2>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Destino *</label>
-                      <select
-                        required
-                        value={formData.destino}
-                        onChange={e => setFormData(f => ({ ...f, destino: e.target.value as 'Asignado a paciente' | 'Donado' | 'Descartado' }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                      >
-                        <option value="Asignado a paciente">Asignado a paciente</option>
-                        <option value="Donado">Donado</option>
-                        <option value="Descartado">Descartado</option>
-                      </select>
-                    </div>
-                  </section>
-                )}
-              </>
             )}
             <FormPagination
               currentStep={currentSection}

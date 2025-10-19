@@ -28,6 +28,8 @@ const PrimerConsulta: React.FC = () => {
       setFormData({});
       setObjetivoSeleccionado(null);
     } catch (err: any) {
+      setFormData({});
+      setObjetivoSeleccionado(null);
       console.error('Error enviando datos', err);
       toast.error(err.response?.data?.message || 'Error al enviar datos');
     }

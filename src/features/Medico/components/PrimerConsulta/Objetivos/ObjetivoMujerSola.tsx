@@ -55,9 +55,6 @@ const ObjetivoMujerSola: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
         <AntecedentesGinecologicos onDataChange={(d) => onDataChange('antecedentes_ginecologicos', d)} />
       </Card>
       
-      <GenerarRecetaConFirma>
-
-      </GenerarRecetaConFirma>
 
     </>
   );

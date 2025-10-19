@@ -19,7 +19,7 @@ const PrimerConsulta: React.FC = () => {
   };
 
   const handleConfirmar = async () => {
-    const datos = { objetivo: objetivoSeleccionado, form: formData };
+    const datos = { objetivo: objetivoSeleccionado, form: formData, paciente_id: 1, medico_id: 1 }; // Reemplazar con IDs reales
 
     try {
       console.log('🧾 Datos listos para enviar:', datos);

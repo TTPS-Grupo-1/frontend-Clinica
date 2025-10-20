@@ -16,12 +16,12 @@ export default function AltaMedicoPage() {
                 "http://localhost:8000/api/medicos/",
                 data
             );
-            
-            if (response.data.success) {
+            console.log("Médico registrado:", response);
+            if (response.status === 201 || response.status === 200) {
                 toast.success("Médico registrado exitosamente");
                 setTimeout(() => {
                     navigate("/medicos/listado");
-                }, 2000);
+                }, 1000);
             }
         } catch (error: any) {
             console.error("Error al registrar médico:", error);

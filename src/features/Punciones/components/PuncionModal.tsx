@@ -113,7 +113,7 @@ export default function PuncionModal({
                         <label className="block text-sm font-medium mb-2">Paciente</label>
                         <input
                             type="text"
-                            value={paciente ? `${paciente.apellido}, ${paciente.nombre}` : ""}
+                            value={paciente ? `${paciente.last_name}, ${paciente.first_name}` : ""}
                             readOnly
                             className="w-full border border-pink-200 rounded text-black px-2 py-1 bg-gray-100"
                         />
@@ -131,8 +131,8 @@ export default function PuncionModal({
                             open={ovocitoModalOpen}
                             onClose={() => setOvocitoModalOpen(false)}
                             onAdd={handleAddOvocito}
-                            nombreDonante={paciente?.nombre || ""}
-                            apellidoDonante={paciente?.apellido || ""}
+                            nombreDonante={paciente?.first_name || ""}
+                            apellidoDonante={paciente?.last_name || ""}
                         />
                         <div className="mt-2 overflow-x-auto">
                             <table className="min-w-full border rounded-lg overflow-hidden bg-gray-100 text-xs sm:text-sm">

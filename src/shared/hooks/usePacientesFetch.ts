@@ -14,6 +14,7 @@ export function usePacientesFetch(): UsePacientesFetchResult {
         setLoading(true);
         axios.get("/api/pacientes/")
             .then(({ data }) => {
+                console.log("Datos de pacientes recibidos:", data);
                 setPacientes(Array.isArray(data) ? data : (data.results ?? []));
             })
             .catch((err) => {

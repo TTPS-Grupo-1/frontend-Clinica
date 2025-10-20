@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
 import type { fertilizacionModalProps as Props } from '../../../interfaces/Fertilizacion';
+import { NotebookPen } from 'lucide-react';
 
 
 export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovocitos, semenes = [], selectedPacienteId, currentUser }: Props) {
@@ -39,8 +40,11 @@ export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovoci
     };
 
     try {
-      // Llamar al handler original (registrar fertilización)
-      await onFertilize(payload);
+      // Primero registrar la fertilización directamente para obtener el ID
+      const fertilizacionResponse = await axios.post('http://localhost:8000/api/fertilizacion/', payload);
+      const fertilizacionId = fertilizacionResponse.data.id_fertilizacion || fertilizacionResponse.data.id;
+      
+      toast.success('Fertilización registrada exitosamente');
 
       // Si es exitosa, crear embrión automáticamente
       if (form.resultado === 'exitosa' && form.ovocito) {
@@ -54,23 +58,22 @@ export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovoci
 
         const embrionPayload = {
           identificador: identificadorEmbrion,
-          fecha_fertilizacion: form.fecha_fertilizacion,
-          ovocito: Number(form.ovocito),
-          tecnica: form.tecnica.toUpperCase(),
-          tecnico_laboratorio: form.tecnico_laboratorio,
-          calidad: 3, // Calidad por defecto, puede ser configurable
-          estado: "no_transferido",
-          info_semen: form.semen_info || "No especificado",
-          fecha_alta: new Date().toISOString().slice(0, 10), // Solo fecha, sin hora
+          fertilizacion: fertilizacionId,  // ID de la fertilización recién creada
+          estado: "no transferido",
         };
 
-        await axios.post('/api/embriones/', embrionPayload);
+        await axios.post('http://localhost:8000/api/embriones/', embrionPayload);
         toast.success(`Embrión ${identificadorEmbrion} creado exitosamente`);
       }
 
       onClose();
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || 'Error al registrar');
+      console.error('Error completo:', error);
+      const errorMsg = error?.response?.data?.detail || 
+                       error?.response?.data?.message || 
+                       error?.message || 
+                       'Error al registrar';
+      toast.error(errorMsg);
     }
   };
 

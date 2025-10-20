@@ -10,6 +10,7 @@ export default function EmbrionPage() {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [initialData, setInitialData] = useState<Partial<Embryo> | undefined>(undefined);
+  const [fertilizacionData, setFertilizacionData] = useState<any>(null);
   const [loadingData, setLoadingData] = useState(!!id);
 
   // Cargar datos del embrión si existe un ID
@@ -19,6 +20,18 @@ export default function EmbrionPage() {
         try {
           const response = await axios.get(`http://localhost:8000/api/embriones/${id}/`);
           setInitialData(response.data);
+          
+          // Si el embrión tiene fertilización asociada, cargar sus datos
+          if (response.data.fertilizacion) {
+            try {
+              const fertResponse = await axios.get(
+                `http://localhost:8000/api/fertilizacion/${response.data.fertilizacion}/`
+              );
+              setFertilizacionData(fertResponse.data);
+            } catch (fertError) {
+              console.error("Error al cargar fertilización:", fertError);
+            }
+          }
         } catch (error) {
           console.error("Error al cargar embrión:", error);
           toast.error("Error al cargar los datos del embrión");
@@ -87,13 +100,62 @@ export default function EmbrionPage() {
   return (
     <main className="pt-28 flex flex-col items-center min-h-screen bg-gray-50">
       <Toaster position="top-center" />
-      <div className="w-full max-w-4xl px-6 py-8">
+      <div className="w-full max-w-6xl px-6 py-8 space-y-6">
+        
+        {/* Información de la Fertilización - Solo si existe y estamos viendo un embrión */}
+        {id && fertilizacionData && (
+          <div className="bg-white shadow-lg rounded-lg p-6 border-l-4 border-blue-500">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="text-blue-600">📋</span>
+              Información de la Fertilización
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm font-semibold text-gray-600">Fecha de Fertilización</p>
+                <p className="text-lg text-gray-900">{fertilizacionData.fecha_fertilizacion || 'N/A'}</p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm font-semibold text-gray-600">Técnico de Laboratorio</p>
+                <p className="text-lg text-gray-900">{fertilizacionData.tecnico_laboratorio || 'N/A'}</p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm font-semibold text-gray-600">Técnica Utilizada</p>
+                <p className="text-lg text-gray-900">
+                  {fertilizacionData.tecnica_icsi ? 'ICSI' : fertilizacionData.tecnica_fiv ? 'FIV' : 'N/A'}
+                </p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm font-semibold text-gray-600">Resultado</p>
+                <p className={`text-lg font-semibold ${
+                  fertilizacionData.resultado === 'exitosa' ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {fertilizacionData.resultado === 'exitosa' ? '✓ Exitosa' : '✗ No Exitosa'}
+                </p>
+              </div>
+              {fertilizacionData.ovocito && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm font-semibold text-gray-600">ID Ovocito</p>
+                  <p className="text-lg text-gray-900">{fertilizacionData.ovocito}</p>
+                </div>
+              )}
+              {fertilizacionData.semen_info && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm font-semibold text-gray-600">Información del Semen</p>
+                  <p className="text-lg text-gray-900">{fertilizacionData.semen_info}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Formulario del Embrión */}
         <EmbrionForm 
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isEdit={!!id}
           initialData={initialData}
         />
+        
         {loading && (
           <div className="mt-4 text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>

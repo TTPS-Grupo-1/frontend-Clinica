@@ -17,7 +17,7 @@ export default function FertilizacionPage() {
 
   async function handleFertilize(payload: any) {
     try {
-      const response = await fetch("/api/fertilizacion/", {
+      const response = await fetch("http://localhost:8000/api/fertilizacion/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -28,6 +28,7 @@ export default function FertilizacionPage() {
       // Opcional: recargar fertilizaciones, mostrar mensaje, etc.
     } catch (err) {
       alert("No se pudo registrar la fertilización");
+      throw err; // Re-lanzar el error para que el modal lo capture
     }
   }
 

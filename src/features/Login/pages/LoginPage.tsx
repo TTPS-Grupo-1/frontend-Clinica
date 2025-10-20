@@ -11,9 +11,10 @@ export default function LoginPage() {
 
   const handleLogin = async (email: string, password: string) => {
     try {
+      console.log("Intentando login con:", { email, password });
       // Petición al backend
       const response = await axios.post("/api/login/", {
-        username: email,
+        email: email,
         password: password,
       });
 
@@ -32,7 +33,7 @@ export default function LoginPage() {
       else if (role === "paciente") navigate("/pacientes");
       else navigate("/dashboard");
 
-      toast.success(`Bienvenido, ${user.username}`);
+      toast.success(`Bienvenido, ${user.first_name}!`);
     } catch (error: any) {
       const msg =
         error.response?.data?.message ||

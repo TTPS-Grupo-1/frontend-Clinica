@@ -13,18 +13,20 @@ export default function RegistroPage() {
       console.log('Datos del formulario:', data);
       
       const dataToSend = {
-        nombre: data.nombre,
-        apellido: data.apellido,
+        first_name: data.nombre,
+        last_name: data.apellido,
         fecha_nacimiento: data.fechaNacimiento,
         email: data.email,
         telefono: data.telefono,
         obra_social: data.cobertura,
         sexo: mapSexoToDjango(data.sexo),
-        contraseña: data.password,
+        password: data.password,
         numero_afiliado: data.numeroCobertura,
         dni: data.dni,
+        rol: 'PACIENTE',
 
       };
+      console.log('Datos a enviar al backend:', dataToSend);
       const response = await axios.post('/api/pacientes/', dataToSend);
       toast.success(response.data.message);
       navigate('/login');

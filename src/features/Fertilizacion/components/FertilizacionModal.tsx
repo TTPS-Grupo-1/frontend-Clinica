@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
 import type { fertilizacionModalProps as Props } from '../../../interfaces/Fertilizacion';
 
 
@@ -18,7 +21,7 @@ export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovoci
 
   if(!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Adaptar técnica a los booleanos que espera el modelo
     const tecnica_icsi = form.tecnica === "icsi";
@@ -35,8 +38,40 @@ export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovoci
       resultado: form.resultado,
     };
 
-    onFertilize(payload);
-    onClose();
+    try {
+      // Llamar al handler original (registrar fertilización)
+      await onFertilize(payload);
+
+      // Si es exitosa, crear embrión automáticamente
+      if (form.resultado === 'exitosa' && form.ovocito) {
+        const ovocitoSeleccionado = ovocitos.find(o => o.id_ovocito === Number(form.ovocito));
+        
+        const identificadorEmbrion = generateUniqueId({
+          prefix: "EMB",
+          nombre: ovocitoSeleccionado?.identificador || "UNK",
+          apellido: "",
+        });
+
+        const embrionPayload = {
+          identificador: identificadorEmbrion,
+          fecha_fertilizacion: form.fecha_fertilizacion,
+          ovocito: Number(form.ovocito),
+          tecnica: form.tecnica.toUpperCase(),
+          tecnico_laboratorio: form.tecnico_laboratorio,
+          calidad: 3, // Calidad por defecto, puede ser configurable
+          estado: "no_transferido",
+          info_semen: form.semen_info || "No especificado",
+          fecha_alta: new Date().toISOString().slice(0, 10), // Solo fecha, sin hora
+        };
+
+        await axios.post('/api/embriones/', embrionPayload);
+        toast.success(`Embrión ${identificadorEmbrion} creado exitosamente`);
+      }
+
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.detail || 'Error al registrar');
+    }
   };
 
   return (

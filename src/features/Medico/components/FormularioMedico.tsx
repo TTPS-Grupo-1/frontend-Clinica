@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 import type { Medico } from "../../../types/Medico";
 
 interface FormularioMedicoProps {
-    medico?: Medico;
-    onSubmit: (data: Partial<Medico>) => void;
-    onCancel: () => void;
-    isEdit?: boolean;
+  medico?: Medico;
+  onSubmit: (data: FormData) => void; // ✅ ahora usamos FormData para enviar imagen
+  onCancel: () => void;
+  isEdit?: boolean;
 }
 
 export default function FormularioMedico({
-    medico,
-    onSubmit,
-    onCancel,
-    isEdit = false
+  medico,
+  onSubmit,
+  onCancel,
+  isEdit = false
 }: FormularioMedicoProps) {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
@@ -22,6 +22,7 @@ export default function FormularioMedico({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [firma, setFirma] = useState<File | null>(null); // ✅ nueva firma
 
   useEffect(() => {
     if (typeof medico !== "undefined") {
@@ -35,30 +36,32 @@ export default function FormularioMedico({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validar contraseña solo en alta
     if (!isEdit) {
-        if (!password || password.length < 8) {
-            alert("La contraseña debe tener al menos 8 caracteres");
-            return;
-        }
-        
-        if (password !== confirmPassword) {
-            alert("Las contraseñas no coinciden");
-            return;
-        }
+      if (!password || password.length < 8) {
+        alert("La contraseña debe tener al menos 8 caracteres");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Las contraseñas no coinciden");
+        return;
+      }
     }
-    
-    const data: Partial<Medico> = {
-      nombre,
-      apellido,
-      dni: Number(dni),
-      email,
-      telefono: Number(telefono),
-      ...((!isEdit && password) && { password })
-    };
-    
-    onSubmit(data);
+
+    // ✅ Usamos FormData para incluir imagen
+    const formData = new FormData();
+    formData.append("first_name", nombre);
+    formData.append("last_name", apellido);
+    formData.append("dni", dni);
+    formData.append("email", email);
+    formData.append("telefono", telefono);
+    formData.append("rol", "MEDICO"); // 👈 se fuerza el rol
+    if (!isEdit && password) formData.append("password", password);
+    if (firma) formData.append("firma_medico", firma); // 👈 se incluye la firma
+
+    onSubmit(formData);
   };
 
   return (
@@ -131,6 +134,24 @@ export default function FormularioMedico({
           </div>
         </div>
 
+        {/* Nueva fila: firma médica */}
+        <div>
+          <label className="block text-base font-medium mb-2 text-gray-700">
+            Firma del médico (PNG o JPG):
+          </label>
+          <input
+            type="file"
+            accept="image/png, image/jpeg"
+            onChange={(e) => setFirma(e.target.files?.[0] || null)}
+            className="w-full px-4 py-2.5 text-base border border-gray-400 rounded bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {firma && (
+            <p className="text-sm text-gray-600 mt-1">
+              Archivo seleccionado: {firma.name}
+            </p>
+          )}
+        </div>
+
         {/* Tercera fila: Contraseñas - solo en alta */}
         {!isEdit && (
           <>
@@ -157,7 +178,9 @@ export default function FormularioMedico({
                 </div>
               </div>
               <div>
-                <label className="block text-base font-medium mb-2 text-gray-700">Confirmar Contraseña:</label>
+                <label className="block text-base font-medium mb-2 text-gray-700">
+                  Confirmar Contraseña:
+                </label>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={confirmPassword}
@@ -170,7 +193,6 @@ export default function FormularioMedico({
               </div>
             </div>
 
-            {/* Mensaje de validación */}
             {password && confirmPassword && password !== confirmPassword && (
               <p className="text-sm text-red-500 text-center">
                 Las contraseñas no coinciden

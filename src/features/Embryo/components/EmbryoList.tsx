@@ -1,14 +1,20 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { EmbryoListAdaptedProps } from "../../../interfaces/Embryo";
 import Pagination from "../../../components/Pagination";
 
 
 export default function EmbryoList({ embryos, selectedPacienteId }: EmbryoListAdaptedProps) {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(embryos.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentEmbryos = embryos.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleVerEmbrion = (embrionId: string | number) => {
+    navigate(`/embriones/${embrionId}`);
+  };
 
   return (
     <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
@@ -24,23 +30,32 @@ export default function EmbryoList({ embryos, selectedPacienteId }: EmbryoListAd
               <th className="px-4 py-3 text-left text-gray-700 font-semibold">Causa de descarte</th>
               <th className="px-4 py-3 text-left text-gray-700 font-semibold">Ovocito</th>
               <th className="px-4 py-3 text-left text-gray-700 font-semibold">Observaciones</th>
+              <th className="px-4 py-3 text-center text-gray-700 font-semibold">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {currentEmbryos.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-gray-500 text-center py-6 text-lg">No hay embriones registrados para el paciente seleccionado.</td>
+                <td colSpan={8} className="text-gray-500 text-center py-6 text-lg">No hay embriones registrados para el paciente seleccionado.</td>
               </tr>
             ) : (
               currentEmbryos.map((embryo) => (
                 <tr key={embryo.id} className="border-b border-gray-200 hover:bg-gray-100 transition-colors">
                   <td className="px-4 py-3 font-mono text-blue-900 font-semibold">{embryo.id}</td>
                   <td className="px-4 py-3 text-gray-800">{embryo.calidad}</td>
-                  <td className="px-4 py-3 text-gray-800">{embryo.pot}</td>
+                  <td className="px-4 py-3 text-gray-800">{embryo.pgt || '-'}</td>
                   <td className="px-4 py-3 text-gray-800">{embryo.estado}</td>
-                  <td className="px-4 py-3 text-gray-800">{embryo.causaDescarte}</td>
-                  <td className="px-4 py-3 text-gray-800">{embryo.ovocito}</td>
-                  <td className="px-4 py-3 text-gray-800">{embryo.observaciones}</td>
+                  <td className="px-4 py-3 text-gray-800">{embryo.causa_descarte || '-'}</td>
+                  <td className="px-4 py-3 text-gray-800">-</td>
+                  <td className="px-4 py-3 text-gray-800">{embryo.observaciones || '-'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={() => handleVerEmbrion(embryo.id!)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium shadow-sm"
+                    >
+                      Ver Embrión
+                    </button>
+                  </td>
                 </tr>
               ))
             )}

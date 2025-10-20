@@ -1,9 +1,9 @@
 export type Embryo = {
-  id: string | number;
+  id?: string | number;
   calidad: string;
-  pot: string;
-  estado: string;
-  causaDescarte: string;
-  ovocito: string;
-  observaciones: string;
+  pgt?: string; // opcional
+  estado: 'descartado' | 'transferido' | 'criopreservado' | 'fresco';
+  fecha_baja?: string; // opcional
+  causa_descarte?: string; // opcional
+  observaciones?: string;
 };

@@ -20,12 +20,15 @@ import PrimeraConsultaPage from './features/Medico/pages/PrimeraConsultaPage';
 import HomePuncion from './features/Punciones/pages/HomePuncion';
 import HomeLaboratorio from './features/Operador/pages/HomeLaboratorio';
 import FertilizacionPage from './features/Fertilizacion/pages/FertilizacionPage';
+import EmbrionPage from './features/Embryo/pages/EmbrionPage';
+
 export default function getAppRoutes() {
   return (
     <>
       <Route path="/" element={<LandingPage />} />
       <Route path="/medico/home" element={<HomePage />} />
       <Route path="/embriones" element={<EmbryoPage />} />
+      <Route path="/embriones/:id" element={<EmbrionPage />} />
       <Route path="/medicos/alta" element={<AltaMedicoPage />} />
       <Route path="/medicos/editar/:dni" element={<EditMedicoPage />} />
       <Route path="/pacientes/home" element={<HomePaciente />} />

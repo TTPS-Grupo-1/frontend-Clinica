@@ -11,6 +11,7 @@ export default function EmbrionPage() {
   const [loading, setLoading] = useState(false);
   const [initialData, setInitialData] = useState<Partial<Embryo> | undefined>(undefined);
   const [fertilizacionData, setFertilizacionData] = useState<any>(null);
+  const [ovocitoData, setOvocitoData] = useState<any>(null);
   const [loadingData, setLoadingData] = useState(!!id);
 
   // Cargar datos del embrión si existe un ID
@@ -28,6 +29,18 @@ export default function EmbrionPage() {
                 `http://localhost:8000/api/fertilizacion/${response.data.fertilizacion}/`
               );
               setFertilizacionData(fertResponse.data);
+              
+              // Si la fertilización tiene ovocito, cargar sus datos para obtener el identificador
+              if (fertResponse.data.ovocito) {
+                try {
+                  const ovocitoResponse = await axios.get(
+                    `http://localhost:8000/api/ovocitos/${fertResponse.data.ovocito}/`
+                  );
+                  setOvocitoData(ovocitoResponse.data);
+                } catch (ovocitoError) {
+                  console.error("Error al cargar ovocito:", ovocitoError);
+                }
+              }
             } catch (fertError) {
               console.error("Error al cargar fertilización:", fertError);
             }
@@ -134,8 +147,8 @@ export default function EmbrionPage() {
               </div>
               {fertilizacionData.ovocito && (
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm font-semibold text-gray-600">ID Ovocito</p>
-                  <p className="text-lg text-gray-900">{fertilizacionData.ovocito}</p>
+                  <p className="text-sm font-semibold text-gray-600">Identificador del Ovocito</p>
+                  <p className="text-lg text-gray-900">{ovocitoData?.identificador || fertilizacionData.ovocito}</p>
                 </div>
               )}
               {fertilizacionData.semen_info && (

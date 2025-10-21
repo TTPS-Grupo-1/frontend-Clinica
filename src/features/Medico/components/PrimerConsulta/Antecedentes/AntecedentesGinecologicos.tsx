@@ -29,43 +29,43 @@ const AntecedentesGinecologicos: React.FC<AntecedentesGinecologicosProps> = ({ d
   };
 
   return (
-    <div className="max-w-xl mx-auto rounded shadow p-6 border-2 border-black bg-white text-black">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">Antecedentes Ginecológicos</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 className="font-semibold mb-2 text-black">{doble ? titulo1 : 'Datos'}</h3>
+  <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px]">
+    <h2 className="text-3xl font-bold mb-8 text-center text-blue-800 tracking-tight">Antecedentes Ginecológicos</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="bg-blue-50 rounded-lg p-6 shadow-sm">
+        <h3 className="font-semibold mb-4 text-blue-700 text-lg">{doble ? titulo1 : 'Datos'}</h3>
+        {campos.map(c => (
+          <div className="mb-5" key={c.name}>
+            <label className="block font-medium mb-2 text-gray-700">{c.label}</label>
+            <input
+              type={c.type}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white text-black focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
+              placeholder={c.placeholder}
+              value={datos1[c.name]}
+              onChange={e => handleChange(1, c.name, e.target.value)}
+            />
+          </div>
+        ))}
+      </div>
+      {doble && (
+        <div className="bg-blue-50 rounded-lg p-6 shadow-sm">
+          <h3 className="font-semibold mb-4 text-blue-700 text-lg">{titulo2}</h3>
           {campos.map(c => (
-            <div className="mb-3" key={c.name}>
-              <label className="block font-medium mb-1 text-black">{c.label}</label>
+            <div className="mb-5" key={c.name}>
+              <label className="block font-medium mb-2 text-gray-700">{c.label}</label>
               <input
                 type={c.type}
-                className="w-full border border-black rounded px-2 py-1 bg-white text-black"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white text-black focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
                 placeholder={c.placeholder}
-                value={datos1[c.name]}
-                onChange={e => handleChange(1, c.name, e.target.value)}
+                value={datos2[c.name]}
+                onChange={e => handleChange(2, c.name, e.target.value)}
               />
             </div>
           ))}
         </div>
-        {doble && (
-          <div>
-            <h3 className="font-semibold mb-2 text-black">{titulo2}</h3>
-            {campos.map(c => (
-              <div className="mb-3" key={c.name}>
-                <label className="block font-medium mb-1 text-black">{c.label}</label>
-                <input
-                  type={c.type}
-                  className="w-full border border-black rounded px-2 py-1 bg-white text-black"
-                  placeholder={c.placeholder}
-                  value={datos2[c.name]}
-                  onChange={e => handleChange(2, c.name, e.target.value)}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      )}
     </div>
+  </div>
   );
 };
 

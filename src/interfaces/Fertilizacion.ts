@@ -12,3 +12,10 @@ export interface fertilizacionModalProps {
   selectedPacienteId: number | null;
   currentUser?: { id: number; nombre: string } | null;
 };
+
+export interface FertilizacionHeaderProps {
+  pacientes: any[];
+  selectedPacienteId: number | null;
+  setSelectedPacienteId: (id: number | null) => void;
+  onOpenModal: () => void;
+}

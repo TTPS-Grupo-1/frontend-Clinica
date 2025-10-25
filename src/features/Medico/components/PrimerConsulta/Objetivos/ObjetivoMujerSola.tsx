@@ -11,6 +11,7 @@ import FenotipoDonacion from '../FenotipoDonacion';
 import AntecedentesGinecologicos from '../Antecedentes/AntecedentesGinecologicos';
 import type { ObjetivoXProps } from '../../../../../interfaces/Medico';
 import GenerarRecetaConFirma from '../../GenerarRecetaConFirma';
+import EstudiosPrequirurgicos from '../Estudios/EstudioPrequirugico';
 
 const ObjetivoMujerSola: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
   return (
@@ -44,7 +45,7 @@ const ObjetivoMujerSola: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
       </Card>
 
       <Card title="Estudios Prequirúrgicos">
-        <EstudiosHormonales onDataChange={(d) => onDataChange('prequirurgicos', d)} />
+        <EstudiosPrequirurgicos onDataChange={(d) => onDataChange('prequirurgicos', d)} />
       </Card>
 
       <Card title="Fenotipo Donación">

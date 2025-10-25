@@ -15,7 +15,7 @@ const AntecedentesQuirurgicos: React.FC<AntecedentesQuirurgicosProps> = ({
   if (!visible) return null;
 
   return (
-    <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
+  <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px] mt-6">
       <h2 className="text-2xl font-bold mb-4 text-center">
         Antecedentes Quirúrgicos
       </h2>

@@ -31,10 +31,10 @@ export default function Pagination({
             <button
               key={pageNum}
               onClick={() => onPageChange(pageNum)}
-              className={`px-3 py-1 text-sm border rounded ${
+              className={`px-3 py-1 text-sm border rounded transition-colors duration-150 ${
                 currentPage === pageNum
                   ? 'bg-blue-600 text-white border-blue-600'
-                  : 'hover:bg-gray-50'
+                  : 'bg-white text-blue-700 border-gray-300 hover:bg-blue-50'
               }`}
             >
               {pageNum}

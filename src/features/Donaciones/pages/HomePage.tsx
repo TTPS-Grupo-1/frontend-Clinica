@@ -30,7 +30,6 @@ export default function HomePage() {
 
           {/* Cards Grid */}
           <article className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            
             {/* Card 1: Donación de Semen */}
             <DashboardCard
               title="Donación de Semen"
@@ -61,6 +60,20 @@ export default function HomePage() {
               onClick={handleDonarOvocitos}
             />
 
+            {/* Card 3: Ver tanques */}
+            <DashboardCard
+              title="Ver tanques"
+              description="Visualiza todos los tanques disponibles, su tipo y el espacio restante."
+              count={0}
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={2} />
+                  <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" opacity="0.2" />
+                </svg>
+              }
+              iconColor="text-green-600"
+              onClick={() => navigate("/operador/tanques")}
+            />
           </article>
 
           {/* Información de proceso */}

@@ -70,7 +70,7 @@ const EstudiosHormonales: React.FC<AntecedentesXProps> = ({
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
+  <div className="max-w-2xl mx-auto mt-6 rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px]">
       <h2 className="text-2xl font-bold mb-4 text-center">
         Estudios Hormonales
       </h2>

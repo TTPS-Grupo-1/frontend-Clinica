@@ -12,7 +12,7 @@ const AntecedentesPersonales: React.FC<{ titulo?: string; onDataChange?: (data: 
 
 
   return (
-    <div className="max-w-xl mx-auto rounded shadow p-6 border-2 border-black bg-white text-black">
+  <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px]">
       <h2 className="text-2xl font-bold mb-4 text-center text-black">{titulo || 'Antecedentes Personales'}</h2>
       <div className="mb-4">
         <label className="block font-medium mb-1 text-black">Fuma (pack-días):</label>

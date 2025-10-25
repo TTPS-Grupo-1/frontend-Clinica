@@ -24,7 +24,9 @@ export default function HomePuncion() {
 
     // Paginación
     const totalPages = Math.ceil(ovocitos.length / ITEMS_PER_PAGE);
-    const paginatedOvocitos = ovocitos.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+        const paginatedOvocitos = ovocitos
+            .filter(o => o && o.identificador)
+            .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
     const selectedPaciente = pacientes.find(p => p.id === formData.selectedPacienteId);
 
@@ -45,7 +47,9 @@ export default function HomePuncion() {
                         >
                             <option value="">-- Selecciona un paciente --</option>
                             {pacientes.map(p => (
-                                <option key={p.id} value={p.id}>{p.apellido}, {p.nombre}</option>
+                                <option key={p.id} value={p.id}>
+                                    {p.last_name}, {p.first_name}
+                                </option>
                             ))}
                         </select>
                     )}
@@ -63,7 +67,7 @@ export default function HomePuncion() {
                             <span className="sm:hidden">+</span>
                         </button>
                     </section>
-                    <section className="overflow-x-auto rounded-lg shadow min-h-[220px] bg-white/80">
+                    <section className="overflow-x-auto rounded-lg shadow bg-white/80">
                         {loadingOvocitos ? (
                             <OvocitosTableSkeleton rows={ITEMS_PER_PAGE} />
                         ) : errorOvocitos ? (

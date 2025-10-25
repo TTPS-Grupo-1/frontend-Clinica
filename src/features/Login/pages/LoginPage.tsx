@@ -18,20 +18,21 @@ export default function LoginPage() {
         password: password,
       });
 
-      const { token, user, role } = response.data;
-
-      // Guardar en Redux y localStorage
+      const { token, user } = response.data;
+      const role = user.rol;
+      console.log(role)
+      // Guardar usuario y token en Redux, pero solo token en localStorage
       dispatch(login({ token, user }));
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
       if (role) {
         localStorage.setItem("role", JSON.stringify(role));
       }
-
-      // Redirigir según rol
-      if (role === "MEDICO") navigate("/medicos");
-      else if (role === "paciente") navigate("/pacientes");
-      else navigate("/dashboard");
+    console.log("Login exitoso, usuario:", user);
+    // Redirigir según rol
+    if (role === "MEDICO") navigate("/medicos");
+    else if (role === "PACIENTE") navigate("/pacientes/home");
+    else if (role === "OPERADOR") navigate("/operador");
+    else navigate("/dashboard");
 
       toast.success(`Bienvenido, ${user.first_name}!`);
     } catch (error: any) {

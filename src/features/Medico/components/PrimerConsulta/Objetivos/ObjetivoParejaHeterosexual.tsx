@@ -16,23 +16,181 @@ import type { ObjetivoXProps } from '../../../../../interfaces/Medico';
 
 const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
   const cards = [
-    { title: "Antecedentes Clínicos - Mujer", content: <AntecedentesClinicos titulo="Mujer" onDataChange={(d) => onDataChange('clinicos_mujer', d)} /> },
-    { title: "Antecedentes Clínicos - Hombre", content: <AntecedentesClinicos titulo="Hombre" onDataChange={(d) => onDataChange('clinicos_hombre', d)} /> },
-    { title: "Antecedentes Familiares - Mujer", content: <AntecedentesFamiliares onDataChange={(d) => onDataChange('familiares_mujer', d)} /> },
-    { title: "Antecedentes Familiares - Hombre", content: <AntecedentesFamiliares onDataChange={(d) => onDataChange('familiares_hombre', d)} /> },
-    { title: "Antecedentes Quirúrgicos - Mujer", content: <AntecedentesQuirurgicos onDataChange={(d) => onDataChange('antecedentes_quirurgicos_mujer', d)} /> },
-    { title: "Antecedentes Quirúrgicos - Hombre", content: <AntecedentesQuirurgicos onDataChange={(d) => onDataChange('antecedentes_quirurgicos_hombre', d)} /> },
-    { title: "Estudios Prequirúrgicos - Mujer", content: <EstudiosPrequirurgicos onDataChange={(d) => onDataChange('estudios_prequirurgicos_mujer', d)} /> },
-    { title: "Estudios Prequirúrgicos - Hombre", content: <EstudiosPrequirurgicos onDataChange={(d) => onDataChange('estudios_prequirurgicos_hombre', d)} /> },
-    { title: "Estudios Ginecológicos", content: <EstudioGinecologico onDataChange={(d) => onDataChange('estudios_ginecologicos', d)} /> },
-    { title: "Estudio de Semen", content: <EstudioSemen visible onDataChange={(d) => onDataChange('estudios_semen', d)} /> },
-    { title: "Estudios Hormonales", content: <EstudiosHormonales onDataChange={(d) => onDataChange('hormonales', d)} /> },
-    { title: "Examen Físico - Mujer", content: <ExamenFisico onDataChange={(d) => onDataChange('examen_fisico_mujer', d)} /> },
-    { title: "Examen Físico - Hombre", content: <ExamenFisico onDataChange={(d) => onDataChange('examen_fisico_hombre', d)} /> },
-    { title: "Antecedentes Personales - Mujer", content: <AntecedentesPersonales titulo="Mujer" onDataChange={(d) => onDataChange('personales_mujer', d)} /> },
-    { title: "Antecedentes Personales - Hombre", content: <AntecedentesPersonales titulo="Hombre" onDataChange={(d) => onDataChange('personales_hombre', d)} /> },
-    { title: "Antecedentes Ginecológicos - Mujer", content: <AntecedentesGinecologicos onDataChange={(d) => onDataChange('antecedentes_ginecologicos', d)} /> },
-    { title: "Antecedentes Genitales - Hombre", content: <AntecedentesGenitales onDataChange={(d) => onDataChange('genitales_hombre', d)} /> },
+    {
+      key: 'clinicos_mujer',
+      title: "Antecedentes Clínicos - Mujer",
+      content: (
+        <AntecedentesClinicos
+          key="clinicos_mujer"
+          titulo="Mujer"
+          onDataChange={(d) => onDataChange('clinicos_mujer', d)}
+        />
+      ),
+    },
+    {
+      key: 'clinicos_hombre',
+      title: "Antecedentes Clínicos - Hombre",
+      content: (
+        <AntecedentesClinicos
+          key="clinicos_hombre"
+          titulo="Hombre"
+          onDataChange={(d) => onDataChange('clinicos_hombre', d)}
+        />
+      ),
+    },
+    {
+      key: 'familiares_mujer',
+      title: "Antecedentes Familiares - Mujer",
+      content: (
+        <AntecedentesFamiliares
+          key="familiares_mujer"
+          onDataChange={(d) => onDataChange('familiares_mujer', d)}
+        />
+      ),
+    },
+    {
+      key: 'familiares_hombre',
+      title: "Antecedentes Familiares - Hombre",
+      content: (
+        <AntecedentesFamiliares
+          key="familiares_hombre"
+          onDataChange={(d) => onDataChange('familiares_hombre', d)}
+        />
+      ),
+    },
+    {
+      key: 'quirurgicos_mujer',
+      title: "Antecedentes Quirúrgicos - Mujer",
+      content: (
+        <AntecedentesQuirurgicos
+          key="quirurgicos_mujer"
+          onDataChange={(d) => onDataChange('antecedentes_quirurgicos_mujer', d)}
+        />
+      ),
+    },
+    {
+      key: 'quirurgicos_hombre',
+      title: "Antecedentes Quirúrgicos - Hombre",
+      content: (
+        <AntecedentesQuirurgicos
+          key="quirurgicos_hombre"
+          onDataChange={(d) => onDataChange('antecedentes_quirurgicos_hombre', d)}
+        />
+      ),
+    },
+    {
+      key: 'prequirurgicos_mujer',
+      title: "Estudios Prequirúrgicos - Mujer",
+      content: (
+        <EstudiosPrequirurgicos
+          key="prequirurgicos_mujer"
+          onDataChange={(d) => onDataChange('estudios_prequirurgicos_mujer', d)}
+        />
+      ),
+    },
+    {
+      key: 'prequirurgicos_hombre',
+      title: "Estudios Prequirúrgicos - Hombre",
+      content: (
+        <EstudiosPrequirurgicos
+          key="prequirurgicos_hombre"
+          onDataChange={(d) => onDataChange('estudios_prequirurgicos_hombre', d)}
+        />
+      ),
+    },
+    {
+      key: 'ginecologicos_mujer',
+      title: "Estudios Ginecológicos",
+      content: (
+        <EstudioGinecologico
+          key="ginecologicos_mujer"
+          onDataChange={(d) => onDataChange('estudios_ginecologicos', d)}
+        />
+      ),
+    },
+    {
+      key: 'semen_hombre',
+      title: "Estudio de Semen",
+      content: (
+        <EstudioSemen
+          key="semen_hombre"
+          visible
+          onDataChange={(d) => onDataChange('estudios_semen', d)}
+        />
+      ),
+    },
+    {
+      key: 'hormonales',
+      title: "Estudios Hormonales",
+      content: (
+        <EstudiosHormonales
+          key="hormonales"
+          onDataChange={(d) => onDataChange('hormonales', d)}
+        />
+      ),
+    },
+    {
+      key: 'examen_fisico_mujer',
+      title: "Examen Físico - Mujer",
+      content: (
+        <ExamenFisico
+          key="examen_fisico_mujer"
+          onDataChange={(d) => onDataChange('examen_fisico_mujer', d)}
+        />
+      ),
+    },
+    {
+      key: 'examen_fisico_hombre',
+      title: "Examen Físico - Hombre",
+      content: (
+        <ExamenFisico
+          key="examen_fisico_hombre"
+          onDataChange={(d) => onDataChange('examen_fisico_hombre', d)}
+        />
+      ),
+    },
+    {
+      key: 'personales_mujer',
+      title: "Antecedentes Personales - Mujer",
+      content: (
+        <AntecedentesPersonales
+          key="personales_mujer"
+          titulo="Mujer"
+          onDataChange={(d) => onDataChange('personales_mujer', d)}
+        />
+      ),
+    },
+    {
+      key: 'personales_hombre',
+      title: "Antecedentes Personales - Hombre",
+      content: (
+        <AntecedentesPersonales
+          key="personales_hombre"
+          titulo="Hombre"
+          onDataChange={(d) => onDataChange('personales_hombre', d)}
+        />
+      ),
+    },
+    {
+      key: 'antecedentes_ginecologicos',
+      title: "Antecedentes Ginecológicos - Mujer",
+      content: (
+        <AntecedentesGinecologicos
+          key="antecedentes_ginecologicos"
+          onDataChange={(d) => onDataChange('antecedentes_ginecologicos', d)}
+        />
+      ),
+    },
+    {
+      key: 'antecedentes_genitales',
+      title: "Antecedentes Genitales - Hombre",
+      content: (
+        <AntecedentesGenitales
+          key="antecedentes_genitales"
+          onDataChange={(d) => onDataChange('genitales_hombre', d)}
+        />
+      ),
+    },
   ];
 
   const [pagina, setPagina] = React.useState(1);
@@ -40,7 +198,9 @@ const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) 
 
   return (
     <div className="flex flex-col items-center w-full">
-      <Card title={cards[pagina - 1].title}>{cards[pagina - 1].content}</Card>
+      <Card key={cards[pagina - 1].key} title={cards[pagina - 1].title}>
+        {cards[pagina - 1].content}
+      </Card>
       <Pagination
         currentPage={pagina}
         totalPages={total}

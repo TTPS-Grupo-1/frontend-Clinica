@@ -21,7 +21,7 @@ export default function PacientCard({ paciente, onAtender, onVerHistoria }: Paci
         
         {/* Información del paciente */}
         <h3 className="text-lg font-semibold text-gray-900 text-center">
-          {paciente.nombre} {paciente.apellido}
+          {(paciente.first_name ? paciente.first_name : "Paciente") + (paciente.last_name ? " " + paciente.last_name : "")}
         </h3>
       </div>
 

@@ -3,14 +3,8 @@ import { fetchTurnos } from "../../../shared/hooks/fetchTurnos";
 import TurnosSkeleton from "../components/TurnosSkeleton";
 import PacientCard from "../components/PacientCard";
 import Pagination from "../../../components/Pagination";
+import type { Turno } from "../../../types/Turno";
 
-interface Turno {
-  id: number;
-  id_grupo: number;
-  id_medico: number;
-  id_paciente: number | null;
-  fecha_hora: string;
-}
 
 
 export default function ListadoTurnos() {
@@ -53,14 +47,14 @@ export default function ListadoTurnos() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto mt-16 md:mt-20 px-4 sm:px-6 py-6 min-h-screen">
+  <div className="w-full max-w-7xl mx-auto mt-16 md:mt-20 px-4 sm:px-6 py-6 min-h-screen bg-gray-50">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white-900 text-center mb-2">
+        <h1 className="text-3xl font-bold text-blue-900 text-center mb-2 tracking-tight">
           Listado de Turnos
         </h1>
-        <p className="text-gray-600 text-center">
-          Gestiona los turnos de tus pacientes - Total: {turnosConPaciente.length} turnos
+        <p className="text-indigo-600 text-center text-lg">
+          Gestiona los turnos de tus pacientes — <span className="font-semibold text-blue-700">{turnosConPaciente.length} turnos</span>
         </p>
       </div>
 
@@ -76,8 +70,8 @@ export default function ListadoTurnos() {
               <PacientCard
                 key={turno.id}
                 paciente={{
-                  id: turno.id,
-                  first_name: turno.id_paciente ? `Paciente ${turno.id_paciente}` : "Libre",
+                  id: turno.id_paciente!,
+                  first_name: `Paciente ${turno.id_paciente}`,
                   last_name: "",
                   edad: 0,
                   fechaTurno: new Date(turno.fecha_hora).toLocaleDateString(),

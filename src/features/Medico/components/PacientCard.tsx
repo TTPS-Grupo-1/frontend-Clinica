@@ -23,7 +23,6 @@ export default function PacientCard({ paciente, onAtender, onVerHistoria }: Paci
         <h3 className="text-lg font-semibold text-gray-900 text-center">
           {paciente.nombre} {paciente.apellido}
         </h3>
-        <p className="text-sm text-gray-600">Edad: {paciente.edad} años</p>
       </div>
 
       {/* Información del turno */}

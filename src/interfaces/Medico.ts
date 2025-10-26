@@ -51,18 +51,15 @@ export interface AntecedenteItemClinicoProps {
   onChange: (value: string) => void;
 }
 
-export interface AntecedentesGenitalesProps {
-  visible: boolean;
-  onDataChange?: (data: any) => void;
-}
-
 
 export interface AntecedentesGinecologicosProps {
   doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
-  onDataChange?: (data: any) => void;
+  onDataChange?: (data: { datos1: Record<string, string>; datos2?: Record<string, string> }) => void;
+  value?: { datos1: Record<string, string>; datos2?: Record<string, string> }; // ✅ nuevo campo para persistencia
   titulo1?: string;
   titulo2?: string;
 }
+
 
 export interface FenotipoDonacionProps {
   visible: boolean;
@@ -94,15 +91,76 @@ export interface AntecedentesXProps {
 export interface AntecedentesQuirurgicosProps {
   onDataChange?: (data: { descripcion: string }) => void;
   visible?: boolean;
+  value?: { descripcion: string }; // ✅ así debe ir
 }
+
 
 export interface AntecedentesFamiliaresProps {
   onDataChange?: (data: string) => void;
+  value?: string;
 }
 
 export interface AntecedenteClinicosProps {
   titulo?: string;
   onDataChange?: (seleccionados: string[]) => void;
+  value?: string[];
 }
 
 
+export interface AntecedentesGenitalesProps {
+  onDataChange?: (data: { descripcion: string }) => void;
+  visible?: boolean;
+  value?: { descripcion: string };
+}
+
+export interface EstudioGinecologicoProps {
+  onDataChange?: (data: { seleccionados: string[] }) => void;
+  value?: { seleccionados: string[] };
+  visible?: boolean;
+}
+
+export interface EstudiosPrequirurgicosProps {
+  value?: { valores: Record<string, boolean> };
+  onDataChange?: (data: { valores: Record<string, boolean> }) => void;
+  visible?: boolean;
+  titulo?: string;
+}
+
+
+export interface EstudioSemenProps {
+  onDataChange?: (data: { estudiosSeleccionados: string[] }) => void;
+  value?: { estudiosSeleccionados: string[] };
+  visible?: boolean;
+}
+
+export interface EstudiosHormonalesProps {
+  onDataChange?: (data: { seleccionados: string[] }) => void;
+  value?: { seleccionados: string[] };
+  visible?: boolean;
+}
+
+
+export interface ExamenFisicoProps {
+  visible?: boolean;
+  value?: string;
+  onDataChange?: (data: string) => void;
+}
+export interface FenotipoDonacionProps2 {
+  onDataChange?: (data: {
+    ojos: string;
+    peloColor: string;
+    peloTipo: string;
+    altura: string;
+    complexion: string;
+    etnia: string;
+  }) => void;
+  value?: {
+    ojos: string;
+    peloColor: string;
+    peloTipo: string;
+    altura: string;
+    complexion: string;
+    etnia: string;
+  };
+  visible?: boolean;
+}

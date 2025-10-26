@@ -96,7 +96,10 @@ const PrimerConsulta: React.FC = () => {
         <ObjetivoModal
           isOpen={modalAbierto}
           onClose={() => setModalAbierto(false)}
-          onSelect={(opcion) => setObjetivoSeleccionado(opcion)}
+          onSelect={(opcion) => {
+            setObjetivoSeleccionado(opcion);
+            setFormData({}); 
+          }}
         />
         <section className="mt-8 px-2 md:px-10 xl:px-24">
           {renderObjetivo()}

@@ -3,14 +3,14 @@ import type { ExamenFisicoProps } from '../../../../interfaces/Medico';
 
 const ExamenFisico: React.FC<ExamenFisicoProps> = ({
   onDataChange,
-  value = { descripcion: '' }, // ✅ valor inicial controlado
+  value = '',
   visible = true,
 }) => {
   if (!visible) return null;
 
   // 🧩 Manejo directo del campo controlado
   const handleChange = (descripcion: string) => {
-    onDataChange?.({ descripcion });
+    onDataChange?.(descripcion);
   };
 
   // 🧱 Render
@@ -26,7 +26,7 @@ const ExamenFisico: React.FC<ExamenFisicoProps> = ({
 
       <textarea
         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-white text-black focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-        value={value.descripcion}
+        value={value}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Ejemplo: abdomen blando, sin masas ni dolor; presión arterial normal..."
         rows={4}

@@ -20,7 +20,7 @@ const ObjetivoParejaFemeninaDonacion: React.FC<ObjetivoXProps> = ({ onDataChange
     familiares: '',
     personales: { fuma: '', alcohol: '', drogas: '', observaciones: '' },
     antecedentes_quirurgicos: { descripcion: '' },
-    examen_fisico: { descripcion: '' },
+    examen_fisico: '',
     estudios_ginecologicos: { seleccionados: [] },
     hormonales: { seleccionados: [] },
     prequirurgicos: { valores: {} },

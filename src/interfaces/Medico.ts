@@ -141,11 +141,10 @@ export interface EstudiosHormonalesProps {
 
 
 export interface ExamenFisicoProps {
-  onDataChange?: (data: { descripcion: string }) => void;
-  value?: { descripcion: string };
   visible?: boolean;
+  value?: string;
+  onDataChange?: (data: string) => void;
 }
-
 export interface FenotipoDonacionProps2 {
   onDataChange?: (data: {
     ojos: string;

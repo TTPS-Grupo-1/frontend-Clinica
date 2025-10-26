@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import type { AntecedentesGenitalesProps } from '../../../../../interfaces/Medico';
 import Paginador from '../Paginador';
-import type { Estudio } from '../../../../../interfaces/Medico';
+import type { Estudio, EstudioSemenProps } from '../../../../../interfaces/Medico';
 
 const ESTUDIOS_POR_PAGINA = 5;
 
-const EstudioSemen: React.FC<AntecedentesGenitalesProps> = ({ visible, onDataChange }) => {
+const EstudioSemen: React.FC<EstudioSemenProps> = ({
+  visible = true,
+  onDataChange,
+  value = { estudiosSeleccionados: [] },
+}) => {
   const [pagina, setPagina] = useState(1);
   const [estudios, setEstudios] = useState<Estudio[]>([]);
-  const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = 'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_semen';
+  const API_URL =
+    'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_semen';
 
-  // 🔹 Llamada real a la API usando Axios
+  // 🔹 Obtener estudios desde Supabase Edge Function
   useEffect(() => {
     const fetchEstudios = async () => {
       try {
@@ -23,19 +26,14 @@ const EstudioSemen: React.FC<AntecedentesGenitalesProps> = ({ visible, onDataCha
         setError(null);
 
         const response = await axios.get(API_URL, {
-          headers: {
-            'Content-Type': 'application/json',
-            // Si tu función necesita token JWT:
-            // 'Authorization': `Bearer ${token}`,
-          },
+          headers: { 'Content-Type': 'application/json' },
         });
 
-        // 🧩 Si la función devuelve { data: [...] }
         const data = Array.isArray(response.data.data)
           ? response.data.data
           : response.data;
 
-        setEstudios(data);
+        setEstudios(data || []);
       } catch (err: any) {
         console.error('Error al obtener estudios de semen:', err);
         setError('No se pudieron cargar los estudios.');
@@ -47,10 +45,13 @@ const EstudioSemen: React.FC<AntecedentesGenitalesProps> = ({ visible, onDataCha
     fetchEstudios();
   }, []);
 
-  // 🔄 Notificar al padre cada vez que cambia la selección
-  useEffect(() => {
-    onDataChange?.({ estudiosSeleccionados: seleccionados });
-  }, [seleccionados]);
+  // ✅ Manejo de selección controlada
+  const toggleSeleccion = (nombre: string) => {
+    const nuevos = value.estudiosSeleccionados.includes(nombre)
+      ? value.estudiosSeleccionados.filter((e) => e !== nombre)
+      : [...value.estudiosSeleccionados, nombre];
+    onDataChange?.({ estudiosSeleccionados: nuevos });
+  };
 
   if (!visible) return null;
 
@@ -59,14 +60,7 @@ const EstudioSemen: React.FC<AntecedentesGenitalesProps> = ({ visible, onDataCha
   const inicio = (pagina - 1) * ESTUDIOS_POR_PAGINA;
   const estudiosPagina = estudios.slice(inicio, inicio + ESTUDIOS_POR_PAGINA);
 
-  const toggleSeleccion = (nombre: string) => {
-    setSeleccionados((prev) =>
-      prev.includes(nombre)
-        ? prev.filter((e) => e !== nombre)
-        : [...prev, nombre]
-    );
-  };
-
+  // 🧱 Render
   return (
     <div className="max-w-xl mx-auto rounded shadow p-6 border-2 border-black bg-white text-black mt-6">
       <h2 className="text-2xl font-bold mb-4 text-center text-black">
@@ -86,7 +80,7 @@ const EstudioSemen: React.FC<AntecedentesGenitalesProps> = ({ visible, onDataCha
               <label key={est.id} className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={seleccionados.includes(est.nombre)}
+                  checked={value.estudiosSeleccionados.includes(est.nombre)}
                   onChange={() => toggleSeleccion(est.nombre)}
                   className="h-4 w-4 accent-black"
                 />
@@ -95,13 +89,15 @@ const EstudioSemen: React.FC<AntecedentesGenitalesProps> = ({ visible, onDataCha
             ))}
           </div>
 
-          <div className="mt-4">
-            <Paginador
-              paginaActual={pagina}
-              totalPaginas={totalPaginas}
-              onPageChange={setPagina}
-            />
-          </div>
+          {totalPaginas > 1 && (
+            <div className="mt-4">
+              <Paginador
+                paginaActual={pagina}
+                totalPaginas={totalPaginas}
+                onPageChange={setPagina}
+              />
+            </div>
+          )}
         </>
       )}
     </div>

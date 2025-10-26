@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Paginador from '../Paginador';
-import type { Estudio } from '../../../../../interfaces/Medico';
-import type { AntecedentesXProps } from '../../../../../interfaces/Medico';
+import type { Estudio, EstudiosHormonalesProps } from '../../../../../interfaces/Medico';
 
 const ANTECEDENTES_POR_PAGINA = 4;
 
-const EstudiosHormonales: React.FC<AntecedentesXProps> = ({
-  onSeleccionChange,
-  onDataChange
+const EstudiosHormonales: React.FC<EstudiosHormonalesProps> = ({
+  onDataChange,
+  visible = true,
+  value = { seleccionados: [] },
 }) => {
   const [campos, setCampos] = useState<Estudio[]>([]);
-  const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [pagina, setPagina] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = 'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_hormonales';
+  const API_URL =
+    'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_hormonales';
 
   // 🔹 Llamada real a la API de Supabase con Axios
   useEffect(() => {
@@ -26,14 +26,9 @@ const EstudiosHormonales: React.FC<AntecedentesXProps> = ({
         setError(null);
 
         const response = await axios.get(API_URL, {
-          headers: {
-            'Content-Type': 'application/json',
-            // Si tu función requiere autenticación:
-            // 'Authorization': `Bearer ${token}`,
-          },
+          headers: { 'Content-Type': 'application/json' },
         });
 
-        // 🧩 Si la función devuelve { data: [...] }
         const data = Array.isArray(response.data.data)
           ? response.data.data
           : response.data;
@@ -50,28 +45,25 @@ const EstudiosHormonales: React.FC<AntecedentesXProps> = ({
     fetchCampos();
   }, []);
 
-  // 🔄 Notificar al padre cuando cambien los seleccionados
-  useEffect(() => {
-    onSeleccionChange?.(seleccionados);
-    onDataChange?.({ seleccionados });
-  }, [seleccionados]);
+  // ✅ Manejo de selección controlada
+  const handleCheckbox = (nombre: string) => {
+    const nuevos = value.seleccionados.includes(nombre)
+      ? value.seleccionados.filter((n) => n !== nombre)
+      : [...value.seleccionados, nombre];
+    onDataChange?.({ seleccionados: nuevos });
+  };
+
+  if (!visible) return null;
 
   // 📦 Paginación
   const totalPaginas = Math.ceil(campos.length / ANTECEDENTES_POR_PAGINA);
   const inicio = (pagina - 1) * ANTECEDENTES_POR_PAGINA;
   const camposPagina = campos.slice(inicio, inicio + ANTECEDENTES_POR_PAGINA);
 
-  const handleCheckbox = (nombre: string) => {
-    setSeleccionados((prev) =>
-      prev.includes(nombre)
-        ? prev.filter((n) => n !== nombre)
-        : [...prev, nombre]
-    );
-  };
-
+  // 🧱 Render
   return (
-    <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
-      <h2 className="text-2xl font-bold mb-4 text-center">
+    <div className="max-w-2xl mx-auto mt-6 rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px]">
+      <h2 className="text-2xl font-bold mb-4 text-center text-black">
         Estudios Hormonales
       </h2>
 
@@ -88,7 +80,7 @@ const EstudiosHormonales: React.FC<AntecedentesXProps> = ({
               <label key={c.id} className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={seleccionados.includes(c.nombre)}
+                  checked={value.seleccionados.includes(c.nombre)}
                   onChange={() => handleCheckbox(c.nombre)}
                   className="h-4 w-4 border-black accent-black"
                 />
@@ -97,13 +89,15 @@ const EstudiosHormonales: React.FC<AntecedentesXProps> = ({
             ))}
           </div>
 
-          <div className="mt-4">
-            <Paginador
-              paginaActual={pagina}
-              totalPaginas={totalPaginas}
-              onPageChange={setPagina}
-            />
-          </div>
+          {totalPaginas > 1 && (
+            <div className="mt-4">
+              <Paginador
+                paginaActual={pagina}
+                totalPaginas={totalPaginas}
+                onPageChange={setPagina}
+              />
+            </div>
+          )}
         </>
       )}
     </div>

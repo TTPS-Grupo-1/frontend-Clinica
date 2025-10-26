@@ -11,18 +11,20 @@ export default function GenerarRecetaConFirma({ tipo_estudio, determinaciones }:
   const { generar, loading } = useGenerarOrden();
 
   const handleGenerar = async () => {
-    const payload = {
-      tipo_estudio,
-      clinica_nombre: "Clínica Médica Integral",
+    const payload =
+     {
+      tipo_estudio:"Prequirúrgico",
       medico: {
         nombre: "Dra. Carla Méndez",
-        matricula: "MP 8821",
       },
       paciente: {
         nombre: "Laura Fernández",
         dni: "40111222"
       },
-      determinaciones
+      determinaciones: [
+        { nombre: "Hemograma" },
+        { nombre: "Glucemia" }
+      ]
     };
     await generar({
       url: "https://srlgceodssgoifgosyoh.supabase.co/functions/v1/generar_orden_medica",

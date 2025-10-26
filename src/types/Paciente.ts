@@ -1,7 +1,7 @@
 export type Paciente = {
   id: number;
-  nombre: string;
-  apellido: string;
+  first_name: string;
+  last_name: string;
   edad: number;
   fechaTurno: string;
   horaTurno: string;
@@ -17,6 +17,7 @@ export type PacienteFormData = {
   fechaNacimiento: string;
   telefono: string;
   password: string;
-  cobertura: string;
+  cobertura: number;
+  coberturaNombre: string;
   numeroCobertura: string;
 }

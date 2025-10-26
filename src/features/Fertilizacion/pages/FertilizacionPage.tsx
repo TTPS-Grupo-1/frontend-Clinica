@@ -5,6 +5,8 @@ import { useOvocitosFetch } from "../../../shared/hooks/useOvocitosFetch";
 import { useFertilizacionesFetch } from "../../../shared/hooks/useFertilizacionesFetch";
 import FertilizacionesTable from "../components/Fertilizaciones";
 import { AnimatePresence, motion } from "framer-motion";
+import FertilizacionesTableSkeleton from "../components/FertilizacionesTableSkeleton";
+import { Suspense } from "react";
 
 export default function FertilizacionPage() {
   const { pacientes } = usePacientesFetch();
@@ -17,7 +19,7 @@ export default function FertilizacionPage() {
 
   async function handleFertilize(payload: any) {
     try {
-      const response = await fetch("/api/fertilizacion/", {
+      const response = await fetch("http://localhost:8000/api/fertilizacion/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -28,57 +30,69 @@ export default function FertilizacionPage() {
       // Opcional: recargar fertilizaciones, mostrar mensaje, etc.
     } catch (err) {
       alert("No se pudo registrar la fertilización");
+      throw err; // Re-lanzar el error para que el modal lo capture
     }
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center pt-24 pb-10 px-4">
-      <div className="max-w-4xl w-full bg-white rounded-lg shadow px-6 py-8">
-        <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">Gestión de Fertilizaciones y Embriones</h1>
-        <div className="mb-6 flex flex-col sm:flex-row gap-2 items-center justify-center">
-        <label className="block text-sm font-medium text-gray-700">Seleccionar paciente</label>
-        <select
-          value={selectedPacienteId ?? ""}
-          onChange={e => setSelectedPacienteId(Number(e.target.value))}
-          className="border border-gray-300 rounded px-3 py-2 w-full sm:w-80 bg-white focus:ring-2 text-black focus:ring-blue-300 shadow-sm"
-        >
-          <option value="">-- Selecciona un paciente --</option>
-          {pacientes.map(p => (
-            <option key={p.id} value={p.id}>{p.apellido}, {p.nombre}</option>
-          ))}
-        </select>
+    <div className="relative w-full min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-300 pt-24 pb-10 px-4 overflow-x-hidden">
+      {/* Fondo decorativo */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full opacity-30 blur-2xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full opacity-30 blur-2xl" />
       </div>
-        <AnimatePresence>
-          {loading ? (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col items-center justify-center h-32"
-            >
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mb-2" />
-              <span className="text-blue-500 font-medium">Cargando fertilizaciones...</span>
-            </motion.div>
-          ) : (
-            selectedPacienteId && (
-              <motion.div
-                key="fertilizaciones"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="w-full"
-              >
-                <FertilizacionesTable fertilizaciones={fertilizaciones} />
-              </motion.div>
-            )
-          )}
-        </AnimatePresence>
+
+      <div className="max-w-4xl w-full bg-white rounded-lg shadow px-6 py-8 z-10 relative">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl font-bold text-blue-700 mb-6 text-center drop-shadow-lg"
+        >
+          Gestión de Fertilizaciones y Embriones
+        </motion.h1>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mb-6 flex flex-col sm:flex-row gap-2 items-center justify-center"
+        >
+          <label className="block text-sm font-medium text-gray-700">Seleccionar paciente</label>
+          <select
+            value={selectedPacienteId ?? ""}
+            onChange={e => setSelectedPacienteId(Number(e.target.value))}
+            className="border border-gray-300 rounded px-3 py-2 w-full sm:w-80 bg-white focus:ring-2 text-black focus:ring-blue-300 shadow-sm"
+          >
+            <option value="">-- Selecciona un paciente --</option>
+            {pacientes.map(p => (
+              <option key={p.id} value={p.id}>{p.last_name}, {p.first_name}</option>
+            ))}
+          </select>
+        </motion.div>
+        <Suspense fallback={<FertilizacionesTableSkeleton />}>
+          <AnimatePresence>
+            {loading ? (
+              <FertilizacionesTableSkeleton />
+            ) : (
+              selectedPacienteId && (
+                <motion.div
+                  key="fertilizaciones"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="w-full"
+                >
+                  <FertilizacionesTable fertilizaciones={fertilizaciones} />
+                </motion.div>
+              )
+            )}
+          </AnimatePresence>
+        </Suspense>
         {selectedPacienteId && (
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-all font-semibold self-center"
+            className="mt-8 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-xl shadow-lg hover:scale-105 hover:from-blue-600 hover:to-blue-800 transition-all font-semibold self-center"
             onClick={() => setIsModalOpen(true)}
           >
             Registrar nueva fertilización
@@ -92,6 +106,7 @@ export default function FertilizacionPage() {
           semenes={[]}
           selectedPacienteId={selectedPacienteId}
           currentUser={null}
+          fertilizaciones={fertilizaciones}
         />
       </div>
     </div>

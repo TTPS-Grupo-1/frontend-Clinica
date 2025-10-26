@@ -15,6 +15,8 @@ export default function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<null | 'embriones' | 'donaciones' | 'profile'>(null);
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const role = user?.role || user?.rol || localStorage.getItem('role');
   const dispatch = useDispatch();
 
  const handleLogout = async () => {
@@ -29,13 +31,11 @@ export default function Navbar() {
     console.error('Logout request failed', err);
     // opcional: mostrar toast de advertencia
   } finally {
-    // limpiar siempre el cliente
-    dispatch(logout());
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
+    // Limpiar el estado de Redux y el token
+    dispatch(logout()); // Limpia usuario y autenticación en Redux
+    localStorage.removeItem('token'); // Solo el token, el usuario está en Redux
     toast.success('Sesión cerrada');
-    navigate('/login');
+    navigate('/'); // Redirige al home normal
   }
 };
 
@@ -48,7 +48,17 @@ export default function Navbar() {
         {/* Logo: inline medical icon (clickable) */}
         <button
           aria-label="Ir al inicio"
-          onClick={() => navigate('/')}
+          onClick={() => {
+            if (role === 'PACIENTE') {
+              navigate('/pacientes/home');
+            } else if (role === 'OPERADOR') {
+              navigate('/operador');
+            } else if (role === 'MEDICO') {
+              navigate('/medico');
+            } else {
+              navigate('/');
+            }
+          }}
           className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0"
         >
           <svg

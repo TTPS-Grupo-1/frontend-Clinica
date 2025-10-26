@@ -47,7 +47,9 @@ export default function HomePuncion() {
                         >
                             <option value="">-- Selecciona un paciente --</option>
                             {pacientes.map(p => (
-                                <option key={p.id} value={p.id}>{p.apellido}, {p.nombre}</option>
+                                <option key={p.id} value={p.id}>
+                                    {p.last_name}, {p.first_name}
+                                </option>
                             ))}
                         </select>
                     )}

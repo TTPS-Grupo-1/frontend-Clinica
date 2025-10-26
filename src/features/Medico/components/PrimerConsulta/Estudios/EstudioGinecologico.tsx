@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import type { Estudio} from '../../../../../interfaces/Medico';
-import type { AntecedentesXProps } from '../../../../../interfaces/Medico';
+import type { Estudio, EstudioGinecologicoProps } from '../../../../../interfaces/Medico';
 
-const EstudioGinecologico: React.FC<AntecedentesXProps> = ({
-  onSeleccionChange,
-  onDataChange
+const EstudioGinecologico: React.FC<EstudioGinecologicoProps> = ({
+  onDataChange,
+  visible = true,
+  value = { seleccionados: [] },
 }) => {
   const [campos, setCampos] = useState<Estudio[]>([]);
-  const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = 'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_ginecologico';
+  const API_URL =
+    'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_ginecologico';
 
-  // 🔹 Llamada real a la Edge Function con Axios
+  // 🔹 Obtener estudios desde Supabase Edge Function (solo una vez)
   useEffect(() => {
     const fetchCampos = async () => {
       try {
@@ -22,14 +22,9 @@ const EstudioGinecologico: React.FC<AntecedentesXProps> = ({
         setError(null);
 
         const response = await axios.get(API_URL, {
-          headers: {
-            'Content-Type': 'application/json',
-            // Si tu función requiere autenticación:
-            // 'Authorization': `Bearer ${token}`,
-          },
+          headers: { 'Content-Type': 'application/json' },
         });
 
-        // 🧩 Si la respuesta de la función tiene formato { data: [...] }
         const data = Array.isArray(response.data.data)
           ? response.data.data
           : response.data;
@@ -46,22 +41,17 @@ const EstudioGinecologico: React.FC<AntecedentesXProps> = ({
     fetchCampos();
   }, []);
 
-  // ✅ Manejo de selección
+  // ✅ Manejo de selección controlada
   const handleCheckbox = (nombre: string) => {
-    setSeleccionados((prev) =>
-      prev.includes(nombre)
-        ? prev.filter((n) => n !== nombre)
-        : [...prev, nombre]
-    );
+    const nuevos = value.seleccionados.includes(nombre)
+      ? value.seleccionados.filter((n) => n !== nombre)
+      : [...value.seleccionados, nombre];
+    onDataChange?.({ seleccionados: nuevos });
   };
 
-  // ✅ Notificar al padre
-  useEffect(() => {
-    onSeleccionChange?.(seleccionados);
-    onDataChange?.({ seleccionados });
-  }, [seleccionados]);
+  if (!visible) return null;
 
-  // 🔹 Render
+  // 🧱 Render
   return (
     <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
       <h2 className="text-2xl font-bold mb-4 text-center">
@@ -80,7 +70,7 @@ const EstudioGinecologico: React.FC<AntecedentesXProps> = ({
             <label key={c.id} className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={seleccionados.includes(c.nombre)}
+                checked={value.seleccionados.includes(c.nombre)}
                 onChange={() => handleCheckbox(c.nombre)}
                 className="h-4 w-4 border-black accent-black"
               />

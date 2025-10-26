@@ -1,6 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 import OvocitoModal from "./OvocitoModal";
+import OvocitosTable from "./OvocitosTable";
+import AgregarOvocitoButton from "./AgregarOvocitoButton";
+import PuncionForm from "./PuncionForm";
 import type { Paciente } from "../../../types/Paciente";
 import type { OvocitoModalRow } from "../../../types/Ovocito";
 
@@ -70,8 +73,43 @@ export default function PuncionModal({
                 }))
             };
             await axios.post("/api/punciones/", payload);
+
+            // Asignar cada ovocito a la API de inventario
+            let assignError = null;
+            for (const o of ovocitos) {
+                try {
+                    const res = await axios.post(
+                        "https://ssewaxrnlmnyizqsbzxe.supabase.co/functions/v1/assign-ovocyte",
+                        {
+                            nro_grupo: 1,
+                            ovocito_id: String(o.identificador)
+                        },
+                        {
+                            headers: { "Content-Type": "application/json" }
+                        }
+                    );
+                    console.log("Asignación ovocito", o.identificador, res.data);
+                    if (!res.data?.success) {
+                        assignError = res.data?.error || `Error asignando ovocito ${o.identificador}`;
+                        break;
+                    }
+                } catch (err: any) {
+                    console.log(err)
+                    console.error("Error asignando ovocito", o.identificador, err);
+                    assignError = err?.response?.data?.error || err?.message || `Error asignando ovocito ${o.identificador}`;
+                    break;
+                }
+            }
+
+            if (assignError) {
+                setError(assignError);
+                setSubmitting(false);
+                return;
+            }
+
             onClose();
             window.location.reload();
+            alert("Punción y asignación de ovocitos registrada correctamente");
         } catch (err: any) {
             setError(err?.response?.data?.detail || err?.message || "Error al registrar punción");
         } finally {
@@ -87,79 +125,18 @@ export default function PuncionModal({
                     {error && (
                         <div className="text-red-600 text-sm mb-2 animate-pulse" role="alert">{error}</div>
                     )}
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium text-black mb-2">Quirófano</label>
-                            <input
-                                type="text"
-                                value={formData.quirofano}
-                                onChange={e => setFormData(fd => ({ ...fd, quirofano: e.target.value }))}
-                                className="w-full border border-pink-300 rounded text-black px-2 py-1 focus:ring-2 focus:ring-pink-200"
-                                placeholder="Ej: Q1"
-                                autoFocus
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <label className="block text-sm text-black font-medium mb-2">Fecha</label>
-                            <input
-                                type="date"
-                                value={formData.fecha}
-                                onChange={e => setFormData(fd => ({ ...fd, fecha: e.target.value }))}
-                                className="w-full border border-pink-300 rounded text-black px-2 py-1 focus:ring-2 focus:ring-pink-200"
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Paciente</label>
-                        <input
-                            type="text"
-                            value={paciente ? `${paciente.apellido}, ${paciente.nombre}` : ""}
-                            readOnly
-                            className="w-full border border-pink-200 rounded text-black px-2 py-1 bg-gray-100"
-                        />
-                    </div>
+                    <PuncionForm formData={formData} setFormData={setFormData} paciente={paciente} />
                     <div className="mt-6">
                         <h3 className="text-lg font-semibold mb-2 text-pink-700">Ovocitos agregados</h3>
-                        <button
-                            type="button"
-                            onClick={() => setOvocitoModalOpen(true)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mb-2 transition-all duration-150"
-                        >
-                            Agregar ovocito
-                        </button>
+                        <AgregarOvocitoButton onClick={() => setOvocitoModalOpen(true)} />
                         <OvocitoModal
                             open={ovocitoModalOpen}
                             onClose={() => setOvocitoModalOpen(false)}
                             onAdd={handleAddOvocito}
-                            nombreDonante={paciente?.nombre || ""}
-                            apellidoDonante={paciente?.apellido || ""}
+                            nombreDonante={paciente?.first_name || ""}
+                            apellidoDonante={paciente?.last_name || ""}
                         />
-                        <div className="mt-2 overflow-x-auto">
-                            <table className="min-w-full border rounded-lg overflow-hidden bg-gray-100 text-xs sm:text-sm">
-                                <thead className="bg-blue-300">
-                                    <tr>
-                                        <th className="px-2 sm:px-4 py-2 text-left">Identificador</th>
-                                        <th className="px-2 sm:px-4 py-2 text-left">Madurez</th>
-                                        <th className="px-2 sm:px-4 py-2 text-left">Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {ovocitos.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={3} className="text-center py-4 text-gray-500">No hay ovocitos agregados.</td>
-                                        </tr>
-                                    ) : (
-                                        ovocitos.map((o) => (
-                                            <tr key={o.identificador} className="border-b text-black hover:bg-blue-50 transition-all duration-100">
-                                                <td className="px-2 sm:px-4 py-2 font-mono break-all max-w-[120px] sm:max-w-[200px]">{o.identificador}</td>
-                                                <td className="px-2 sm:px-4 py-2">{o.madurez}</td>
-                                                <td className="px-2 sm:px-4 py-2">{o.tipo_estado}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                        <OvocitosTable ovocitos={ovocitos} />
                     </div>
                     <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
                         <button

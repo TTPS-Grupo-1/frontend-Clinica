@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
 import type { fertilizacionModalProps as Props } from '../../../interfaces/Fertilizacion';
+import { NotebookPen } from 'lucide-react';
 
 
-export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovocitos, semenes = [], selectedPacienteId, currentUser }: Props) {
+// Se espera que el modal reciba también la lista de fertilizaciones actuales
+// Si no, puedes agregar la prop fertilizaciones: Fertilizacion[]
+export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovocitos, semenes = [], selectedPacienteId, currentUser, fertilizaciones = [] }: Props & { fertilizaciones?: any[] }) {
   const [form, setForm] = useState({
     ovocito: '',
     semen_info: '',
@@ -11,20 +18,22 @@ export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovoci
     tecnica: '',
     resultado: 'no_exitosa',
   });
+  // Filtrar ovocitos que no estén en fertilizaciones
+  const fertilizadosIds = fertilizaciones.map(f => f.ovocito?.id_ovocito ?? f.ovocito).filter(Boolean);
+  const ovocitosDisponibles = ovocitos.filter(o => !fertilizadosIds.includes(o.id_ovocito));
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(()=>{
     setForm((f)=>({ ...f, tecnico_laboratorio: currentUser ? currentUser.nombre : f.tecnico_laboratorio }));
   }, [currentUser]);
 
-  if(!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Adaptar técnica a los booleanos que espera el modelo
+    setSubmitting(true);
     const tecnica_icsi = form.tecnica === "icsi";
     const tecnica_fiv = form.tecnica === "fiv";
-
-    // Solo enviar los campos requeridos por el modelo
     const payload: any = {
       ovocito: form.ovocito ? Number(form.ovocito) : null,
       semen_info: form.semen_info || null,
@@ -34,71 +43,124 @@ export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovoci
       tecnica_fiv,
       resultado: form.resultado,
     };
-
-    onFertilize(payload);
-    onClose();
+    try {
+      const fertilizacionResponse = await axios.post('http://localhost:8000/api/fertilizacion/', payload);
+      const fertilizacionId = fertilizacionResponse.data.id_fertilizacion || fertilizacionResponse.data.id;
+      toast.success('Fertilización registrada exitosamente');
+      if (form.resultado === 'exitosa' && form.ovocito) {
+        const ovocitoSeleccionado = ovocitos.find(o => o.id_ovocito === Number(form.ovocito));
+        const identificadorEmbrion = generateUniqueId({
+          prefix: "EMB",
+          nombre: ovocitoSeleccionado?.identificador || "UNK",
+          apellido: "",
+        });
+        const embrionPayload = {
+          identificador: identificadorEmbrion,
+          fertilizacion: fertilizacionId,
+          estado: "no transferido",
+        };
+        await axios.post('http://localhost:8000/api/embriones/', embrionPayload);
+        toast.success(`Embrión ${identificadorEmbrion} creado exitosamente`);
+      }
+      setSubmitting(false);
+      onClose();
+    } catch (error: any) {
+      setSubmitting(false);
+      console.error('Error completo:', error);
+      const errorMsg = error?.response?.data?.detail || 
+                       error?.response?.data?.message || 
+                       error?.message || 
+                       'Error al registrar';
+      toast.error(errorMsg);
+    }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6 border border-gray-200">
-        <h3 className="text-lg text-gray-900 font-semibold mb-4">Registrar Fertilización</h3>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div>
-            <label className="block text-sm text-gray-900 font-medium">Ovocito</label>
-            <select value={form.ovocito} onChange={e=>setForm({...form, ovocito: e.target.value})} className="w-full border border-gray-700 bg-gray-100 text-gray-900 px-3 py-2">
-              <option className="text-gray-500" value="">-- Selecciona ovocito --</option>
-              {ovocitos.map(o=> (
-                <option key={o.id_ovocito} value={o.id_ovocito} className="text-gray-900">{o.identificador}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm text-gray-900 font-medium">Semen (opcional)</label>
-            <input
-              type="text"
-              value={form.semen_info}
-              onChange={e=>setForm({...form, semen_info: e.target.value})}
-              className="w-full border border-gray-700 bg-gray-100 text-gray-900 px-3 py-2"
-              placeholder="Identificador, notas, etc."
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-900 text-sm font-medium">Fecha de fertilización</label>
-            <input type="date" value={form.fecha_fertilizacion} onChange={e=>setForm({...form, fecha_fertilizacion: e.target.value})} className="w-full border border-gray-700 bg-gray-100 text-gray-900 px-3 py-2" />
-          </div>
-
-          <div>
-            <label className="block text-gray-900 text-sm font-medium">Técnico de laboratorio</label>
-            <input type="text" value={form.tecnico_laboratorio} onChange={e=>setForm({...form, tecnico_laboratorio: e.target.value})} className="w-full border border-gray-700 bg-gray-100 text-gray-900 px-3 py-2" placeholder="Nombre del operador" />
-          </div>
-
-          <div>
-            <label className="block text-gray-900 text-sm font-medium">Técnica</label>
-            <select value={form.tecnica} onChange={e=>setForm({...form, tecnica: e.target.value})} className="w-full border border-gray-700 bg-gray-100 text-gray-900 px-3 py-2">
-              <option className="text-gray-500" value="">-- Selecciona técnica --</option>
-              <option className="text-gray-900" value="icsi">ICSI</option>
-              <option className="text-gray-900" value="fiv">FIV</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-gray-900 text-sm font-medium">Resultado</label>
-            <select value={form.resultado} onChange={e=>setForm({...form, resultado: e.target.value})} className="w-full border border-gray-700 bg-gray-100 text-gray-900 px-3 py-2">
-              <option className="text-gray-900" value="exitosa">Exitosa</option>
-              <option className="text-gray-900" value="no_exitosa">No exitosa</option>
-            </select>
-          </div>
-
-          <div className="flex text-gray-900 justify-end gap-2">
-            <button type="button" onClick={onClose} className="px-3 py-2 border border-gray-700 bg-gray-100 text-gray-900 rounded">Cancelar</button>
-            <button type="submit" className="px-3 py-2 bg-blue-600 text-white rounded">Registrar fertilización</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-gray-100 flex flex-col"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <NotebookPen className="w-6 h-6 text-blue-600" />
+                <h3 className="text-lg text-blue-700 font-bold">Registrar Fertilización</h3>
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <div>
+                  <label className="block text-sm text-gray-900 font-medium">Ovocito</label>
+                  <select value={form.ovocito} onChange={e=>setForm({...form, ovocito: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300">
+                    <option className="text-gray-500" value="">-- Selecciona ovocito --</option>
+                    {ovocitosDisponibles.length === 0 ? (
+                      <option disabled value="">No hay ovocitos disponibles</option>
+                    ) : (
+                      ovocitosDisponibles.map(o=> (
+                        <option key={o.id_ovocito} value={o.id_ovocito} className="text-gray-900">{o.identificador}</option>
+                      ))
+                    )}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-900 font-medium">Semen (opcional)</label>
+                  <input
+                    type="text"
+                    value={form.semen_info}
+                    onChange={e=>setForm({...form, semen_info: e.target.value})}
+                    className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300"
+                    placeholder="Identificador, notas, etc."
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <div className="w-1/2">
+                    <label className="block text-gray-900 text-sm font-medium">Fecha de fertilización</label>
+                    <input type="date" value={form.fecha_fertilizacion} onChange={e=>setForm({...form, fecha_fertilizacion: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300" />
+                  </div>
+                  <div className="w-1/2">
+                    <label className="block text-gray-900 text-sm font-medium">Técnico de laboratorio</label>
+                    <input type="text" value={form.tecnico_laboratorio} onChange={e=>setForm({...form, tecnico_laboratorio: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300" placeholder="Nombre del operador" />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="w-1/2">
+                    <label className="block text-gray-900 text-sm font-medium">Técnica</label>
+                    <select value={form.tecnica} onChange={e=>setForm({...form, tecnica: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300">
+                      <option className="text-gray-500" value="">-- Selecciona técnica --</option>
+                      <option className="text-gray-900" value="icsi">ICSI</option>
+                      <option className="text-gray-900" value="fiv">FIV</option>
+                    </select>
+                  </div>
+                  <div className="w-1/2">
+                    <label className="block text-gray-900 text-sm font-medium">Resultado</label>
+                    <select value={form.resultado} onChange={e=>setForm({...form, resultado: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300">
+                      <option className="text-gray-900" value="exitosa">Exitosa</option>
+                      <option className="text-gray-900" value="no_exitosa">No exitosa</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex text-gray-900 justify-end gap-2 mt-4">
+                  <button type="button" onClick={onClose} className="px-3 py-2 border border-gray-300 bg-gray-50 text-gray-900 rounded hover:bg-gray-100 transition">Cancelar</button>
+                  <button type="submit" disabled={submitting} className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
+                    {submitting && <span className="animate-spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full" />}
+                    Registrar fertilización
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
 }

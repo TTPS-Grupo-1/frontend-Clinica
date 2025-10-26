@@ -17,6 +17,7 @@ export type PacienteFormData = {
   fechaNacimiento: string;
   telefono: string;
   password: string;
-  cobertura: string;
+  cobertura: number;
+  coberturaNombre: string;
   numeroCobertura: string;
 }

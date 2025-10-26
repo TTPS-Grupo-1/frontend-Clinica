@@ -3,7 +3,7 @@ import type { Paciente } from "../types/Paciente";
 export interface CoberturaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (cobertura: string) => void;
+  onSelect: (cobertura: { id: number; nombre: string; sigla: string }) => void;
 }
 
 

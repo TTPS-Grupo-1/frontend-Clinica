@@ -110,7 +110,7 @@ export default function CoberturaModal({ isOpen, onClose, onSelect }: CoberturaM
                         <button
                           className="w-full text-left px-3 py-2 hover:bg-blue-100 hover:text-blue-700 rounded text-blue-900 font-medium transition"
                           onClick={() => {
-                            onSelect(os.nombre);
+                            onSelect(os);
                             onClose();
                           }}
                         >

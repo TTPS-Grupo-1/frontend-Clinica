@@ -17,7 +17,7 @@ const SEXOS = [
 export default function RegistroForm({ onSubmit, initialData }: PropsPaciente) {
   const [form, setForm] = useState<PacienteFormData>(
     initialData || {
-      nombre: '', apellido: '', dni: '', email: '', sexo: '', fechaNacimiento: '', telefono: '', password: '', cobertura: '', numeroCobertura: '',
+      nombre: '', apellido: '', dni: '', email: '', sexo: '', fechaNacimiento: '', telefono: '', password: '', coberturaNombre: '', cobertura: 0, numeroCobertura: '',
     }
   );
   const [showCoberturaModal, setShowCoberturaModal] = useState(false);
@@ -26,8 +26,11 @@ export default function RegistroForm({ onSubmit, initialData }: PropsPaciente) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleCoberturaSelect = (cobertura: string) => {
-    setForm(f => ({ ...f, cobertura }));
+  const handleCoberturaSelect = (cobertura: { id: number; nombre: string; sigla: string }) => {
+    setForm(f => ({ ...f, 
+      cobertura: cobertura.id,
+      coberturaNombre: cobertura.nombre
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -92,7 +95,7 @@ export default function RegistroForm({ onSubmit, initialData }: PropsPaciente) {
           <div className="md:col-span-2">
             <label className="block mb-2 text-base font-medium text-blue-700">Cobertura médica</label>
             <div className="flex gap-2">
-              <input name="cobertura" value={form.cobertura} readOnly className="w-full border border-gray-300 rounded px-3 py-2 text-base bg-white text-blue-900 placeholder-gray-400 cursor-pointer focus:outline-none focus:border-blue-500" onClick={() => setShowCoberturaModal(true)} placeholder="Seleccionar..." required />
+              <input name="cobertura" value={form.coberturaNombre} readOnly className="w-full border border-gray-300 rounded px-3 py-2 text-base bg-white text-blue-900 placeholder-gray-400 cursor-pointer focus:outline-none focus:border-blue-500" onClick={() => setShowCoberturaModal(true)} placeholder="Seleccionar..." required />
               <button type="button" onClick={() => setShowCoberturaModal(true)} className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">Elegir</button>
             </div>
           </div>

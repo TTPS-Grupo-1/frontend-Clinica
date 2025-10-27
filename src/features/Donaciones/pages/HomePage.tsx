@@ -5,12 +5,12 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   const handleDonarSemen = () => {
-    navigate("/operador/donaciones/nueva/semen");
+    navigate("/operador/donaciones/nueva/esperma");
     console.log("Navegando a formulario de donación de semen...");
   };
 
   const handleDonarOvocitos = () => {
-    navigate("/operador/donaciones/nueva/ovocitos");
+    navigate("/operador/donaciones/nueva/ovocito");
     console.log("Navegando a formulario de donación de ovocitos...");
   };
 

@@ -20,6 +20,14 @@ export default function HomePage() {
             bgColor: "bg-green-500",
             hoverColor: "hover:bg-green-600"
         },
+                {
+            title: "Asignar Turnos a Médico",
+            description: "Asignar turnos a los diferentes médicos",
+            icon: "👨‍⚕️",
+            path: "/medicos/asignar_turnos",
+            bgColor: "bg-yellow-500",
+            hoverColor: "hover:bg-yellow-600"
+        },
     ];
 
     return (

@@ -56,8 +56,8 @@ export default function MedicoList({ medicos, onEliminar }: MedicoListProps & { 
             ) : (
               currentMedicos.map((medico) => (
                 <tr key={medico.dni} className="border-b border-gray-700 last:border-b-0 hover:bg-gray-800">
-                  <td className="px-3 py-2 text-gray-100">{medico.nombre}</td>
-                  <td className="px-3 py-2 text-gray-100">{medico.apellido}</td>
+                  <td className="px-3 py-2 text-gray-100">{medico.first_name}</td>
+                  <td className="px-3 py-2 text-gray-100">{medico.last_name}</td>
                   <td className="px-3 py-2 text-gray-100">{medico.dni}</td>
                   <td className="px-3 py-2 text-gray-100">{medico.email}</td>
                   <td className="px-3 py-2 text-gray-100">{medico.telefono}</td>

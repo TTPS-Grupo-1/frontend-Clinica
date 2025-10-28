@@ -3,7 +3,7 @@ import type { Medico } from "../../../types/Medico";
 
 interface FormularioMedicoProps {
   medico?: Medico;
-  onSubmit: (data: FormData) => void; // ✅ ahora usamos FormData para enviar imagen
+  onSubmit: (data: FormData) => void;
   onCancel: () => void;
   isEdit?: boolean;
 }
@@ -22,20 +22,29 @@ export default function FormularioMedico({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [firma, setFirma] = useState<File | null>(null); // ✅ nueva firma
+  const [firma, setFirma] = useState<File | null>(null);
+  const [tieneFirmaExistente, setTieneFirmaExistente] = useState(false); // 👈 Nuevo estado
 
   useEffect(() => {
     if (typeof medico !== "undefined") {
-      setNombre(medico.nombre ?? "");
-      setApellido(medico.apellido ?? "");
+      setNombre(medico.first_name ?? "");
+      setApellido(medico.last_name ?? "");
       setDni(medico.dni !== undefined ? String(medico.dni) : "");
       setEmail(medico.email ?? "");
       setTelefono(medico.telefono !== undefined ? String(medico.telefono) : "");
+      
+      // 👇 Verificar si tiene firma existente
+      if (medico.firma_medico) {
+        setTieneFirmaExistente(true);
+      }
     }
   }, [medico]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log("📤 Preparando envío de formulario");
+    console.log("📝 Modo:", isEdit ? "Edición" : "Alta");
 
     // Validar contraseña solo en alta
     if (!isEdit) {
@@ -50,16 +59,34 @@ export default function FormularioMedico({
       }
     }
 
-    // ✅ Usamos FormData para incluir imagen
     const formData = new FormData();
     formData.append("first_name", nombre);
     formData.append("last_name", apellido);
-    formData.append("dni", dni);
     formData.append("email", email);
     formData.append("telefono", telefono);
-    formData.append("rol", "MEDICO"); // 👈 se fuerza el rol
-    if (!isEdit && password) formData.append("password", password);
-    if (firma) formData.append("firma_medico", firma); // 👈 se incluye la firma
+    formData.append("rol", "MEDICO");
+    
+    // 👇 SOLO agregar DNI y password en ALTA (no en edición)
+    if (!isEdit) {
+      formData.append("dni", dni);
+      if (password) formData.append("password", password);
+    }
+    
+    // Solo agregar firma si se seleccionó una nueva
+    if (firma) {
+      console.log("📎 Agregando firma:", firma.name);
+      formData.append("firma_medico", firma);
+    }
+
+    // Log de datos a enviar
+    console.log("📤 Datos del FormData:");
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`  ${key}: [File] ${value.name}`);
+      } else {
+        console.log(`  ${key}: ${value}`);
+      }
+    }
 
     onSubmit(formData);
   };
@@ -101,7 +128,8 @@ export default function FormularioMedico({
               value={dni}
               onChange={e => setDni(e.target.value.replace(/[^0-9]/g, ""))}
               required
-              className="w-full px-4 py-2.5 text-base border border-gray-400 rounded bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isEdit} // 👈 Deshabilitar DNI en edición
+              className="w-full px-4 py-2.5 text-base border border-gray-400 rounded bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
               autoComplete="off"
             />
           </div>
@@ -134,20 +162,33 @@ export default function FormularioMedico({
           </div>
         </div>
 
-        {/* Nueva fila: firma médica */}
+        {/* Fila de firma médica */}
         <div>
           <label className="block text-base font-medium mb-2 text-gray-700">
-            Firma del médico (PNG o JPG):
+            {tieneFirmaExistente ? "Cambiar firma del médico (PNG o JPG):" : "Firma del médico (PNG o JPG):"}
           </label>
+          
+          {/* 👇 Mensaje si ya tiene firma */}
+          {tieneFirmaExistente && (
+            <div className="mb-2 p-3 bg-blue-50 border border-blue-200 rounded">
+              <p className="text-sm text-blue-700 flex items-center gap-2">
+                <span>✅</span>
+                <span>Este médico ya tiene una firma cargada. Puede cargar una nueva si desea reemplazarla.</span>
+              </p>
+            </div>
+          )}
+
           <input
             type="file"
             accept="image/png, image/jpeg"
             onChange={(e) => setFirma(e.target.files?.[0] || null)}
             className="w-full px-4 py-2.5 text-base border border-gray-400 rounded bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          
           {firma && (
-            <p className="text-sm text-gray-600 mt-1">
-              Archivo seleccionado: {firma.name}
+            <p className="text-sm text-green-600 mt-2 flex items-center gap-2">
+              <span>📄</span>
+              <span>Nueva firma seleccionada: <strong>{firma.name}</strong></span>
             </p>
           )}
         </div>
@@ -195,18 +236,29 @@ export default function FormularioMedico({
 
             {password && confirmPassword && password !== confirmPassword && (
               <p className="text-sm text-red-500 text-center">
-                Las contraseñas no coinciden
+                ❌ Las contraseñas no coinciden
               </p>
             )}
           </>
         )}
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white text-lg py-3 rounded font-semibold hover:bg-blue-700 transition mt-8"
-        >
-          {isEdit ? "Guardar Cambios" : "Registrar Médico"}
-        </button>
+        {/* Botones */}
+        <div className="flex gap-4 mt-8">
+          <button
+            type="submit"
+            className="flex-1 bg-blue-600 text-white text-lg py-3 rounded font-semibold hover:bg-blue-700 transition"
+          >
+            {isEdit ? "Guardar Cambios" : "Registrar Médico"}
+          </button>
+          
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex-1 bg-gray-300 text-gray-700 text-lg py-3 rounded font-semibold hover:bg-gray-400 transition"
+          >
+            Cancelar
+          </button>
+        </div>
       </form>
     </div>
   );

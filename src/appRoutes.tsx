@@ -24,6 +24,7 @@ import FertilizacionPage from './features/Fertilizacion/pages/FertilizacionPage'
 import EmbrionPage from './features/Embryo/pages/EmbrionPage';
 import AlmacenamientoPage from './features/Donaciones/pages/AlmacenamientoPage';
 import AsignarTurnosPage from './features/Admin/pages/AsignarTurnosPage';
+import MonitoreosPage from './features/Medico/pages/MonitoreosPage';
 
 
 export default function getAppRoutes() {
@@ -31,6 +32,7 @@ export default function getAppRoutes() {
     <>
       <Route path="/" element={<LandingPage />} />
       <Route path="/medico/home" element={<HomePage />} />
+      <Route path="/medico/monitoreos" element={<MonitoreosPage />} />
       <Route path="/embriones" element={<EmbryoPage />} />
       <Route path="/embriones/:id" element={<EmbrionPage />} />
       <Route path="/medicos/alta" element={<AltaMedicoPage />} />

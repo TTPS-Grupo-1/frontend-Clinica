@@ -1,21 +1,23 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, User } from "lucide-react";
+import { ChevronRight, User, MessageCircle } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { logout } from '../store/authSlice';
 import axios from 'axios';
 import { toast } from 'sonner';
+import Chatbot from './Chatbot';
 
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   // Only one dropdown open at a time: 'embriones', 'donaciones', 'profile', or null
   const [openDropdown, setOpenDropdown] = useState<null | 'embriones' | 'donaciones' | 'profile'>(null);
   const navigate = useNavigate();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const isAuthenticated = useSelector((state: RootState) => (state.auth as any)?.isAuthenticated);
+  const user = useSelector((state: RootState) => (state.auth as any)?.user);
   const role = user?.role || user?.rol || localStorage.getItem('role');
   const dispatch = useDispatch();
 
@@ -182,6 +184,17 @@ export default function Navbar() {
                 </ul>
               </div>
             </div>
+          {/* Chatbot Button */}
+          {isAuthenticated && (
+            <button
+              onClick={() => setIsChatbotOpen(!isChatbotOpen)}
+              className="text-white font-medium hover:text-yellow-500 transition-colors duration-200 mr-4"
+              title="Chatbot de asistencia"
+            >
+              <MessageCircle className="h-6 w-6" />
+            </button>
+          )}
+
           {/* User Menu */}
           {isAuthenticated && (
             <div className="relative z-50 group">
@@ -274,6 +287,12 @@ export default function Navbar() {
             </ul>
           </article>
       </section>
+
+      {/* Chatbot Component */}
+      <Chatbot 
+        isOpen={isChatbotOpen} 
+        onClose={() => setIsChatbotOpen(false)} 
+      />
     </nav>
   );
 }

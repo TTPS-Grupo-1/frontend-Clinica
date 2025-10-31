@@ -24,6 +24,7 @@ import EmbrionPage from './features/Embryo/pages/EmbrionPage';
 import AlmacenamientoPage from './features/Donaciones/pages/AlmacenamientoPage';
 import AsignarTurnosPage from './features/Admin/pages/AsignarTurnosPage';
 import MonitoreosPage from './features/Medico/pages/MonitoreosPage';
+import TransferenciaPage from './features/Transferencia/pages/TransferenciaPage';
 
 
 export default function getAppRoutes() {
@@ -55,7 +56,8 @@ export default function getAppRoutes() {
       <Route path="/operador/punciones" element={<HomePuncion />} />
       <Route path="/operador/fertilizaciones" element={<FertilizacionPage />} />
       <Route path="/operador/tanques" element={<AlmacenamientoPage />} />
-            <Route path="/medicos/asignar_turnos" element={<AsignarTurnosPage />} />
+      <Route path="/medicos/asignar_turnos" element={<AsignarTurnosPage />} />
+      <Route path="/transferencias" element={<TransferenciaPage />} />
     </>
   );
 }

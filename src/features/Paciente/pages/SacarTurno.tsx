@@ -4,21 +4,9 @@ import Calendario from "../components/Calendario";
 import HorariosDisponibles from "../components/Horarios";
 import { toast, Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
-
+import type { Medico } from "../../../types/Medico";
+import type { TurnoAPI } from "../../../types/Turno";
 // Interfaz para los datos del Turno que devuelve la API externa
-interface TurnoAPI {
-    id: number;
-    id_medico: number;
-    id_paciente: number | null; // null si está libre
-    fecha_hora: string; // Formato ISO 8601
-}
-
-interface Medico {
-    id: number;
-    first_name: string;
-    last_name: string;
-}
-
 // 💡 Nueva interfaz para el slot de horario que se pasa al componente hijo
 interface HorarioSlot {
     id: number;
@@ -34,7 +22,7 @@ interface UserState {
     };
 }
 
-const SacarTurno = () => {
+export default function SacarTurno() {
     const [medicos, setMedicos] = useState<Medico[]>([]);
     const [medicoId, setMedicoId] = useState(""); 
     const [fecha, setFecha] = useState<Date | undefined>();
@@ -177,9 +165,9 @@ const SacarTurno = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center pt-[80px]">
-            <h1 className="text-2xl font-bold mb-6">Sacar Turno</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">Sacar Turno</h1>
             <Toaster position="top-center" />
-            <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-2xl space-y-6"> 
+            <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-2xl space-y-6 text-gray-800"> 
                 
                 <SelectMedico
                     medicos={medicos.map((m) => ({
@@ -201,7 +189,7 @@ const SacarTurno = () => {
                         selectedTurnoId={turnoSeleccionado?.id || null} // Pasamos el ID seleccionado para resaltarlo
                     />
                 ) : (
-                    <p className="text-sm text-gray-500 text-center">Selecciona un médico y una fecha para ver los horarios.</p>
+                    <p className="text-sm text-gray-600 text-center">Selecciona un médico y una fecha para ver los horarios.</p>
                 )}
 
                 {/* Botón de Confirmación */}
@@ -211,8 +199,8 @@ const SacarTurno = () => {
                         disabled={loadingConfirm}
                         className={`mx-auto flex items-center justify-center gap-2 border py-2 px-6 rounded-md font-medium transition ${
                             loadingConfirm
-                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-600 text-white border-gray-400 hover:bg-blue-700"
+                                ? "bg-gray-300 text-gray-700 cursor-not-allowed border-gray-300"
+                                : "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700"
                         }`}
                     >
                         {loadingConfirm ? "Reservando..." : `Confirmar Turno para ${turnoSeleccionado.fecha_hora.split("T")[1].substring(0, 5)}`}
@@ -222,5 +210,3 @@ const SacarTurno = () => {
         </div>
     );
 };
-
-export default SacarTurno;

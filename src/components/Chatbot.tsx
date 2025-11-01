@@ -10,7 +10,7 @@ import {
   ChatInput, 
   WelcomeMessage,
   type Message 
-} from './chatbot';
+} from './chatbot/index';
 
 interface ChatbotProps {
   isOpen: boolean;

@@ -7,3 +7,10 @@ export type Medico = {
   telefono: number;
   password?: string;  // Opcional porque no se devuelve en listados
 };
+
+
+export type MedicoTurno =  {
+    id: number;
+    first_name: string;
+    last_name: string;
+}

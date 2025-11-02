@@ -1,4 +1,4 @@
-import SegundaConsulta from '../components/SegundaConsulta/SegundaConsulta';
+import SegundaConsulta from '../../components/SegundaConsulta/SegundaConsulta';
 
 function SegundaConsultaPage() {
   return (

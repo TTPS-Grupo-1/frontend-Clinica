@@ -16,7 +16,7 @@ import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage'
 import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
 import VerOrdenesMedicas from './features/Paciente/pages/VerOrdenesMedicasPage';
 import PrimeraConsultaPage from './features/Medico/pages/PrimeraConsultaPage';
-import SegundaConsultaPage from './features/Medico/pages/SegundaConsultaPage';
+import SegundaConsultaPage from './features/Medico/pages/segunda-consulta/SegundaConsultaPage';
 
 import HomePuncion from './features/Punciones/pages/HomePuncion';
 import HomeLaboratorio from './features/Operador/pages/HomeLaboratorio';
@@ -57,7 +57,8 @@ export default function getAppRoutes() {
       <Route path="/operador/punciones" element={<HomePuncion />} />
       <Route path="/operador/fertilizaciones" element={<FertilizacionPage />} />
       <Route path="/operador/tanques" element={<AlmacenamientoPage />} />
-            <Route path="/medicos/asignar_turnos" element={<AsignarTurnosPage />} />
+      <Route path="/medicos/asignar_turnos" element={<AsignarTurnosPage />} />
+      <Route path="/medico/segundaConsulta" element={<SegundaConsultaPage />} />
     </>
   );
 }

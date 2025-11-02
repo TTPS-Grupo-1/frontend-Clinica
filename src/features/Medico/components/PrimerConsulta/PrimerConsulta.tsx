@@ -19,11 +19,12 @@ const PrimerConsulta: React.FC = () => {
   };
 
   const handleConfirmar = async () => {
-    const datos = { objetivo: objetivoSeleccionado, form: formData, paciente_id: 1, medico_id: 19 }; // Reemplazar con IDs reales
+    const datos = { objetivo: objetivoSeleccionado, form: formData, paciente_id: 1, medico_id: 3 }; // Reemplazar con IDs reales
 
     try {
       console.log('🧾 Datos listos para enviar:', datos);
-      await axios.post('/api/primeras-consultas/', datos, { withCredentials: true });
+      const res = await axios.post('/api/primeras-consultas/', datos, { withCredentials: true });
+      console.log('✅ Respuesta del servidor:', res.data);
       toast.success('Datos enviados correctamente');
       setFormData({});
       setObjetivoSeleccionado(null);

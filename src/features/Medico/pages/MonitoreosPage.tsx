@@ -59,6 +59,15 @@ export default function MonitoreosPage() {
     fetchMonitoreo();
   }, [monitoreoId, navigate]);
 
+  // 🧪 TESTING: Si no hay monitoreoId, usar uno hardcodeado
+  useEffect(() => {
+    if (!monitoreoId) {
+      const testMonitoreoId = '1'; // 👈 Cambia este ID según tengas en BD
+      navigate(`/monitoreos?monitoreoId=${testMonitoreoId}`, { replace: true });
+      return;
+    }
+  }, [monitoreoId, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -87,7 +96,7 @@ export default function MonitoreosPage() {
       console.log("📤 Atendiendo monitoreo:", payload);
 
       const response = await axios.patch(
-        `http://localhost:8000/api/monitoreo/monitoreos/${monitoreoId}/atender/`,
+        `http://localhost:8000/api/monitoreo/monitoreos/${monitoreoId}/guardar_atencion/`,
         payload
       );
 

@@ -1,46 +1,41 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FlaskConical, Syringe, Paperclip, Calendar, ArrowLeft, CheckCircle } from "lucide-react";
+import { FlaskConical, Syringe, Paperclip, Calendar, ArrowLeft } from "lucide-react";
 import SeccionEstudios from "./SeccionEstudios";
 import SeccionProtocolo from "./SeccionProtocolo";
 import SeccionConsentimiento from "./SeccionConsentimiento";
 import SeccionMonitoreo from "./SeccionMonitoreo";
 import { getTratamientoByPaciente, getPrimeraConsultaById, getEstudiosAgrupadosPorConsulta } from "./consultasService";
+import { useParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
-function SegundaConsulta() {
-  const [seccionActiva, setSeccionActiva] = useState<string | null>(null);
+const SECCIONES = [
+  { key: "estudios", label: "Cargar estudios", icon: FlaskConical },
+  { key: "protocolo", label: "Registrar protocolo", icon: Syringe },
+  { key: "consentimiento", label: "Subir consentimiento", icon: Paperclip },
+  { key: "monitoreo", label: "Monitoreo estimulación", icon: Calendar },
+];
+
+export default function SegundaConsulta() {
+  const { pacienteId } = useParams();
+  const pacienteIdNum = Number(pacienteId);
+  const [step, setStep] = useState(0);
   const [tratamiento, setTratamiento] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [primeraConsulta, setPrimeraConsulta] = useState<any>(null);
   const [estudiosAgrupados, setEstudiosAgrupados] = useState<any[]>([]);
-  const [dataConsulta, setDataConsulta] = useState({
-    estudios: [],
-    protocolo: {},
-    consentimientoPDF: null,
-    monitoreo: [],
-  });
 
-  const pacienteId = 1; // 🔹 temporal, luego vendrá desde el turno
-
-  // Manejar cambio desde subcomponentes
-  const handleDataChange = (section: string, data: any) => {
-    setDataConsulta((prev) => ({ ...prev, [section]: data }));
-  };
-
-  const handleAbrir = (seccion: string) => {
-    setSeccionActiva((prev) => (prev === seccion ? null : seccion));
-  };
-
-  // 📡 Obtener tratamiento y datos asociados
+  // Fetch tratamiento y primera consulta
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const tratamientoData = await getTratamientoByPaciente(pacienteId);
+        const tratamientoData = await getTratamientoByPaciente(pacienteIdNum);
         setTratamiento(tratamientoData);
         localStorage.setItem("tratamiento_id", tratamientoData.id);
-
         if (tratamientoData.primera_consulta) {
           const consultaData = await getPrimeraConsultaById(tratamientoData.primera_consulta);
+          setPrimeraConsulta(consultaData);
           const estudiosData = await getEstudiosAgrupadosPorConsulta(tratamientoData.primera_consulta);
           setEstudiosAgrupados(estudiosData.estudios);
         }
@@ -51,46 +46,56 @@ function SegundaConsulta() {
       }
     };
     fetchData();
-  }, []);
+  }, [pacienteIdNum]);
 
-  // 🔹 Confirmar toda la segunda consulta
-  const handleConfirmar = async () => {
-    try {
-      const tratamientoId = localStorage.getItem("tratamiento_id");
-      const formData = new FormData();
+  const handleNext = () => setStep((prev) => Math.min(prev + 1, SECCIONES.length - 1));
+  const handlePrev = () => setStep((prev) => Math.max(prev - 1, 0));
 
-      formData.append("tratamiento_id", tratamientoId || "");
-      formData.append("protocolo", JSON.stringify(dataConsulta.protocolo));
-      formData.append("monitoreo", JSON.stringify(dataConsulta.monitoreo));
-      formData.append("estudios", JSON.stringify(dataConsulta.estudios));
-
-      if (dataConsulta.consentimientoPDF) {
-        formData.append("consentimiento", dataConsulta.consentimientoPDF);
-      }
-      console.log("🧾 Datos que se enviarán al backend:");
-      for (const [key, value] of formData.entries()) {
-        console.log(`📦 ${key}:`, value);
-      }
-
-      await axios.post("/api/segunda_consulta/confirmar/", formData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      alert("✅ Segunda consulta registrada correctamente.");
-    } catch (err: any) {
-      console.error("❌ Error al confirmar:", err);
-      alert("Error al guardar la segunda consulta.");
+  const SeccionActual = () => {
+    switch (SECCIONES[step].key) {
+      case "estudios":
+        return <SeccionEstudios estudiosAgrupados={estudiosAgrupados} />;
+      case "protocolo":
+        return <SeccionProtocolo />;
+      case "consentimiento":
+        return <SeccionConsentimiento />;
+      case "monitoreo":
+        return <SeccionMonitoreo />;
+      default:
+        return null;
     }
   };
 
   if (loading)
-    return <div className="text-center text-gray-500 mt-10">Cargando información...</div>;
+    return (
+      <div className="text-center text-gray-500 mt-10">
+        <div className="animate-pulse">Cargando información del tratamiento...</div>
+        <button
+          onClick={() => window.location.href = '/medico/home'}
+          className="flex items-center gap-2 px-4 py-2 mt-4 text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-all"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Volver al home
+        </button>
+      </div>
+    );
+
   if (error)
-    return <div className="text-center text-red-500 mt-10">{error}</div>;
+    return (
+      <div className="flex flex-col items-center mt-10 p-4 border border-red-300 bg-red-50 text-red-700 rounded-lg max-w-md mx-auto">
+        <p className="font-semibold text-center">{error}</p>
+        <button
+          onClick={() => window.location.href = '/medico/home'}
+          className="flex items-center gap-2 px-4 py-2 mt-4 text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-all"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Volver al home
+        </button>
+      </div>
+    );
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl space-y-6 border border-gray-200">
+    <div className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl space-y-6 border border-gray-200">
       <button
         onClick={() => (window.location.href = "/medico/home")}
         className="flex items-center gap-2 px-4 py-2 mb-4 text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-all"
@@ -99,100 +104,58 @@ function SegundaConsulta() {
         Volver al home
       </button>
 
-      <h2 className="text-2xl font-bold text-blue-700 text-center mb-2">
-        Segunda Consulta
-      </h2>
-      <p className="text-gray-600 text-center mb-6">
-        Aquí podés cargar estudios, registrar el protocolo de estimulación, subir el consentimiento informado y definir el monitoreo.
-      </p>
-
-      {/* Botones principales */}
-      <div className="flex flex-col sm:flex-row justify-center gap-4 flex-wrap">
-        <button
-          onClick={() => handleAbrir("estudios")}
-          className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-sm border ${
-            seccionActiva === "estudios"
-              ? "bg-blue-600 text-white"
-              : "bg-blue-100 text-blue-700 hover:bg-blue-200"
-          }`}
-        >
-          <FlaskConical className="w-5 h-5" />
-          Cargar estudios
-        </button>
-
-        <button
-          onClick={() => handleAbrir("protocolo")}
-          className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-sm border ${
-            seccionActiva === "protocolo"
-              ? "bg-green-600 text-white"
-              : "bg-green-100 text-green-700 hover:bg-green-200"
-          }`}
-        >
-          <Syringe className="w-5 h-5" />
-          Registrar protocolo
-        </button>
-
-        <button
-          onClick={() => handleAbrir("consentimiento")}
-          className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-sm border ${
-            seccionActiva === "consentimiento"
-              ? "bg-purple-600 text-white"
-              : "bg-purple-100 text-purple-700 hover:bg-purple-200"
-          }`}
-        >
-          <Paperclip className="w-5 h-5" />
-          Subir consentimiento
-        </button>
-
-        <button
-          onClick={() => handleAbrir("monitoreo")}
-          className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-sm border ${
-            seccionActiva === "monitoreo"
-              ? "bg-orange-600 text-white"
-              : "bg-orange-100 text-orange-700 hover:bg-orange-200"
-          }`}
-        >
-          <Calendar className="w-5 h-5" />
-          Monitoreo estimulación
-        </button>
+      <div className="flex items-center justify-center gap-4 mb-6">
+        {SECCIONES.map((sec, idx) => {
+          const Icon = sec.icon;
+          const isActive = step === idx;
+          return (
+            <div
+              key={sec.key}
+              className={`flex flex-col items-center transition-all duration-300 ${
+                isActive ? "scale-110 text-blue-600" : "text-gray-400"
+              }`}
+            >
+              <Icon className={`w-7 h-7 mb-1 ${isActive ? "" : "opacity-60"}`} />
+              <span className={`text-xs font-medium ${isActive ? "text-blue-600" : "text-gray-400"}`}>{sec.label}</span>
+              <div className={`w-2 h-2 rounded-full mt-1 ${isActive ? "bg-blue-600" : "bg-gray-300"}`}></div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Secciones dinámicas */}
-      {seccionActiva === "estudios" && (
-        <SeccionEstudios
-          estudiosAgrupados={estudiosAgrupados}
-          onDataChange={(data: any) => handleDataChange("estudios", data)}
-        />
-      )}
-      {seccionActiva === "protocolo" && (
-        <SeccionProtocolo onDataChange={(data: any) => handleDataChange("protocolo", data)} />
-      )}
-      {seccionActiva === "consentimiento" && (
-        <SeccionConsentimiento
-          onDataChange={(file) => handleDataChange("consentimientoPDF", file)}
-      />
-      )}
-      {seccionActiva === "monitoreo" && (
-        <SeccionMonitoreo onDataChange={(data: any) => handleDataChange("monitoreo", data)} />
-      )}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -40 }}
+          transition={{ duration: 0.4 }}
+        >
+          <SeccionActual />
+        </motion.div>
+      </AnimatePresence>
 
-      {/* Botón Confirmar final */}
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-between mt-8">
         <button
-          onClick={handleConfirmar}
-          disabled={!dataConsulta.consentimientoPDF}
-          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-md ${
-            dataConsulta.consentimientoPDF
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          onClick={handlePrev}
+          disabled={step === 0}
+          className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+            step === 0 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-100 text-blue-700 hover:bg-blue-200"
           }`}
         >
-          <CheckCircle className="w-5 h-5" />
-          Confirmar Segunda Consulta
+          Anterior
+        </button>
+        <button
+          onClick={handleNext}
+          disabled={step === SECCIONES.length - 1}
+          className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+            step === SECCIONES.length - 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+          }`}
+        >
+          Siguiente
         </button>
       </div>
     </div>
   );
 }
 
-export default SegundaConsulta;

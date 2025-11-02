@@ -1,72 +1,50 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CheckCircle } from "lucide-react";
 
 interface SeccionMonitoreoProps {
-  onDataChange?: (data: any) => void;
+  initialData?: string[];
+  onDataChange?: (data: string[]) => void;
 }
 
-function SeccionMonitoreo({ onDataChange }: SeccionMonitoreoProps) {
+export default function SeccionMonitoreo({
+  initialData = [],
+  onDataChange,
+}: SeccionMonitoreoProps) {
   const [fechaInicio, setFechaInicio] = useState<string>("");
   const [diasSeleccionados, setDiasSeleccionados] = useState<number[]>([]);
-  const [fechasCalculadas, setFechasCalculadas] = useState<string[]>([]);
+  const [fechas, setFechas] = useState<string[]>(initialData);
 
   const calcularFechas = () => {
     if (!fechaInicio || diasSeleccionados.length === 0) return;
-
     const base = new Date(fechaInicio);
-    const fechas: string[] = [];
-
-    diasSeleccionados.forEach((d) => {
-      const nueva = new Date(base);
-      nueva.setDate(base.getDate() + d);
-      fechas.push(nueva.toISOString().split("T")[0]);
+    const nuevas = diasSeleccionados.map((d) => {
+      const f = new Date(base);
+      f.setDate(f.getDate() + d);
+      return f.toISOString().split("T")[0];
     });
-
-    setFechasCalculadas(fechas);
+    setFechas(nuevas);
+    onDataChange?.(nuevas);
   };
 
-  useEffect(() => {
-    if (fechasCalculadas.length > 0) {
-      onDataChange?.({
-        fechaInicio,
-        diasSeleccionados,
-        fechasMonitoreo: fechasCalculadas,
-      });
-    }
-  }, [fechasCalculadas]);
-
-  const toggleDia = (dia: number) => {
+  const toggleDia = (d: number) =>
     setDiasSeleccionados((prev) =>
-      prev.includes(dia) ? prev.filter((x) => x !== dia) : [...prev, dia]
+      prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]
     );
-  };
 
   return (
-    <div className="mt-8 p-6 border rounded-lg bg-orange-50">
+    <div className="p-6 border rounded-lg bg-orange-50">
       <h3 className="text-xl font-semibold text-orange-700 mb-3">
         Monitoreo de la estimulación
       </h3>
-      <p className="text-gray-600 mb-4">
-        Seleccioná la fecha de inicio y los días dentro de los próximos 20 días
-        para los controles.
-      </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
-        <div className="flex flex-col">
-          <label className="text-sm text-gray-700 mb-1">Fecha de inicio</label>
-          <input
-            type="date"
-            value={fechaInicio}
-            onChange={(e) => setFechaInicio(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-orange-400"
-          />
-        </div>
-      </div>
+      <input
+        type="date"
+        value={fechaInicio}
+        onChange={(e) => setFechaInicio(e.target.value)}
+        className="border border-gray-300 rounded px-3 py-2 mb-4"
+      />
 
-      <label className="block text-sm text-gray-700 mb-2">
-        Días seleccionados (desde inicio)
-      </label>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 mb-4">
         {[...Array(20).keys()].map((i) => (
           <button
             key={i + 1}
@@ -74,7 +52,7 @@ function SeccionMonitoreo({ onDataChange }: SeccionMonitoreoProps) {
             className={`px-3 py-1 rounded border text-sm ${
               diasSeleccionados.includes(i + 1)
                 ? "bg-orange-600 text-white"
-                : "bg-white text-orange-700 border-orange-400 hover:bg-orange-100"
+                : "bg-white text-orange-700 border-orange-400"
             }`}
           >
             +{i + 1}
@@ -84,19 +62,18 @@ function SeccionMonitoreo({ onDataChange }: SeccionMonitoreoProps) {
 
       <button
         onClick={calcularFechas}
-        className="mt-4 bg-orange-600 text-white px-5 py-2 rounded hover:bg-orange-700"
+        className="bg-orange-600 text-white px-5 py-2 rounded hover:bg-orange-700"
       >
-        Calcular fechas de monitoreo
+        Calcular fechas
       </button>
 
-      {fechasCalculadas.length > 0 && (
-        <div className="mt-6 bg-white p-4 rounded-lg shadow-inner">
+      {fechas.length > 0 && (
+        <div className="mt-6 bg-white p-4 rounded shadow-inner">
           <h4 className="font-semibold text-orange-700 mb-2 flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-green-600" />
-            Fechas recomendadas:
+            <CheckCircle className="w-5 h-5 text-green-600" /> Fechas calculadas:
           </h4>
-          <ul className="list-disc list-inside text-gray-700">
-            {fechasCalculadas.map((f, i) => (
+          <ul className="list-disc ml-6 text-gray-700">
+            {fechas.map((f, i) => (
               <li key={i}>{f}</li>
             ))}
           </ul>
@@ -105,5 +82,3 @@ function SeccionMonitoreo({ onDataChange }: SeccionMonitoreoProps) {
     </div>
   );
 }
-
-export default SeccionMonitoreo;

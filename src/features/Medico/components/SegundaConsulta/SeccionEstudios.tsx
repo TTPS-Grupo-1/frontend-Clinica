@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SeccionEstudiosProps {
   estudiosAgrupados: {
@@ -13,7 +13,12 @@ interface SeccionEstudiosProps {
 
 export default function SeccionEstudios({ estudiosAgrupados, onDataChange }: SeccionEstudiosProps) {
   const [personaSeleccionada, setPersonaSeleccionada] = useState<string | null>(null);
-  const [valores, setValores] = useState<{ [id: number]: string }>({});
+  const [valores, setValores] = useState<{ [key: string]: string }>({});
+
+  // ✅ avisamos al padre solo cuando cambia algo (no al renderizar)
+  useEffect(() => {
+    onDataChange?.(valores);
+  }, [valores]);
 
   if (!estudiosAgrupados || estudiosAgrupados.length === 0) {
     return (
@@ -22,12 +27,6 @@ export default function SeccionEstudios({ estudiosAgrupados, onDataChange }: Sec
       </div>
     );
   }
-
-  const handleValorChange = (id: number, valor: string) => {
-    const nuevos = { ...valores, [id]: valor };
-    setValores(nuevos);
-    onDataChange?.(nuevos); // 🔹 notifica al padre
-  };
 
   if (!personaSeleccionada) {
     return (
@@ -55,6 +54,10 @@ export default function SeccionEstudios({ estudiosAgrupados, onDataChange }: Sec
 
   const personaData = estudiosAgrupados.find((p) => p.persona === personaSeleccionada);
 
+  const handleValorChange = (id: number, valor: string) => {
+    setValores((prev) => ({ ...prev, [id]: valor }));
+  };
+
   return (
     <div className="p-6 border rounded-lg bg-blue-50">
       <button
@@ -78,9 +81,9 @@ export default function SeccionEstudios({ estudiosAgrupados, onDataChange }: Sec
                 <input
                   type="text"
                   placeholder="Ingresar valor"
-                  defaultValue={est.valor || ""}
-                  className="border border-gray-300 rounded px-2 py-1 text-sm w-40 focus:ring-2 focus:ring-blue-300"
+                  defaultValue={valores[est.id] || ""}
                   onChange={(e) => handleValorChange(est.id, e.target.value)}
+                  className="border border-gray-300 rounded px-2 py-1 text-sm w-40 focus:ring-2 focus:ring-blue-300"
                 />
               </li>
             ))}

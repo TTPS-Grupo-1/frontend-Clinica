@@ -1,12 +1,15 @@
-import { useState } from "react";
-import { CalendarDays, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle } from "lucide-react";
 
-function SeccionMonitoreo() {
+interface SeccionMonitoreoProps {
+  onDataChange?: (data: any) => void;
+}
+
+function SeccionMonitoreo({ onDataChange }: SeccionMonitoreoProps) {
   const [fechaInicio, setFechaInicio] = useState<string>("");
   const [diasSeleccionados, setDiasSeleccionados] = useState<number[]>([]);
   const [fechasCalculadas, setFechasCalculadas] = useState<string[]>([]);
 
-  // Calcular las fechas de monitoreo dentro de los 20 días
   const calcularFechas = () => {
     if (!fechaInicio || diasSeleccionados.length === 0) return;
 
@@ -22,6 +25,16 @@ function SeccionMonitoreo() {
     setFechasCalculadas(fechas);
   };
 
+  useEffect(() => {
+    if (fechasCalculadas.length > 0) {
+      onDataChange?.({
+        fechaInicio,
+        diasSeleccionados,
+        fechasMonitoreo: fechasCalculadas,
+      });
+    }
+  }, [fechasCalculadas]);
+
   const toggleDia = (dia: number) => {
     setDiasSeleccionados((prev) =>
       prev.includes(dia) ? prev.filter((x) => x !== dia) : [...prev, dia]
@@ -34,7 +47,8 @@ function SeccionMonitoreo() {
         Monitoreo de la estimulación
       </h3>
       <p className="text-gray-600 mb-4">
-        Seleccioná la fecha de inicio del tratamiento y los días dentro de los próximos 20 días en los que el paciente deberá asistir a control.
+        Seleccioná la fecha de inicio y los días dentro de los próximos 20 días
+        para los controles.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
@@ -44,30 +58,28 @@ function SeccionMonitoreo() {
             type="date"
             value={fechaInicio}
             onChange={(e) => setFechaInicio(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="border border-gray-300 rounded px-3 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-orange-400"
           />
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm text-gray-700 mb-2">
-          Días seleccionados (desde inicio)
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {[...Array(20).keys()].map((i) => (
-            <button
-              key={i + 1}
-              onClick={() => toggleDia(i + 1)}
-              className={`px-3 py-1 rounded border text-sm ${
-                diasSeleccionados.includes(i + 1)
-                  ? "bg-orange-600 text-white"
-                  : "bg-white text-orange-700 border-orange-400 hover:bg-orange-100"
-              }`}
-            >
-              +{i + 1}
-            </button>
-          ))}
-        </div>
+      <label className="block text-sm text-gray-700 mb-2">
+        Días seleccionados (desde inicio)
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {[...Array(20).keys()].map((i) => (
+          <button
+            key={i + 1}
+            onClick={() => toggleDia(i + 1)}
+            className={`px-3 py-1 rounded border text-sm ${
+              diasSeleccionados.includes(i + 1)
+                ? "bg-orange-600 text-white"
+                : "bg-white text-orange-700 border-orange-400 hover:bg-orange-100"
+            }`}
+          >
+            +{i + 1}
+          </button>
+        ))}
       </div>
 
       <button
@@ -81,7 +93,7 @@ function SeccionMonitoreo() {
         <div className="mt-6 bg-white p-4 rounded-lg shadow-inner">
           <h4 className="font-semibold text-orange-700 mb-2 flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            Fechas recomendadas de control:
+            Fechas recomendadas:
           </h4>
           <ul className="list-disc list-inside text-gray-700">
             {fechasCalculadas.map((f, i) => (

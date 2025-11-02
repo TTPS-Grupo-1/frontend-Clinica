@@ -8,10 +8,12 @@ interface SeccionEstudiosProps {
       estudios: { id: number; nombre_estudio: string; valor: string | null }[];
     }[];
   }[];
+  onDataChange?: (data: any) => void;
 }
 
-export default function SeccionEstudios({ estudiosAgrupados }: SeccionEstudiosProps) {
+export default function SeccionEstudios({ estudiosAgrupados, onDataChange }: SeccionEstudiosProps) {
   const [personaSeleccionada, setPersonaSeleccionada] = useState<string | null>(null);
+  const [valores, setValores] = useState<{ [id: number]: string }>({});
 
   if (!estudiosAgrupados || estudiosAgrupados.length === 0) {
     return (
@@ -21,7 +23,12 @@ export default function SeccionEstudios({ estudiosAgrupados }: SeccionEstudiosPr
     );
   }
 
-  // 🔹 Paso 1: Mostrar los botones de personas (PACIENTE / ACOMPAÑANTE)
+  const handleValorChange = (id: number, valor: string) => {
+    const nuevos = { ...valores, [id]: valor };
+    setValores(nuevos);
+    onDataChange?.(nuevos); // 🔹 notifica al padre
+  };
+
   if (!personaSeleccionada) {
     return (
       <div className="p-6 border rounded-lg bg-blue-50">
@@ -46,7 +53,6 @@ export default function SeccionEstudios({ estudiosAgrupados }: SeccionEstudiosPr
     );
   }
 
-  // 🔹 Paso 2: Mostrar los estudios de la persona seleccionada
   const personaData = estudiosAgrupados.find((p) => p.persona === personaSeleccionada);
 
   return (
@@ -74,6 +80,7 @@ export default function SeccionEstudios({ estudiosAgrupados }: SeccionEstudiosPr
                   placeholder="Ingresar valor"
                   defaultValue={est.valor || ""}
                   className="border border-gray-300 rounded px-2 py-1 text-sm w-40 focus:ring-2 focus:ring-blue-300"
+                  onChange={(e) => handleValorChange(est.id, e.target.value)}
                 />
               </li>
             ))}

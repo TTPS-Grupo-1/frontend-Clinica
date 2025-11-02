@@ -1,7 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FileUp, CheckCircle, AlertCircle } from "lucide-react";
 
-function SeccionConsentimiento() {
+interface SeccionConsentimientoProps {
+  onDataChange?: (file: File | null) => void;
+}
+
+function SeccionConsentimiento({ onDataChange }: SeccionConsentimientoProps) {
   const [archivo, setArchivo] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,16 +27,9 @@ function SeccionConsentimiento() {
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleUpload = () => {
-    if (!archivo) {
-      setError("Debes seleccionar un archivo antes de subirlo.");
-      return;
-    }
-
-    // 🔹 Simulamos el upload (en futuro llamará al backend/Supabase)
-    console.log("Archivo subido:", archivo);
-    alert("Consentimiento informado subido correctamente ✅");
-  };
+  useEffect(() => {
+    onDataChange?.(archivo);
+  }, [archivo]);
 
   return (
     <div className="mt-8 p-6 border rounded-lg bg-purple-50">
@@ -40,7 +37,7 @@ function SeccionConsentimiento() {
         Subir consentimiento informado
       </h3>
       <p className="text-gray-600 mb-4">
-        Este documento debe ser firmado y cargado en formato PDF antes de avanzar con el tratamiento.
+        Este documento debe ser cargado en formato PDF antes de confirmar la segunda consulta.
       </p>
 
       <div className="flex flex-col items-center gap-4">
@@ -82,13 +79,6 @@ function SeccionConsentimiento() {
             {error}
           </div>
         )}
-
-        <button
-          onClick={handleUpload}
-          className="mt-4 bg-purple-600 text-white px-5 py-2 rounded hover:bg-purple-700"
-        >
-          Subir consentimiento
-        </button>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FlaskConical, Syringe, Paperclip, Calendar, ArrowLeft  } from "lucide-react";
+import { FlaskConical, Syringe, Paperclip, Calendar, ArrowLeft, CheckCircle } from "lucide-react";
 import SeccionEstudios from "./SeccionEstudios";
 import SeccionProtocolo from "./SeccionProtocolo";
 import SeccionConsentimiento from "./SeccionConsentimiento";
@@ -12,79 +12,100 @@ function SegundaConsulta() {
   const [tratamiento, setTratamiento] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [primeraConsulta, setPrimeraConsulta] = useState<any>(null);
-  const [estudiosAgrupados, setEstudiosAgrupados] = useState<any[]>([]); 
+  const [estudiosAgrupados, setEstudiosAgrupados] = useState<any[]>([]);
+  const [dataConsulta, setDataConsulta] = useState({
+    estudios: [],
+    protocolo: {},
+    consentimientoPDF: null,
+    monitoreo: [],
+  });
 
-  // 🔹 Por ahora paciente hardcodeado, después lo vas a recibir del turno
-  const pacienteId = 1;
+  const pacienteId = 1; // 🔹 temporal, luego vendrá desde el turno
+
+  // Manejar cambio desde subcomponentes
+  const handleDataChange = (section: string, data: any) => {
+    setDataConsulta((prev) => ({ ...prev, [section]: data }));
+  };
 
   const handleAbrir = (seccion: string) => {
     setSeccionActiva((prev) => (prev === seccion ? null : seccion));
   };
 
-  // 📡 Obtener tratamiento y primera consulta
+  // 📡 Obtener tratamiento y datos asociados
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1️⃣ Obtener tratamiento
         const tratamientoData = await getTratamientoByPaciente(pacienteId);
-        console.log("🧬 Tratamiento obtenido:", tratamientoData);
         setTratamiento(tratamientoData);
         localStorage.setItem("tratamiento_id", tratamientoData.id);
 
-        // 2️⃣ Si hay una primera consulta asociada, obtenerla
         if (tratamientoData.primera_consulta) {
           const consultaData = await getPrimeraConsultaById(tratamientoData.primera_consulta);
-          console.log("🧾 Primera consulta:", consultaData);
-          setPrimeraConsulta(consultaData);
-          // 🔹 Nuevo: obtener estudios asociados
           const estudiosData = await getEstudiosAgrupadosPorConsulta(tratamientoData.primera_consulta);
-          console.log("🧪 Estudios agrupados:", estudiosData);
           setEstudiosAgrupados(estudiosData.estudios);
         }
       } catch (err: any) {
-        console.error("❌ Error obteniendo tratamiento o consulta:", err);
         setError(err.response?.data?.detail || "No se pudo cargar la información del tratamiento");
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
+  // 🔹 Confirmar toda la segunda consulta
+  const handleConfirmar = async () => {
+    try {
+      const tratamientoId = localStorage.getItem("tratamiento_id");
+      const formData = new FormData();
+
+      formData.append("tratamiento_id", tratamientoId || "");
+      formData.append("protocolo", JSON.stringify(dataConsulta.protocolo));
+      formData.append("monitoreo", JSON.stringify(dataConsulta.monitoreo));
+      formData.append("estudios", JSON.stringify(dataConsulta.estudios));
+
+      if (dataConsulta.consentimientoPDF) {
+        formData.append("consentimiento", dataConsulta.consentimientoPDF);
+      }
+      console.log("🧾 Datos que se enviarán al backend:");
+      for (const [key, value] of formData.entries()) {
+        console.log(`📦 ${key}:`, value);
+      }
+
+      await axios.post("/api/segunda_consulta/confirmar/", formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      alert("✅ Segunda consulta registrada correctamente.");
+    } catch (err: any) {
+      console.error("❌ Error al confirmar:", err);
+      alert("Error al guardar la segunda consulta.");
+    }
+  };
+
   if (loading)
-    return (
-      <div className="text-center text-gray-500 mt-10">
-        Cargando información del tratamiento...
-      </div>
-    );
-
+    return <div className="text-center text-gray-500 mt-10">Cargando información...</div>;
   if (error)
-    return (
-      <div className="text-center text-red-500 mt-10">
-        {error}
-      </div>
-    );
-
- 
+    return <div className="text-center text-red-500 mt-10">{error}</div>;
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl space-y-6 border border-gray-200">
-
       <button
-        onClick={() => window.location.href = '/medico/home'}
+        onClick={() => (window.location.href = "/medico/home")}
         className="flex items-center gap-2 px-4 py-2 mb-4 text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-all"
       >
         <ArrowLeft className="w-5 h-5" />
         Volver al home
       </button>
 
+      <h2 className="text-2xl font-bold text-blue-700 text-center mb-2">
+        Segunda Consulta
+      </h2>
       <p className="text-gray-600 text-center mb-6">
         Aquí podés cargar estudios, registrar el protocolo de estimulación, subir el consentimiento informado y definir el monitoreo.
       </p>
 
-     
       {/* Botones principales */}
       <div className="flex flex-col sm:flex-row justify-center gap-4 flex-wrap">
         <button
@@ -137,10 +158,39 @@ function SegundaConsulta() {
       </div>
 
       {/* Secciones dinámicas */}
-      {seccionActiva === "estudios" && <SeccionEstudios estudiosAgrupados={estudiosAgrupados} />}
-      {seccionActiva === "protocolo" && <SeccionProtocolo />}
-      {seccionActiva === "consentimiento" && <SeccionConsentimiento />}
-      {seccionActiva === "monitoreo" && <SeccionMonitoreo />}
+      {seccionActiva === "estudios" && (
+        <SeccionEstudios
+          estudiosAgrupados={estudiosAgrupados}
+          onDataChange={(data: any) => handleDataChange("estudios", data)}
+        />
+      )}
+      {seccionActiva === "protocolo" && (
+        <SeccionProtocolo onDataChange={(data: any) => handleDataChange("protocolo", data)} />
+      )}
+      {seccionActiva === "consentimiento" && (
+        <SeccionConsentimiento
+          onDataChange={(file) => handleDataChange("consentimientoPDF", file)}
+      />
+      )}
+      {seccionActiva === "monitoreo" && (
+        <SeccionMonitoreo onDataChange={(data: any) => handleDataChange("monitoreo", data)} />
+      )}
+
+      {/* Botón Confirmar final */}
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handleConfirmar}
+          disabled={!dataConsulta.consentimientoPDF}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-md ${
+            dataConsulta.consentimientoPDF
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          <CheckCircle className="w-5 h-5" />
+          Confirmar Segunda Consulta
+        </button>
+      </div>
     </div>
   );
 }

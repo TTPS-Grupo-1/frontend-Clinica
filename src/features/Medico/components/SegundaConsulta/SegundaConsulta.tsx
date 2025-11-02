@@ -13,6 +13,7 @@ function SegundaConsulta() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [primeraConsulta, setPrimeraConsulta] = useState<any>(null);
+  const [estudiosAgrupados, setEstudiosAgrupados] = useState<any[]>([]); 
 
   // 🔹 Por ahora paciente hardcodeado, después lo vas a recibir del turno
   const pacienteId = 1;
@@ -39,6 +40,7 @@ function SegundaConsulta() {
           // 🔹 Nuevo: obtener estudios asociados
           const estudiosData = await getEstudiosAgrupadosPorConsulta(tratamientoData.primera_consulta);
           console.log("🧪 Estudios agrupados:", estudiosData);
+          setEstudiosAgrupados(estudiosData.estudios);
         }
       } catch (err: any) {
         console.error("❌ Error obteniendo tratamiento o consulta:", err);
@@ -130,7 +132,7 @@ function SegundaConsulta() {
       </div>
 
       {/* Secciones dinámicas */}
-      {seccionActiva === "estudios" && <SeccionEstudios />}
+      {seccionActiva === "estudios" && <SeccionEstudios estudiosAgrupados={estudiosAgrupados} />}
       {seccionActiva === "protocolo" && <SeccionProtocolo />}
       {seccionActiva === "consentimiento" && <SeccionConsentimiento />}
       {seccionActiva === "monitoreo" && <SeccionMonitoreo />}

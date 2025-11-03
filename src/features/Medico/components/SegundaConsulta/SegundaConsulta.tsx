@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 import {
   FlaskConical,
   Syringe,
@@ -9,15 +10,20 @@ import {
   ArrowLeft,
   CheckCircle,
 } from "lucide-react";
-import SeccionEstudios from "./SeccionEstudios";
-import SeccionProtocolo from "./SeccionProtocolo";
-import SeccionConsentimiento from "./SeccionConsentimiento";
-import SeccionMonitoreo from "./SeccionMonitoreo";
-import SeccionConclusion from "./SeccionConclusion";
+
+import {
+  SeccionEstudios,
+  SeccionProtocolo,
+  SeccionConsentimiento,
+  SeccionMonitoreo,
+  SeccionConclusion
+} from "./Secciones";
+
 import {
   getTratamientoByPaciente,
   getEstudiosAgrupadosPorConsulta,
 } from "./consultasService";
+import { toast } from 'sonner';
 
 const SECCIONES = [
   { key: "estudios", label: "Cargar estudios", icon: FlaskConical },
@@ -42,6 +48,8 @@ const SegundaConsulta: React.FC = () => {
     conclusion: { ovocitoViable: false, semenViable: false },
   });
 
+  const { pacienteId } = useParams();
+
   // 🔁 Actualizar secciones
   const handleSectionChange = (key: string, data: any) => {
     setFormData((prev) => ({ ...prev, [key]: data }));
@@ -51,8 +59,7 @@ const SegundaConsulta: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const pacienteId = 1;
-        const tratamiento = await getTratamientoByPaciente(pacienteId);
+        const tratamiento = await getTratamientoByPaciente(Number(pacienteId));
         localStorage.setItem("tratamiento_id", tratamiento.id);
 
         if (tratamiento.primera_consulta) {
@@ -80,20 +87,24 @@ const SegundaConsulta: React.FC = () => {
       form.append("tratamiento_id", tratamientoId || "");
       form.append("protocolo", JSON.stringify(formData.protocolo));
       form.append("monitoreo", JSON.stringify(formData.monitoreo));
-      form.append("estudios", JSON.stringify(formData.estudios));
+      const estudiosArray = Object.entries(formData.estudios || {}).map(([id, valor]) => ({
+        id: Number(id),
+        valor,
+      }));
+      form.append("estudios", JSON.stringify(estudiosArray));
       form.append("conclusion", JSON.stringify(formData.conclusion));
       if (formData.consentimientoPDF)
         form.append("consentimiento", formData.consentimientoPDF);
 
       console.log("📤 Enviando:", Object.fromEntries(form));
-      await axios.post("/api/segunda_consulta/confirmar/", form, {
+      await axios.post("/api/segunda_consultas/", form, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("✅ Segunda consulta registrada correctamente.");
+      toast.success("Segunda consulta registrada correctamente.");
     } catch (err) {
       console.error(err);
-      alert("❌ Error al guardar la segunda consulta.");
+      toast.error("Error al guardar la segunda consulta.");
     }
   };
 

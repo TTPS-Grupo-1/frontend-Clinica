@@ -41,7 +41,7 @@ export default function SeccionMonitoreo({
         type="date"
         value={fechaInicio}
         onChange={(e) => setFechaInicio(e.target.value)}
-        className="border border-gray-300 rounded px-3 py-2 mb-4"
+        className="border border-black rounded px-3 py-2 mb-4 text-black bg-white placeholder-gray-500"
       />
 
       <div className="flex flex-wrap gap-2 mb-4">

@@ -26,6 +26,7 @@ import AlmacenamientoPage from './features/Donaciones/pages/AlmacenamientoPage';
 import AsignarTurnosPage from './features/Admin/pages/AsignarTurnosPage';
 import MonitoreosPage from './features/Medico/pages/MonitoreosPage';
 import TransferenciaPage from './features/Transferencia/pages/TransferenciaPage';
+import CriopreservacionSemenPage from './features/Criopreservaciones/pages/CriopreservarSemenPage';
 
 
 export default function getAppRoutes() {
@@ -60,6 +61,7 @@ export default function getAppRoutes() {
       <Route path="/operador/tanques" element={<AlmacenamientoPage />} />
       <Route path="/medicos/asignar_turnos" element={<AsignarTurnosPage />} />
       <Route path="/transferencias" element={<TransferenciaPage />} />
+      <Route path="/operador/criopreservacion" element={<CriopreservacionSemenPage />} />
     </>
   );
 }

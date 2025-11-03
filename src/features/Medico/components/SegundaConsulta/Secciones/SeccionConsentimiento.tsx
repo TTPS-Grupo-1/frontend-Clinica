@@ -2,11 +2,12 @@ import { useState, useRef } from "react";
 import { FileUp, CheckCircle, Trash, AlertCircle } from "lucide-react";
 
 interface SeccionConsentimientoProps {
+  initialData?: File | null;
   onDataChange?: (file: File | null) => void;
 }
 
-export default function SeccionConsentimiento({ onDataChange }: SeccionConsentimientoProps) {
-  const [archivo, setArchivo] = useState<File | null>(null);
+export default function SeccionConsentimiento({ onDataChange, initialData }: SeccionConsentimientoProps) {
+  const [archivo, setArchivo] = useState<File | null>(initialData || null);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);

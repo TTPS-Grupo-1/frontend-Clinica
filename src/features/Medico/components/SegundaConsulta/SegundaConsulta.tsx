@@ -95,8 +95,6 @@ const SegundaConsulta: React.FC = () => {
       form.append("conclusion", JSON.stringify(formData.conclusion));
       if (formData.consentimientoPDF)
         form.append("consentimiento", formData.consentimientoPDF);
-
-      console.log("📤 Enviando:", Object.fromEntries(form));
       await axios.post("/api/segunda_consultas/", form, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -115,6 +113,7 @@ const SegundaConsulta: React.FC = () => {
         return (
           <SeccionEstudios
             estudiosAgrupados={estudiosAgrupados}
+            initialData={formData.estudios}
             onDataChange={(data) => handleSectionChange("estudios", data)}
           />
         );
@@ -128,6 +127,7 @@ const SegundaConsulta: React.FC = () => {
       case "consentimiento":
         return (
           <SeccionConsentimiento
+            initialData={formData.consentimientoPDF}
             onDataChange={(file) => handleSectionChange("consentimientoPDF", file)}
           />
         );

@@ -9,11 +9,12 @@ interface SeccionEstudiosProps {
     }[];
   }[];
   onDataChange?: (data: any) => void;
+  initialData?: { [key: string]: string };
 }
 
-export default function SeccionEstudios({ estudiosAgrupados, onDataChange }: SeccionEstudiosProps) {
+export default function SeccionEstudios({ estudiosAgrupados, onDataChange, initialData }: SeccionEstudiosProps) {
   const [personaSeleccionada, setPersonaSeleccionada] = useState<string | null>(null);
-  const [valores, setValores] = useState<{ [key: string]: string }>({});
+  const [valores, setValores] = useState<{ [key: string]: string }>(initialData || {});
 
   // ✅ avisamos al padre solo cuando cambia algo (no al renderizar)
   useEffect(() => {

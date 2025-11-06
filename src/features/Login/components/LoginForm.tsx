@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LogIn } from 'lucide-react';
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 
 interface LoginFormProps {
   onSubmit?: (email: string, password: string) => void;
@@ -29,9 +30,13 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
         transition={{ duration: 0.5 }}
         className="max-w-lg mx-auto p-10 bg-white rounded-2xl shadow-2xl space-y-8 border border-gray-100 z-10 relative"
       >
+        <RoleHomeButton className="!static mr-4" />
         <div className="flex items-center justify-center gap-2 mb-2">
+          
           <LogIn className="w-7 h-7 text-blue-600" />
+          
           <h2 className="text-3xl font-bold text-center text-blue-700">Iniciar sesión</h2>
+          
         </div>
         <div>
           <label className="block mb-2 text-lg font-medium text-blue-700">Email</label>

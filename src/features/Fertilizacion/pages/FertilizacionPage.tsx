@@ -1,5 +1,6 @@
 import { useState } from "react";
 import FertilizacionModal from "../components/FertilizacionModal";
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import { usePacientesFetch } from "../../../shared/hooks/usePacientesFetch";
 import { useOvocitosFetch } from "../../../shared/hooks/useOvocitosFetch";
 import { useFertilizacionesFetch } from "../../../shared/hooks/useFertilizacionesFetch";
@@ -43,20 +44,30 @@ export default function FertilizacionPage() {
       </div>
 
       <div className="max-w-4xl w-full bg-white rounded-lg shadow px-6 py-8 z-10 relative">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl font-bold text-blue-700 mb-6 text-center drop-shadow-lg"
-        >
-          Gestión de Fertilizaciones y Embriones
-        </motion.h1>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mb-6 flex flex-col sm:flex-row gap-2 items-center justify-center"
-        >
+        <div className="mb-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center">
+              {/* Place the RoleHomeButton as part of the header: override internal absolute with !static */}
+              <RoleHomeButton className="!static mr-4" />
+              <motion.h1
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-2xl font-bold text-blue-700 drop-shadow-lg"
+              >
+                Gestión de Fertilizaciones y Embriones
+              </motion.h1>
+            </div>
+            {/* right-side controls could go here in future */}
+            <div />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-2 items-center justify-center"
+          >
           <label className="block text-sm font-medium text-gray-700">Seleccionar paciente</label>
           <select
             value={selectedPacienteId ?? ""}
@@ -69,6 +80,8 @@ export default function FertilizacionPage() {
             ))}
           </select>
         </motion.div>
+
+        </div>
         <Suspense fallback={<FertilizacionesTableSkeleton />}>
           <AnimatePresence>
             {loading ? (

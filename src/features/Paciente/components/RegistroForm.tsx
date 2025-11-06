@@ -4,6 +4,7 @@ import { UserPlus } from 'lucide-react';
 import CoberturaModal from './CoberturaModal';
 import type { PacienteFormData } from '../../../types/Paciente';
 import type { PropsPaciente } from '../../../interfaces/Paciente';
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 
 const SEXOS = [
   'Femenino',
@@ -45,13 +46,15 @@ export default function RegistroForm({ onSubmit, initialData }: PropsPaciente) {
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full opacity-30 blur-2xl" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full opacity-30 blur-2xl" />
       </div>
+      
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl w-full mx-auto p-8 bg-white rounded-2xl shadow-2xl space-y-8 border border-gray-100 z-10 relative"
+        className="max-w-2xl w-full mx-auto p-8 pt-15 bg-white rounded-2xl shadow-2xl space-y-8 border border-gray-100 z-10 relative"
       >
+        <RoleHomeButton className="!static mr-4" />
         <div className="flex items-center justify-center gap-2 mb-2">
           <UserPlus className="w-7 h-7 text-blue-600" />
           <h2 className="text-2xl font-bold text-center text-blue-700">Registro de Paciente</h2>

@@ -27,7 +27,7 @@ import AsignarTurnosPage from './features/Admin/pages/AsignarTurnosPage';
 import MonitoreosPage from './features/Medico/pages/MonitoreosPage';
 import TransferenciaPage from './features/Transferencia/pages/TransferenciaPage';
 import CriopreservacionSemenPage from './features/Criopreservaciones/pages/CriopreservarSemenPage';
-
+import HistoriaClinicaPage from './features/Paciente/pages/HistoriaClinicaPage';
 
 export default function getAppRoutes() {
   return (
@@ -57,6 +57,7 @@ export default function getAppRoutes() {
       <Route path="/operador" element={<HomeLaboratorio />} />
       <Route path="/operador/donaciones" element={<DonacionesHomePage />} />
       <Route path="/operador/punciones" element={<HomePuncion />} />
+      <Route path="/pacientes/:pacienteId/historia" element={<HistoriaClinicaPage />} />
       <Route path="/operador/fertilizaciones" element={<FertilizacionPage />} />
       <Route path="/operador/tanques" element={<AlmacenamientoPage />} />
       <Route path="/medicos/asignar_turnos" element={<AsignarTurnosPage />} />

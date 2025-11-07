@@ -45,6 +45,7 @@ export default function RegistroForm({ onSubmit, initialData }: PropsPaciente) {
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full opacity-30 blur-2xl" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full opacity-30 blur-2xl" />
       </div>
+      
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 40 }}

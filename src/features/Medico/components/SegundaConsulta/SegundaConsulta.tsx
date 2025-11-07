@@ -24,6 +24,7 @@ import {
   getEstudiosAgrupadosPorConsulta,
 } from "./consultasService";
 import { toast } from 'sonner';
+import { useSelector } from "react-redux";
 
 const SECCIONES = [
   { key: "estudios", label: "Cargar estudios", icon: FlaskConical },
@@ -38,6 +39,8 @@ const SegundaConsulta: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [estudiosAgrupados, setEstudiosAgrupados] = useState<any[]>([]);
+  const user = useSelector((state: any) => state.auth.user);
+  const medicoId = user.id;
 
   // 🧩 Estado general, igual que en ObjetivoParejaFemeninaRopa
   const [formData, setFormData] = useState({
@@ -134,6 +137,7 @@ const SegundaConsulta: React.FC = () => {
       case "monitoreo":
         return (
           <SeccionMonitoreo
+            idMedico={medicoId}
             initialData={formData.monitoreo}
             onDataChange={(data) => handleSectionChange("monitoreo", data)}
           />

@@ -8,4 +8,6 @@ export interface Props {
   loadingEmbriones: boolean;
   fertilizaciones: any[];
   loadingFert: boolean;
+  historial?: any[]; // historial de ovocitos (opcional)
+  loadingHistorial?: boolean;
 };

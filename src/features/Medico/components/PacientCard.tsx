@@ -1,5 +1,8 @@
-import type { PacientCardProps } from "../../../interfaces/Medico";
-export default function PacientCard({ paciente, onAtender, onVerHistoria }: PacientCardProps) {
+import type { PacientCardProps, PacientCardOptions } from "../../../interfaces/Medico";
+
+type Props = PacientCardProps & Partial<PacientCardOptions>;
+
+export default function PacientCard({ paciente, onAtender, onVerHistoria, showAtender = true }: Props) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
       {/* Silueta de persona */}
@@ -26,23 +29,27 @@ export default function PacientCard({ paciente, onAtender, onVerHistoria }: Paci
       </div>
 
       {/* Información del turno */}
-      <div className="mb-4 text-center">
-        <p className="text-sm text-gray-700">
-          <span className="font-medium">Fecha:</span> {paciente.fechaTurno}
-        </p>
-        <p className="text-sm text-gray-700">
-          <span className="font-medium">Hora:</span> {paciente.horaTurno}
-        </p>
-      </div>
+          {showAtender ? (
+            <div className="mb-4 text-center">
+              <p className="text-sm text-gray-700">
+                <span className="font-medium">Fecha:</span> {paciente.fechaTurno}
+              </p>
+              <p className="text-sm text-gray-700">
+                <span className="font-medium">Hora:</span> {paciente.horaTurno}
+              </p>
+            </div>
+          ) : null}
 
       {/* Botones */}
       <div className="flex flex-col gap-2">
-        <button
-          onClick={() => onAtender(paciente.id)}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium"
-        >
-          Atender
-        </button>
+        {showAtender ? (
+          <button
+            onClick={() => onAtender(paciente.id)}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium"
+          >
+            Atender
+          </button>
+        ) : null}
         <button
           onClick={() => onVerHistoria(paciente.id)}
           className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 transition-colors duration-200 font-medium"

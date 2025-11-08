@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store';
 import DashboardCard from "../components/DashboardCard";
-import GenerarOrdenEstudioForm from "../components/GenerarOrdenEstudioForm";
 
 export default function HomePage() {
   const navigate = useNavigate();
+
+  const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
 
   const handleVerTurnos = () => {
     navigate("/medico/turnos");
@@ -11,8 +14,15 @@ export default function HomePage() {
   };
 
   const handleVerPacientes = () => {
-    navigate("/medico/pacientes");
-    console.log("Navegando a pacientes...");
+    const medicoId = currentUser?.id;
+    if (medicoId) {
+      navigate(`/medico/${medicoId}/pacientes`);
+      console.log(`Navegando a pacientes del médico ${medicoId}...`);
+    } else {
+      // Fallback: si no hay user (rare caso), usar 0 para que la página de destino lo maneje
+      navigate(`/medico/0/pacientes`);
+      console.log('Navegando a pacientes (medico 0) por falta de user en store...');
+    }
   };
 
   return (
@@ -61,7 +71,7 @@ export default function HomePage() {
               iconColor="text-blue-600"
               onClick={handleVerPacientes}
             />
-            <GenerarOrdenEstudioForm />
+            
             </section>
         </div>
       </div>

@@ -11,6 +11,7 @@ import EstudioGinecologico from '../Estudios/EstudioGinecologico';
 import EstudiosPrequirurgicos from '../Estudios/EstudiosPrequirugicos';
 import AntecedentesGinecologicos from '../Antecedentes/AntecedentesGinecologicos';
 import type { ObjetivoXProps } from '../../../../../interfaces/Medico';
+import FenotipoDonacion from '../FenotipoDonacion';
 
 const ObjetivoParejaFemeninaRopa: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
   // 🧠 Estado global de ambas mujeres
@@ -33,6 +34,22 @@ const ObjetivoParejaFemeninaRopa: React.FC<ObjetivoXProps> = ({ onDataChange }) 
     prequirurgicos_mujer2: { valores: {} },
     antecedentes_ginecologicos_mujer1: { datos1: {}, datos2: {} },
     antecedentes_ginecologicos_mujer2: { datos1: {}, datos2: {} },
+    fenotipo: {
+      ojos: '',
+      peloColor: '',
+      peloTipo: '',
+      altura: '',
+      complexion: '',
+      etnia: '',
+    },
+    fenotipo2: {
+      ojos: '',
+      peloColor: '',
+      peloTipo: '',
+      altura: '',
+      complexion: '',
+      etnia: '',
+    }
   });
 
   // 🔁 Notifica al padre principal (PrimerConsulta)
@@ -214,6 +231,24 @@ const ObjetivoParejaFemeninaRopa: React.FC<ObjetivoXProps> = ({ onDataChange }) 
           titulo1="Mujer 2"
           value={formData.antecedentes_ginecologicos_mujer2}
           onDataChange={(d) => handleSectionChange('antecedentes_ginecologicos_mujer2', d)}
+        />
+      ),
+    },
+    {
+      title: 'Fenotipo - Mujer 1',
+      content: (
+        <FenotipoDonacion
+          value={formData.fenotipo}
+          onDataChange={(d) => handleSectionChange('fenotipo', d)}
+        />
+      ),
+    },
+    {
+      title: 'Fenotipo - Mujer 2',
+      content: (
+        <FenotipoDonacion
+          value={formData.fenotipo2}
+          onDataChange={(d) => handleSectionChange('fenotipo2', d)}
         />
       ),
     },

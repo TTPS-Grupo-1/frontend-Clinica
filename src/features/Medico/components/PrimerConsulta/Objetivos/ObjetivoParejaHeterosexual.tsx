@@ -13,6 +13,7 @@ import EstudioSemen from '../Estudios/EstudioSemen';
 import AntecedentesGinecologicos from '../Antecedentes/AntecedentesGinecologicos';
 import AntecedentesGenitales from '../Antecedentes/AntecedentesGenitales';
 import type { ObjetivoXProps } from '../../../../../interfaces/Medico';
+import FenotipoDonacion from '../FenotipoDonacion';
 
 // 💡 Tipamos las cards
 interface CardItem {
@@ -41,6 +42,22 @@ const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) 
     hormonales: { seleccionados: [] as string[] },
     antecedentes_ginecologicos: { datos1: {}, datos2: {} },
     genitales_hombre: { descripcion: '' },
+    fenotipo: {
+      ojos: '',
+      peloColor: '',
+      peloTipo: '',
+      altura: '',
+      complexion: '',
+      etnia: '',
+    },
+    fenotipo2: {
+      ojos: '',
+      peloColor: '',
+      peloTipo: '',
+      altura: '',
+      complexion: '',
+      etnia: '',
+    }
   });
 
   // 🔄 Cada vez que cambia algo, avisamos al padre
@@ -229,6 +246,26 @@ const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) 
         />
       ),
     },
+    {
+      key: 'fenotipo',
+      title: 'Fenotipo - Mujer',
+      content: (
+        <FenotipoDonacion
+          value={formData.fenotipo}
+          onDataChange={(d) => handleDataChange('fenotipo', d)}
+        />
+      )
+    },
+    {
+      key: 'fenotipo2',
+      title: 'Fenotipo - Hombre',
+      content: (
+        <FenotipoDonacion
+          value={formData.fenotipo2}
+          onDataChange={(d) => handleDataChange('fenotipo2', d)}
+        />
+      )
+    }
   ];
 
   // 📄 Paginador

@@ -2,11 +2,13 @@ import { useState } from "react";
 
 interface SeccionConclusionProps {
   initialData?: { ovocitoViable: boolean; semenViable: boolean };
+  objetivo?: string;
   onDataChange?: (data: any) => void;
 }
 
 export default function SeccionConclusion({
   initialData = { ovocitoViable: false, semenViable: false },
+  objetivo,
   onDataChange,
 }: SeccionConclusionProps) {
   const [conclusion, setConclusion] = useState(initialData);
@@ -33,7 +35,7 @@ export default function SeccionConclusion({
           />
           Ovocito viable
         </label>
-
+      {objetivo === 'pareja_heterosexual' && (
         <label className="flex items-center gap-2 text-gray-800">
           <input
             type="checkbox"
@@ -43,6 +45,7 @@ export default function SeccionConclusion({
           />
           Semen viable
         </label>
+      )}
       </div>
     </div>
   );

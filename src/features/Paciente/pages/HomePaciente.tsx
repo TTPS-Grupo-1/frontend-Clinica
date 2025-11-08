@@ -10,6 +10,8 @@ export default function HomePaciente() {
   const navegar = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const nombre = user?.first_name || user?.name || user?.email || "Paciente";
+  // prefer an explicit paciente id from the auth user; fallback to 1 for dev
+  const pacienteId = user?.id ?? 6;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-50 flex flex-col items-center p-6 pt-[80px]">
@@ -37,7 +39,7 @@ export default function HomePaciente() {
             title="Mi Historia Clínica"
             description="Consultá tu historia clínica"
             icon={<ClipboardPlus className="w-6 h-6" />}
-            onClick={() => navegar("/pacientes/historiaClinica")}
+            onClick={() => navegar(`/pacientes/${pacienteId}/historia`)}
             bgColor="bg-white"
             iconColor="text-red-500"
           />

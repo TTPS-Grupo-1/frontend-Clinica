@@ -56,7 +56,7 @@ export default function Navbar() {
             } else if (role === 'OPERADOR') {
               navigate('/operador');
             } else if (role === 'MEDICO') {
-              navigate('/medico');
+              navigate('/medico/home');
             } else {
               navigate('/');
             }

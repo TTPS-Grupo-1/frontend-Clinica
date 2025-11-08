@@ -38,13 +38,15 @@ export default function SeccionMonitoreo({
   const calcularFechas = async () => {
     if (!fechaInicio || diasSeleccionados.length === 0) return;
 
-    const base = new Date(fechaInicio + "T00:00:00");
-    const nuevas = diasSeleccionados.map((d) => {
-      const f = new Date(base);
-      f.setDate(f.getDate() + d);
-      return f.toISOString().split("T")[0];
-    });
+    const [year, month, day] = fechaInicio.split("-").map(Number);
 
+    const nuevas = diasSeleccionados.map((d) => {
+      const fecha = new Date(year, month - 1, day + d); // sumar días directamente
+      const y = fecha.getFullYear();
+      const m = String(fecha.getMonth() + 1).padStart(2, "0");
+      const dd = String(fecha.getDate()).padStart(2, "0");
+      return `${y}-${m}-${dd}`; // formato YYYY-MM-DD sin pasar por UTC
+    });
     setCargando(true);
     setError(null);
 
@@ -178,7 +180,7 @@ export default function SeccionMonitoreo({
               <div key={fecha} className="border-b pb-2">
                 <div className="font-bold text-lg text-orange-700 mb-2">
                   📅{" "}
-                  {new Date(fecha).toLocaleDateString("es-AR", {
+                  {new Date(`${fecha}T12:00:00`).toLocaleDateString("es-AR", {
                     weekday: "long",
                     day: "2-digit",
                     month: "long",

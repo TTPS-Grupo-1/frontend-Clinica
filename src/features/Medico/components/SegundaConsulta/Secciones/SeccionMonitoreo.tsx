@@ -11,7 +11,7 @@ type TurnoAPI = {
   id: number;
   id_medico: number;
   id_paciente: number | null;
-  fecha_hora: string;
+  fecha_hora: string; // ISO del backend (sin tz)
 };
 
 export default function SeccionMonitoreo({
@@ -22,31 +22,40 @@ export default function SeccionMonitoreo({
   const [fechaInicio, setFechaInicio] = useState<string>("");
   const [diasSeleccionados, setDiasSeleccionados] = useState<number[]>([]);
   const [fechas, setFechas] = useState<string[]>(initialData);
-  const [ocupadas, setOcupadas] = useState<string[]>([]);
   const [seleccionHorarios, setSeleccionHorarios] = useState<Record<string, string>>({});
   const [turnosMedico, setTurnosMedico] = useState<TurnoAPI[]>([]);
+  const [turnosPorFecha, setTurnosPorFecha] = useState<Record<string, { hora: string; id: number; ocupado: boolean }[]>>({});
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Alternar días (+1, +2, +3, etc.)
-  const toggleDia = (d: number) =>
-    setDiasSeleccionados((prev) =>
-      prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]
-    );
+  // Horarios base cada 20'
+  const horariosBase = (() => {
+    const hs: string[] = [];
+    const inicio = 8 * 60, fin = 20 * 60;
+    for (let m = inicio; m < fin; m += 20) {
+      const h = String(Math.floor(m / 60)).padStart(2, "0");
+      const min = String(m % 60).padStart(2, "0");
+      hs.push(`${h}:${min}`);
+    }
+    return hs;
+  })();
 
-  // Calcular fechas y traer turnos del médico
+  const toggleDia = (d: number) =>
+    setDiasSeleccionados((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
+
   const calcularFechas = async () => {
     if (!fechaInicio || diasSeleccionados.length === 0) return;
 
-    const [year, month, day] = fechaInicio.split("-").map(Number);
-
+    // Construcción robusta de fechas YYYY-MM-DD (sin UTC)
+    const [y, m, d0] = fechaInicio.split("-").map(Number);
     const nuevas = diasSeleccionados.map((d) => {
-      const fecha = new Date(year, month - 1, day + d); // sumar días directamente
-      const y = fecha.getFullYear();
-      const m = String(fecha.getMonth() + 1).padStart(2, "0");
-      const dd = String(fecha.getDate()).padStart(2, "0");
-      return `${y}-${m}-${dd}`; // formato YYYY-MM-DD sin pasar por UTC
+      const f = new Date(y, m - 1, d0 + d);
+      const yyyy = f.getFullYear();
+      const mm = String(f.getMonth() + 1).padStart(2, "0");
+      const dd = String(f.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
     });
+
     setCargando(true);
     setError(null);
 
@@ -54,84 +63,65 @@ export default function SeccionMonitoreo({
       const res = await fetch(`http://localhost:8000/api/turnos/medico/${idMedico}/`);
       if (!res.ok) throw new Error("Error al obtener turnos del médico");
       const json = (await res.json()) as { data: TurnoAPI[] };
-
-      const todos = json.data;
+      const todos = json.data || [];
       setTurnosMedico(todos);
 
-      const ocupadas = todos
-        .filter((t) => t.id_paciente !== null)
-        .map((t) => t.fecha_hora.split("T")[0]);
+      // 👉 FIX DE ZONA HORARIA:
+      // Si el backend manda "YYYY-MM-DDTHH:mm:ss" SIN zona, muchos navegadores lo interpretan como UTC.
+      // Sumamos +3h para mostrarlo en ART (UTC-3).
+      const mapa: Record<string, { hora: string; id: number; ocupado: boolean }[]> = {};
+      for (const t of todos) {
+        const dt = new Date(t.fecha_hora);
+        dt.setHours(dt.getHours() + 3); // ⏰ corregimos a ART
 
-      const disponibles = nuevas.filter((f) => !ocupadas.includes(f));
+        const fechaLocal = dt.toLocaleDateString("en-CA"); // YYYY-MM-DD
+        const horaLocal = dt.toLocaleTimeString("es-AR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
 
-      setFechas(disponibles);
-      setOcupadas(nuevas.filter((f) => ocupadas.includes(f)));
+        if (!mapa[fechaLocal]) mapa[fechaLocal] = [];
+        mapa[fechaLocal].push({ hora: horaLocal, id: t.id, ocupado: t.id_paciente !== null });
+      }
+      for (const f of Object.keys(mapa)) {
+        mapa[f].sort((a, b) => a.hora.localeCompare(b.hora));
+      }
+
+      setTurnosPorFecha(mapa);
+      setFechas(nuevas);
       setSeleccionHorarios({});
       onDataChange?.([]);
     } catch (e: any) {
       console.error("❌ Error al obtener turnos:", e);
-      if (e.message.includes("Failed to fetch")) {
-        setError("No se pudo conectar con el servidor (CORS o red).");
-      } else {
-        setError(e.message || "Error desconocido al obtener turnos.");
-      }
+      setError(e.message || "Error desconocido al obtener turnos.");
     } finally {
       setCargando(false);
     }
   };
 
-  // Generar horarios cada 20 minutos (solo visual)
-  const generarHorarios = () => {
-    const horarios: string[] = [];
-    const inicio = 8 * 60; // 8:00
-    const fin = 20 * 60; // 20:00
-    for (let m = inicio; m < fin; m += 20) {
-      const h = Math.floor(m / 60)
-        .toString()
-        .padStart(2, "0");
-      const min = (m % 60).toString().padStart(2, "0");
-      horarios.push(`${h}:${min}`);
-    }
-    return horarios;
-  };
-
-  const horarios = generarHorarios();
-
-  /** Manejar selección de horario **/
+  // Al seleccionar horario: si hay turno real ese día/hora, mandamos su id; si el día no tiene turnos en backend, id_turno = null
   const seleccionarHorario = (fecha: string, hora: string) => {
-    // Buscar el turno real correspondiente
-    const turnoReal = turnosMedico.find((t) => {
-      const [turnoFecha, turnoHoraCompleta] = t.fecha_hora.split("T");
-      const turnoHora = turnoHoraCompleta.slice(0, 5); // HH:MM
-      return t.id_paciente === null && turnoFecha === fecha && turnoHora === hora;
-    });
+    const listaDia = turnosPorFecha[fecha]; // puede ser undefined (día sin agenda)
+    const turnoReal = listaDia?.find((t) => t.hora === hora && !t.ocupado) || null;
 
     setSeleccionHorarios((prev) => {
-      const nuevo = { ...prev, [fecha]: hora };
-
-      // Armar array con id_turno y fecha_hora
-      const seleccionFinal = Object.entries(nuevo).map(([f, h]) => {
-        const t = turnosMedico.find((tu) => {
-          const [fechaTu, horaTu] = tu.fecha_hora.split("T");
-          return fechaTu === f && horaTu.slice(0, 5) === h;
-        });
+      const next = { ...prev, [fecha]: hora };
+      const seleccionFinal = Object.entries(next).map(([f, h]) => {
+        const t = turnosPorFecha[f]?.find((x) => x.hora === h && !x.ocupado) || null;
         return {
-          id_turno: t?.id || null,
+          id_turno: t?.id ?? null,
           fecha_hora: `${f} ${h}:00`,
         };
       });
-
-      console.log("🎯 Monitoreo a enviar:", seleccionFinal);
-      onDataChange?.(seleccionFinal as any);
-      return nuevo;
+      onDataChange?.(seleccionFinal);
+      return next;
     });
   };
 
   return (
     <div className="p-6 border rounded-lg bg-orange-50">
-      <h3 className="text-xl font-semibold text-orange-700 mb-3">
-        Monitoreo de la estimulación
-      </h3>
+      <h3 className="text-xl font-semibold text-orange-700 mb-3">Monitoreo de la estimulación</h3>
 
       <input
         type="date"
@@ -175,52 +165,65 @@ export default function SeccionMonitoreo({
           <h4 className="font-semibold text-orange-700 mb-2 flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-green-600" /> Fechas disponibles:
           </h4>
-          <div className="space-y-4">
-            {fechas.map((fecha) => (
-              <div key={fecha} className="border-b pb-2">
-                <div className="font-bold text-lg text-orange-700 mb-2">
-                  📅{" "}
-                  {new Date(`${fecha}T12:00:00`).toLocaleDateString("es-AR", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "long",
-                  })}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {horarios.map((h) => {
-                    const activo = seleccionHorarios[fecha] === h;
-                    return (
-                      <button
-                        key={h}
-                        onClick={() => seleccionarHorario(fecha, h)}
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded border text-sm ${
-                          activo
-                            ? "bg-orange-700 text-white border-orange-700"
-                            : "bg-white text-orange-700 border-orange-400 hover:bg-orange-50"
-                        }`}
-                      >
-                        <Clock className="w-4 h-4" />
-                        {h}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
-      {ocupadas.length > 0 && (
-        <div className="mt-6 bg-white p-4 rounded shadow-inner">
-          <h4 className="font-semibold text-red-700 mb-2 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-red-600" /> Fechas ocupadas:
-          </h4>
-          <ul className="list-disc ml-6 text-gray-700">
-            {ocupadas.map((f, i) => (
-              <li key={i}>{f}</li>
-            ))}
-          </ul>
+          <div className="space-y-4">
+            {fechas.map((fecha) => {
+              // Si hay agenda en backend para ese día → usamos SOLO esos horarios; si no hay → usamos grilla completa
+              const agendaDia = turnosPorFecha[fecha];
+              const items = agendaDia
+                ? agendaDia.map(({ hora, id, ocupado }) => ({ hora, id, ocupado }))
+                : horariosBase.map((hora) => ({ hora, id: null as number | null, ocupado: false }));
+
+              return (
+                <div key={fecha} className="border-b pb-2">
+                  <div className="font-bold text-lg text-orange-700 mb-2">
+                    📅{" "}
+                    {new Date(`${fecha}T12:00:00`).toLocaleDateString("es-AR", {
+                      weekday: "long",
+                      day: "2-digit",
+                      month: "long",
+                    })}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {items.map(({ hora, id, ocupado }) => {
+                      const activo = seleccionHorarios[fecha] === hora;
+
+                      if (agendaDia && ocupado) {
+                        return (
+                          <button
+                            key={`${fecha}-${hora}`}
+                            disabled
+                            className="inline-flex items-center gap-1 px-3 py-1 rounded border text-sm bg-gray-200 text-gray-500 cursor-not-allowed"
+                            title="Turno ocupado"
+                          >
+                            <Clock className="w-4 h-4" />
+                            {hora}
+                          </button>
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={`${fecha}-${hora}`}
+                          onClick={() => seleccionarHorario(fecha, hora)}
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded border text-sm ${
+                            activo
+                              ? "bg-orange-700 text-white border-orange-700"
+                              : "bg-white text-orange-700 border-orange-400 hover:bg-orange-50"
+                          }`}
+                          title={agendaDia ? (id ? "Turno libre" : "Horario libre sin turno creado") : "Horario libre"}
+                        >
+                          <Clock className="w-4 h-4" />
+                          {hora}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

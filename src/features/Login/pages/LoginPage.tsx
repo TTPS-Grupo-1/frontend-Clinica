@@ -30,7 +30,7 @@ export default function LoginPage() {
       }
     console.log("Login exitoso, usuario:", user);
     // Redirigir según rol
-    if (role === "MEDICO") navigate("/medicos");
+    if (role === "MEDICO") navigate("/medico/home");
     else if (role === "PACIENTE") navigate("/pacientes/home");
     else if (role === "OPERADOR_LABORATORIO") navigate("/operador");
     else navigate("/dashboard");

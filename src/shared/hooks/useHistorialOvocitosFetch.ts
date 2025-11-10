@@ -14,11 +14,16 @@ export function useHistorialOvocitosFetch(pacienteId: number | null) {
     }
 
     let cancelled = false;
+    const getAuthHeaders = () => {
+      const token = localStorage.getItem('token');
+      return token ? { Authorization: `Token ${token}` } : {};
+    };
+
     async function fetchData() {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(`/api/historial_ovocitos/?paciente=${pacienteId}`);
+        const res = await axios.get(`/api/historial_ovocitos/?paciente=${pacienteId}`, { headers: getAuthHeaders() });
         if (!cancelled) setHistorial(res.data);
       } catch (err) {
         if (!cancelled) setError(err);

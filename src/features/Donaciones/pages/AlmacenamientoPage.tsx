@@ -1,0 +1,38 @@
+import { useEffect, useState } from "react";
+import TanquesStatsCard from "../components/TanquesStatsCard";
+
+export default function AlmacenamientoPage() {
+  const [gametes, setGametes] = useState<any[]>([]);
+  const [stats, setStats] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    async function fetchStorage() {
+      setLoading(true);
+      const res = await fetch('/api/almacenamiento?group_number=1&type=esperma');
+      const api = await res.json();
+      console.log('Datos de tanques recibidos:', api);
+      // Si la API es la de gametos, ajusta el parsing aquí
+      if (api.success && api.data) {
+        setGametes(api.data.gametes || []);
+        setStats(api.data.summary?.storage_capacity || null);
+      } else {
+        setGametes([]);
+        setStats(null);
+      }
+      setLoading(false);
+    }
+    fetchStorage();
+  }, [page]);
+
+  return (
+    <section className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 pt-20 pb-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Almacenamiento de Tanques</h1>
+        <TanquesStatsCard loading={loading} stats={stats} />
+
+      </div>
+    </section>
+  );
+}

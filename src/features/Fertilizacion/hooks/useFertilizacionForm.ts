@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getAuthHeaders } from '../utils/fertilizacionHelpers';
 import { toast } from 'sonner';
 import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
 
@@ -60,8 +61,9 @@ export const useFertilizacionForm = (
     };
 
     try {
-      // Crear fertilización
-      const fertilizacionResponse = await axios.post('http://localhost:8000/api/fertilizacion/', payload);
+      // Crear fertilización (añadir headers de auth)
+      const headers = getAuthHeaders();
+      const fertilizacionResponse = await axios.post('http://localhost:8000/api/fertilizacion/', payload, { headers });
       const fertilizacionId = fertilizacionResponse.data.id_fertilizacion || fertilizacionResponse.data.id;
       
       toast.success('Fertilización registrada exitosamente');
@@ -81,7 +83,7 @@ export const useFertilizacionForm = (
           estado: "no transferido",
         };
 
-        await axios.post('http://localhost:8000/api/embriones/', embrionPayload);
+        await axios.post('http://localhost:8000/api/embriones/', embrionPayload, { headers });
         toast.success(`Embrión ${identificadorEmbrion} creado exitosamente`);
       }
 

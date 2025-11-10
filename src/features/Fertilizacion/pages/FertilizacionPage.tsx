@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store';
 import FertilizacionModal from "../components/FertilizacionModal";
 import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import { usePacientesFetch } from "../../../shared/hooks/usePacientesFetch";
-import { useOvocitosFetch } from "../../../shared/hooks/useOvocitosFetch";
 import { useFertilizacionesFetch } from "../../../shared/hooks/useFertilizacionesFetch";
 import FertilizacionesTable from "../components/Fertilizaciones";
 import { AnimatePresence, motion } from "framer-motion";
@@ -13,27 +14,13 @@ export default function FertilizacionPage() {
   const { pacientes } = usePacientesFetch();
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { ovocitos } = useOvocitosFetch(selectedPacienteId);
   const { fertilizaciones, loading } = useFertilizacionesFetch(selectedPacienteId);
 
-  // ...existing code...
+  // Obtener usuario actual desde el store persistido (localStorage)
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
-  async function handleFertilize(payload: any) {
-    try {
-      const response = await fetch("http://localhost:8000/api/fertilizacion/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) throw new Error("Error al registrar fertilización");
-      // Opcional: recargar fertilizaciones, mostrar mensaje, etc.
-    } catch (err) {
-      alert("No se pudo registrar la fertilización");
-      throw err; // Re-lanzar el error para que el modal lo capture
-    }
-  }
+  const selectedPaciente = pacientes.find(p => p.id === selectedPacienteId) ?? null;
+  const selectedPacienteNombre = selectedPaciente ? `${selectedPaciente.last_name}, ${selectedPaciente.first_name}` : null;
 
   return (
     <div className="relative w-full min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-300 pt-24 pb-10 px-4 overflow-x-hidden">
@@ -71,7 +58,7 @@ export default function FertilizacionPage() {
           <label className="block text-sm font-medium text-gray-700">Seleccionar paciente</label>
           <select
             value={selectedPacienteId ?? ""}
-            onChange={e => setSelectedPacienteId(Number(e.target.value))}
+            onChange={e => setSelectedPacienteId(e.target.value ? Number(e.target.value) : null)}
             className="border border-gray-300 rounded px-3 py-2 w-full sm:w-80 bg-white focus:ring-2 text-black focus:ring-blue-300 shadow-sm"
           >
             <option value="">-- Selecciona un paciente --</option>
@@ -114,12 +101,9 @@ export default function FertilizacionPage() {
         <FertilizacionModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onFertilize={handleFertilize}
-          ovocitos={ovocitos}
-          semenes={[]}
           selectedPacienteId={selectedPacienteId}
-          currentUser={null}
-          fertilizaciones={fertilizaciones}
+          selectedPacienteNombre={selectedPacienteNombre}
+          currentUserId={currentUser?.id ?? null} // sólo pasamos el id del usuario
         />
       </div>
     </div>

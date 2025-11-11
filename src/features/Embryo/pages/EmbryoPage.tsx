@@ -11,6 +11,11 @@ export default function EmbryoPage() {
   const { embriones } = useEmbryoFetch(selectedPacienteId);
   const { ovocitos } = useOvocitosFetch(selectedPacienteId);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // ✅ AGREGAR estos logs:
+  console.log('Paciente seleccionado:', selectedPacienteId);
+  console.log('Embriones cargados:', embriones);
+  
   console.log(ovocitos)
   // Modal submit handler
   const handleSubmitEmbrion = async (nuevoEmbryo: any) => {
@@ -73,7 +78,11 @@ export default function EmbryoPage() {
 
           {selectedPacienteId ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.45, delay: 0.06 }}>
-              <EmbryoList embryos={embriones} selectedPacienteId={selectedPacienteId} />
+              <EmbryoList 
+                key={selectedPacienteId} // ✅ AGREGAR esta línea
+                embryos={embriones} 
+                selectedPacienteId={selectedPacienteId} 
+              />
             </motion.div>
           ) : (
             <motion.div

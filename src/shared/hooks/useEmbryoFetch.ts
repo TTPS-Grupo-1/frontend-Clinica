@@ -17,12 +17,18 @@ export function useEmbryoFetch(pacienteId: number | null): UseEmbryoFetchResult 
         }
         setLoading(true);
         setError(null);
-        axios.get(`/api/embriones/?paciente=${pacienteId}`)
+        
+        // ✅ CAMBIAR esta línea:
+        axios.get(`http://localhost:8000/api/embriones/`, {
+            params: { paciente: pacienteId }
+        })
             .then(({ data }) => {
                 const items = Array.isArray(data) ? data : (data.results ?? []);
+                console.log('Embriones recibidos del backend:', items);
                 setEmbriones(items);
             })
             .catch((err) => {
+                console.error('Error fetching embriones:', err);
                 setError(err?.response?.data?.detail || err?.message || "Error al cargar embriones");
                 setEmbriones([]);
             })

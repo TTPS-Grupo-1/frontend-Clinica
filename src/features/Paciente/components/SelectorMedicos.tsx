@@ -9,6 +9,7 @@ interface MedicoSelectProps {
   medicos: Medico[];
   selected: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
 const SelectMedico: FC<MedicoSelectProps> = ({ medicos, selected, onChange }) => {

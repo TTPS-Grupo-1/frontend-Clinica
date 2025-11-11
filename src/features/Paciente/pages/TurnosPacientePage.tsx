@@ -2,9 +2,10 @@ import TurnoCard from "../components/TurnosPacienteComponente";
 import Pagination from "../../../components/Pagination";
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import ConfirmModal from "../components/ModalConfirmacionComponente";
+import { useNavigate } from "react-router-dom";
 
 // --- INTERFACES ---
 interface TurnoAPI {
@@ -12,6 +13,7 @@ interface TurnoAPI {
     id_medico: number;
     id_paciente: number;
     fecha_hora: string; // "YYYY-MM-DDTHH:MM:SS+00:00"
+    es_monitoreo: boolean;
 }
 
 interface Turnos {
@@ -19,6 +21,8 @@ interface Turnos {
     fecha: string;
     hora: string;
     medico: string;
+    es_monitoreo: boolean;
+    
 }
 
 interface UserState {
@@ -39,6 +43,7 @@ interface Medico {
 
 export default function MisTurnos() {
 
+    const navigate = useNavigate();
     const [medicos, setMedicos] = useState<Medico[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [misTurnos, setMisTurnos] = useState<TurnoAPI[]>([]); // Almacena los datos de la API
@@ -103,6 +108,7 @@ export default function MisTurnos() {
             if (!res.ok) throw new Error("Error al obtener tus turnos.");
 
             const { data } = await res.json(); 
+            console.log("TURNOS DESDE API ---->", data);
             setMisTurnos(data || []);
             
         } catch (err) {
@@ -174,7 +180,8 @@ export default function MisTurnos() {
             id: turno.id,
             fecha: fechaParte.split("-").reverse().join("/"),
             hora: horaLimpia,
-            medico: nombreCompleto, 
+            medico: nombreCompleto,
+            es_monitoreo: Boolean(turno.es_monitoreo), 
         };
     });
 
@@ -202,23 +209,10 @@ export default function MisTurnos() {
 
     return (
         <div className="relative w-full max-w-7xl mx-auto mt-16 md:mt-20 px-4 sm:px-6 py-6 min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-300 overflow-x-hidden">
-            
+        <Toaster position="top-center" />
 {/* ... (Fondo decorativo y Header) ... */}
 
             <div className="relative z-10">
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="mb-6"
-                >
-                <h1 className="text-3xl font-bold mb-4 text-center text-blue-700 drop-shadow-lg">Mis Turnos</h1>
-                <p className="text-gray-700 text-center text-lg">
-                    Gestiona tus próximos turnos <span className="font-semibold">({misTurnos.length})</span>
-                </p>
-                </motion.div>
-
-                {/* Turnos */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -230,6 +224,17 @@ export default function MisTurnos() {
                             key={turno.id}
                             turno={turno}
                             onCancelar={handleOpenModal}
+                            onReasignar={(idTurno: number) => {
+                                const t = misTurnos.find(t => t.id === idTurno);
+                                if (!t) {
+                                    toast.error("No se encontró el turno seleccionado.");
+                                    return;
+                                }
+
+                                navigate(
+                                    `/sacar-turno?reasignar=1&id_turno=${t.id}&id_medico=${t.id_medico}&fecha=${t.fecha_hora}`
+                                );
+                            }}
                         />
                     ))}
                 </motion.div>

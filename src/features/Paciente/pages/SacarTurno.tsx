@@ -6,6 +6,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { Medico } from "../../../types/Medico";
 import type { TurnoAPI } from "../../../types/Turno";
+import { useLocation } from "react-router-dom";
 // Interfaz para los datos del Turno que devuelve la API externa
 // 💡 Nueva interfaz para el slot de horario que se pasa al componente hijo
 interface HorarioSlot {
@@ -20,6 +21,10 @@ interface UserState {
             rol: string;
         } | null;
     };
+}
+
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
 }
 
 export default function SacarTurno() {
@@ -37,12 +42,28 @@ export default function SacarTurno() {
     const userId = useSelector((state: UserState) => state.auth.user?.id);
     const userRol = useSelector((state: UserState) => state.auth.user?.rol);
 
+    const query = useQuery();
+    const modoReasignar = query.get("reasignar") === "1";
+
+    const turnoIdReasignar = query.get("id_turno");
+    const medicoReasignar = query.get("id_medico");
+    const fechaHoraReasignar = query.get("fecha");
+
     // URLs de los proxies de Django
     const PROXY_CONSULTA_URL = "http://127.0.0.1:8000/api/turnos/consultar_medico_fecha/";
     const ENDPOINT_RESERVAR_URL = "http://127.0.0.1:8000/api/reservar_turno/"; 
     const PACIENTE_ID = (userRol === 'PACIENTE' && userId) ? userId : null;
 
-    console.log("ID PACIENTE --> ", PACIENTE_ID)
+    useEffect(() => {
+        if (!modoReasignar) return;
+
+        if (medicoReasignar) setMedicoId(medicoReasignar);
+
+        if (fechaHoraReasignar) {
+            const fecha = new Date(fechaHoraReasignar);
+            setFecha(fecha);
+        }
+    }, [modoReasignar]);
     // 1. CARGA INICIAL DE MÉDICOS (Sin cambios)
     useEffect(() => {
         const fetchMedicos = async () => {
@@ -100,12 +121,29 @@ export default function SacarTurno() {
 
 
     // 4. PREPARACIÓN DE DATOS PARA EL COMPONENTE HIJO (Ahora objetos {id, hora})
-    const horariosSlots: HorarioSlot[] = turnosData
-        .filter(t => t.id_paciente === null) // Solo turnos libres
-        .map(t => ({
-            id: t.id,
-            hora: t.fecha_hora.split("T")[1].substring(0, 5) // HH:MM
-        }));
+    let horariosSlots: HorarioSlot[] = [];
+
+    if (modoReasignar && fechaHoraReasignar) {
+        const horaOriginal = fechaHoraReasignar.split("T")[1].substring(0, 5);
+
+        const turnoCoincidente = turnosData.find(
+            t => t.fecha_hora.includes(horaOriginal)
+        );
+
+        if (turnoCoincidente) {
+            horariosSlots = [{
+                id: turnoCoincidente.id,
+                hora: horaOriginal
+            }];
+        }
+    } else {
+        horariosSlots = turnosData
+            .filter(t => t.id_paciente === null)
+            .map(t => ({
+                id: t.id,
+                hora: t.fecha_hora.split("T")[1].substring(0, 5)
+            }));
+    }
 
 
     // 5. MANEJADOR DE SELECCIÓN DE HORARIO (Recibe el ID único)
@@ -115,6 +153,16 @@ export default function SacarTurno() {
             return;
         }
         
+        if (modoReasignar && fechaHoraReasignar) {
+            const horaOriginal = fechaHoraReasignar.split("T")[1].substring(0,5);
+            const slot = horariosSlots.find(h => h.id === turnoId);
+
+            if (!slot || slot.hora !== horaOriginal) {
+                toast.error("Solo puede reasignar en el mismo horario.");
+                return;
+            }
+        }
+
         // Encontrar el OBJETO TurnoAPI completo usando el ID único devuelto por el hijo
         const turnoEncontrado = turnosData.find(t => t.id === turnoId);
 
@@ -163,6 +211,8 @@ export default function SacarTurno() {
         }
     };
 
+    const fechaOriginal = fechaHoraReasignar ? new Date(fechaHoraReasignar) : null;
+
     return (
         <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center pt-[80px]">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Sacar Turno</h1>
@@ -176,9 +226,15 @@ export default function SacarTurno() {
                     }))}
                     selected={medicoId}
                     onChange={setMedicoId}
+                    disabled={modoReasignar}
                 />
-
-                <Calendario selected={fecha} onSelect={setFecha} />
+                
+                <Calendario 
+                    selected={fecha} 
+                    onSelect={setFecha} 
+                    minDate={fechaOriginal ? new Date(fechaOriginal.getTime() - 24*60*60*1000) : undefined}
+                    maxDate={fechaOriginal ? new Date(fechaOriginal.getTime() + 24*60*60*1000) : undefined}
+                />
 
                 {/* Horarios Disponibles */}
                 {(medicoId && fecha) ? (

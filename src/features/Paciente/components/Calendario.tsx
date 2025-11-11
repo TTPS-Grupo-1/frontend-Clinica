@@ -6,9 +6,11 @@ import "react-day-picker/dist/style.css";
 interface CalendarPickerProps {
   selected: Date | undefined;
   onSelect: (date: Date | undefined) => void;
+  minDate?: Date;
+  maxDate?: Date;
 }
 
-const CalendarPicker: FC<CalendarPickerProps> = ({ selected, onSelect }) => {
+const CalendarPicker: FC<CalendarPickerProps> = ({ selected, onSelect, minDate, maxDate }) => {
   return (
     <div>
       <label className="block text-sm font-medium mb-2">Fecha</label>
@@ -17,7 +19,8 @@ const CalendarPicker: FC<CalendarPickerProps> = ({ selected, onSelect }) => {
           mode="single"
           selected={selected}
           onSelect={onSelect}
-          fromDate={new Date()}
+          fromDate={minDate}
+          toDate={maxDate}
           locale={es}
         />
       </div>

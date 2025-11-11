@@ -18,11 +18,13 @@ export interface Turno {
   hora: string;
   medico: string;
   especialidad?: string;
+  es_monitoreo: boolean; 
 }
 
 export interface TurnoCardProps {
   turno: Turno;
   onCancelar: (id: number) => void;
+  onReasignar: (idTurno: number) => void;
 }
 
 export interface UsePacientesFetchResult {

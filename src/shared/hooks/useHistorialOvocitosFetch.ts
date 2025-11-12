@@ -18,7 +18,9 @@ export function useHistorialOvocitosFetch(pacienteId: number | null) {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(`/api/historial_ovocitos/?paciente=${pacienteId}`);
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const headers = token ? { Authorization: `Token ${token}` } : {};
+  const res = await axios.get(`/api/historial_ovocitos/?paciente=${pacienteId}`, { headers });
         if (!cancelled) setHistorial(res.data);
       } catch (err) {
         if (!cancelled) setError(err);

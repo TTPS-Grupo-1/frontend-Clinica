@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
 import { useEmbryoFetch } from '../../../shared/hooks/useEmbryoFetch';
 import { useFertilizacionesFetch } from '../../../shared/hooks/useFertilizacionesFetch';
-import HistoriaClinicaDetails from '../components/HistoriaClinicaDetails';
+import HistoriaClinicaDetails from '../components/History/HistoriaClinicaDetails';
 
 export default function HistoriaClinicaPage() {
   const { pacienteId: pacienteIdParam } = useParams<{ pacienteId?: string }>();

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import DashboardCard from "../../Medico/components/DashboardCard";
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -20,12 +21,15 @@ export default function HomePage() {
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <article className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Centro de Donaciones
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Registra y gestiona las donaciones de gametos. Completa los formularios con toda la información requerida para el proceso de fertilización asistida.
-            </p>
+            <div className="max-w-3xl mx-auto flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-4">Centro de Donaciones</h1>
+                <p className="text-xl text-gray-600">
+                  Registra y gestiona las donaciones de gametos. Completa los formularios con toda la información requerida para el proceso de fertilización asistida.
+                </p>
+              </div>
+              <RoleHomeButton className="!static ml-6" />
+            </div>
           </article>
 
           {/* Cards Grid */}

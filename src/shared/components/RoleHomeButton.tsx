@@ -29,7 +29,7 @@ export default function RoleHomeButton({ rol: rolProp = null, label = 'Volver al
     'medico': '/medico/home',
     'directormedico': '/medico/home',
     'paciente': '/pacientes/home',
-    'operadorlaboratorio': '/operador',
+    'operador_laboratorio': '/operador',
     'operador': '/operador',
   };
 

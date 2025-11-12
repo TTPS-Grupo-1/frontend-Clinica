@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from 'framer-motion';
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import { usePacientesFetch } from "../../../shared/hooks/usePacientesFetch";
 import { useOvocitosFetch } from "../../../shared/hooks/useOvocitosFetch";;
 import Pagination from "../../../components/Pagination";
@@ -34,14 +35,17 @@ export default function HomePuncion() {
         <div className={`min-h-screen pt-20 pb-8 bg-gradient-to-br from-pink-50 to-rose-100`}>
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <motion.h1
-                        initial={{ opacity: 0, y: -12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45 }}
-                        className="text-2xl sm:text-3xl font-bold text-pink-700 mb-6 text-center drop-shadow-lg tracking-tight"
-                    >
-                        Punciones
-                    </motion.h1>
+                    <div className="mb-6 flex items-center justify-between">
+                        <motion.h1
+                            initial={{ opacity: 0, y: -12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.45 }}
+                            className="text-2xl sm:text-3xl font-bold text-pink-700 drop-shadow-lg tracking-tight"
+                        >
+                            Punciones
+                        </motion.h1>
+                        <RoleHomeButton className="!static ml-4" />
+                    </div>
 
                     <motion.section
                         initial={{ opacity: 0, y: 8 }}

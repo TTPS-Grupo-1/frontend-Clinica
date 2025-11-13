@@ -3,6 +3,7 @@ import axios from 'axios';
 import OvocitosTable from '../../../Punciones/components/OvocitosTable';
 import EmbryoList from '../../../Embryo/components/EmbryoList';
 import FertilizacionesTable from '../../../Fertilizacion/components/Fertilizaciones';
+import PatientDetails from './PatientDetails';
 
 type Props = {
   tratamientoId: number;
@@ -10,116 +11,86 @@ type Props = {
   paciente?: any | null;
 };
 
-import PatientDetails from './PatientDetails';
-
 export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }: Props) {
   const [tratamiento, setTratamiento] = useState<any | null>(null);
   const [ovocitos, setOvocitos] = useState<any[]>([]);
-  const [historial, setHistorial] = useState<any[]>([]);
   const [embriones, setEmbriones] = useState<any[]>([]);
   const [fertilizaciones, setFertilizaciones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pacienteLocal, setPacienteLocal] = useState<any | null>(null);
 
   useEffect(() => {
-    async function fetchAll() {
+    async function fetchTreatmentData() {
       setLoading(true);
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         const headers = token ? { Authorization: `Token ${token}` } : {};
 
-        // 1) Obtener el tratamiento
-        const tRes = await axios.get(`/api/tratamientos/${tratamientoId}/`, { headers });
-        const tr = tRes.data;
-        setTratamiento(tr);
+        // Usar el nuevo endpoint que devuelve todos los datos relacionados
+        
+        const response = await axios.get(`/api/tratamientos/${tratamientoId}/detalles-completos/`, { headers });
+        const data = response.data;
 
-        // Extraer ids útiles
-        const pacienteId = tr?.paciente ?? tr?.paciente_id ?? (tr?.paciente?.id ?? null);
-        const puncionId = tr?.puncion ?? tr?.puncion_id ?? (tr?.puncion?.id ?? null);
+        // Establecer todos los datos de una vez
+        setTratamiento(data.tratamiento);
+        setOvocitos(data.ovocitos || []);
+        setFertilizaciones(data.fertilizaciones || []);
+        setEmbriones(data.embriones || []);
 
-        // 2) Ovocitos: preferir filtrar por punción, fallback por paciente
-        let ovocitosData: any[] = [];
-        try {
-          if (puncionId) {
-            const oRes = await axios.get(`/api/ovocitos/?puncion=${puncionId}`, { headers });
-            ovocitosData = Array.isArray(oRes.data) ? oRes.data : (oRes.data.results ?? []);
-          } else if (pacienteId) {
-            const oRes = await axios.get(`/api/ovocitos/?paciente=${pacienteId}`, { headers });
-            ovocitosData = Array.isArray(oRes.data) ? oRes.data : (oRes.data.results ?? []);
+        // Si no recibimos el objeto paciente, obtenerlo
+        if (!paciente && data.tratamiento?.paciente) {
+          try {
+            const pRes = await axios.get(`/api/pacientes/${data.tratamiento.paciente}/`, { headers });
+            setPacienteLocal(pRes.data);
+          } catch (pErr) {
+            console.error('Error fetching patient:', pErr);
+            setPacienteLocal(null);
           }
-        } catch (ovErr) {
-          ovocitosData = [];
         }
-        setOvocitos(ovocitosData);
 
-        // 3) Historial de ovocitos: por paciente
-        let historialData: any[] = [];
-        try {
-          if (pacienteId) {
-            const hRes = await axios.get(`/api/historial_ovocitos/?paciente=${pacienteId}`, { headers });
-            historialData = Array.isArray(hRes.data) ? hRes.data : (hRes.data.results ?? []);
-          }
-        } catch (hErr) {
-          historialData = [];
-        }
-        setHistorial(historialData);
-
-        // 4) Fertilizaciones: traer todas y filtrar por ovocitos del tratamiento
-        let fertilizacionesData: any[] = [];
-        try {
-          const fRes = await axios.get(`/api/fertilizacion/`, { headers });
-          const allF = Array.isArray(fRes.data) ? fRes.data : (fRes.data.results ?? fRes.data?.data ?? []);
-          const ovIds = ovocitosData.map((o: any) => o.id_ovocito ?? o.id ?? o.pk).filter(Boolean);
-          if (ovIds.length > 0) {
-            fertilizacionesData = allF.filter((f: any) => ovIds.includes(f.ovocito ?? f.ovocito_id ?? f.ovocito?.id));
-          } else if (pacienteId) {
-            // fallback: sin ovocitos no podemos asociar fertilizaciones de forma fiable
-            fertilizacionesData = [];
-          }
-        } catch (fErr) {
-          fertilizacionesData = [];
-        }
-        setFertilizaciones(fertilizacionesData);
-
-        // 5) Embriones: traer todos y filtrar por fertilizaciones encontradas
-        let embrionesData: any[] = [];
-        try {
-          const eRes = await axios.get(`/api/embriones/`, { headers });
-          const allE = Array.isArray(eRes.data) ? eRes.data : (eRes.data.results ?? []);
-          const fertIds = fertilizacionesData.map((ff: any) => ff.id ?? ff.id_fertilizacion ?? ff.pk).filter(Boolean);
-          if (fertIds.length > 0) {
-            embrionesData = allE.filter((em: any) => fertIds.includes(em.fertilizacion ?? em.fertilizacion_id ?? em.fertilizacion?.id));
-          }
-        } catch (eErr) {
-          embrionesData = [];
-        }
-        setEmbriones(embrionesData);
-        console.log('Fetched treatment details:', {
-          tratamiento: tr,
-          ovocitos: ovocitosData,
-          historial: historialData,
-          embriones: embrionesData,
-          fertilizaciones: fertilizacionesData,
-        });
       } catch (err) {
-        // Silencioso: algunos endpoints pueden no existir; componentes mostrarán mensajes vacíos.
+        console.error('Error fetching treatment data:', err);
+        // Agregar más detalles del error
+        if (err instanceof Error) {
+          console.error('Error details:', {
+            message: err.message,
+            response: (err as any).response?.data,
+            status: (err as any).response?.status,
+            config: (err as any).config
+          });
+        }
+        
+        // También mostrar el error completo de axios
+        if ((err as any).isAxiosError) {
+          console.error('Axios error details:', {
+            url: (err as any).config?.url,
+            method: (err as any).config?.method,
+            headers: (err as any).config?.headers,
+            responseStatus: (err as any).response?.status,
+            responseData: (err as any).response?.data
+          });
+        }
       } finally {
         setLoading(false);
       }
     }
-    fetchAll();
-  }, [tratamientoId]);
+
+    if (tratamientoId) {
+      fetchTreatmentData();
+    }
+  }, [tratamientoId, paciente]);
 
   if (loading) return <div className="text-gray-500">Cargando detalles del tratamiento...</div>;
 
   // Si nos pasaron el objeto paciente, mostrar resumen reutilizable
-  const showPaciente = !!paciente;
+  const showPaciente = !!(paciente || pacienteLocal);
 
   return (
     <div className="space-y-6">
       {showPaciente ? (
         <div className="bg-white rounded p-4">
           <h3 className="text-lg font-semibold mb-2">Datos del paciente</h3>
-          <PatientDetails paciente={paciente} loading={false} />
+          <PatientDetails paciente={paciente || pacienteLocal} loading={false} />
         </div>
       ) : null}
 
@@ -127,11 +98,12 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
         <h3 className="text-lg font-semibold mb-2">Resumen del tratamiento</h3>
         {tratamiento ? (
           <div className="text-gray-700">
-            <div><strong>ID:</strong> {tratamiento.id ?? tratamiento.pk}</div>
-            <div><strong>Tipo:</strong> {tratamiento.tipo || tratamiento.nombre || '-'}</div>
-            <div><strong>Estado:</strong> {tratamiento.estado || tratamiento.tipo_estado || '-'}</div>
-            <div><strong>Inicio:</strong> {tratamiento.fecha_inicio || tratamiento.created_at || '-'}</div>
-            <div><strong>Médico:</strong> {tratamiento.medico?.nombre || tratamiento.medico || '-'}</div>
+            <div><strong>ID:</strong> {tratamiento.id}</div>
+            <div><strong>Estado:</strong> {tratamiento.activo ? 'Activo' : 'Inactivo'}</div>
+            <div><strong>Inicio:</strong> {tratamiento.fecha_inicio}</div>
+            <div><strong>Médico:</strong> {tratamiento.medico_nombre || `ID: ${tratamiento.medico}`}</div>
+            <div><strong>Objetivo:</strong> {tratamiento.objetivo || '-'}</div>
+            <div><strong>Creado:</strong> {tratamiento.fecha_creacion ? new Date(tratamiento.fecha_creacion).toLocaleDateString() : '-'}</div>
           </div>
         ) : (
           <div className="text-gray-500">No hay detalles del tratamiento disponibles.</div>

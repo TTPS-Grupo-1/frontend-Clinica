@@ -8,8 +8,10 @@ import {
   TransferenciaForm,
   TransferenciaSkeleton,
   NoTratamientosState,
-  NoPacienteSelectedState
+  NoPacienteSelectedState,
+  NoEmbrionesState
 } from '../components';
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import type { MessageType } from '../../../types/Transferencia';
 
 export default function TransferenciaPage() {
@@ -17,6 +19,7 @@ export default function TransferenciaPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<MessageType>('info');
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
+  const [includeMultiple, setIncludeMultiple] = useState(false);
 
   // Cargar pacientes
   const { pacientes, loading: pacientesLoading, error: pacientesError } = usePacientesFetch();
@@ -25,6 +28,22 @@ export default function TransferenciaPage() {
   const { tratamientos, embriones, loading: dataLoading, error: dataError, submitTransferencia } = useApi(selectedPacienteId);
   
   const { formData, updateField, toggleEmbrion, resetForm } = useTransferenciaForm();
+
+  const handleEmbrionToggle = (embrionId: number) => {
+    if (includeMultiple) {
+      // allow the hook to toggle as usual for multi-select
+      toggleEmbrion(embrionId);
+      return;
+    }
+
+    // single-select mode: replace the selection with this embrion, or clear if already selected
+    const current = formData.embriones || [];
+    if (current.includes(embrionId)) {
+      updateField('embriones', []);
+    } else {
+      updateField('embriones', [embrionId]);
+    }
+  };
 
   const handlePacienteChange = (pacienteId: number | null) => {
     setSelectedPacienteId(pacienteId);
@@ -88,8 +107,10 @@ export default function TransferenciaPage() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen pt-[80px]">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg relative">
+        <RoleHomeButton />
+        
+        <h2 className="text-2xl font-semibold mb-6 text-gray-800 mt-12">
           Registrar Transferencia Embrionaria
         </h2>
 
@@ -116,15 +137,33 @@ export default function TransferenciaPage() {
             </div>
           ) : tratamientos.length === 0 ? (
             <NoTratamientosState />
+          ) : !dataLoading && embriones.length === 0 ? (
+            <NoEmbrionesState />
           ) : (
             <>
+              {/* Toggle para habilitar selección múltiple de embriones - Solo aparece cuando hay MÁS DE 1 embrión */}
+              {embriones.length > 1 && (
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={includeMultiple}
+                      onChange={(e) => setIncludeMultiple(e.target.checked)}
+                      className="mr-2 h-4 w-4"
+                    />
+                    <span className="text-sm text-gray-700">Incluir más de un embrión</span>
+                  </label>
+                  <span className="text-xs text-gray-400">{includeMultiple ? 'Modo múltiple' : 'Modo único'}</span>
+                </div>
+              )}
+              
               <TransferenciaSelector
                 tratamientos={tratamientos}
                 embriones={embriones}
                 selectedTratamiento={formData.tratamiento}
                 selectedEmbriones={formData.embriones}
                 onTratamientoChange={(tratamiento) => updateField('tratamiento', tratamiento)}
-                onEmbrionToggle={toggleEmbrion}
+                onEmbrionToggle={handleEmbrionToggle}
                 isLoading={isLoading}
               />
 

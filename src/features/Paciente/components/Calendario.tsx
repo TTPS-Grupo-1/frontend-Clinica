@@ -8,9 +8,16 @@ interface CalendarPickerProps {
   onSelect: (date: Date | undefined) => void;
   minDate?: Date;
   maxDate?: Date;
+  disabled?: ((date: Date) => boolean) | Date[];
 }
 
-const CalendarPicker: FC<CalendarPickerProps> = ({ selected, onSelect, minDate, maxDate }) => {
+const CalendarPicker: FC<CalendarPickerProps> = ({
+  selected,
+  onSelect,
+  minDate,
+  maxDate,
+  disabled,
+}) => {
   return (
     <div>
       <label className="block text-sm font-medium mb-2">Fecha</label>
@@ -22,6 +29,7 @@ const CalendarPicker: FC<CalendarPickerProps> = ({ selected, onSelect, minDate, 
           fromDate={minDate}
           toDate={maxDate}
           locale={es}
+          disabled={disabled || undefined} // 👈 el cambio importante
         />
       </div>
     </div>

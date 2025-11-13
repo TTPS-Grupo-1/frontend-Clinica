@@ -153,9 +153,9 @@ export default function MisTurnos() {
             toast.success('Turno cancelado exitosamente!'); 
             
             // 💡 SOLUCIÓN: Usar setTimeout para priorizar el renderizado del toast
-            setTimeout(() => {
-                fetchMisTurnos(); // Recargar la lista
-            }, 150); 
+            
+            fetchMisTurnos(); // Recargar la lista
+
             
         } catch (error) {
             // Mostrar error si el fetch falló
@@ -173,7 +173,7 @@ export default function MisTurnos() {
         const medicoEncontrado = medicos.find(m => m.id === turno.id_medico);
         
         const nombreCompleto = medicoEncontrado 
-            ? `Dr. ${medicoEncontrado.first_name} ${medicoEncontrado.last_name}` 
+            ? `${medicoEncontrado.first_name} ${medicoEncontrado.last_name}` 
             : "Médico Desconocido";
 
         return {
@@ -214,6 +214,18 @@ export default function MisTurnos() {
 
             <div className="relative z-10">
                 <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="mb-6"
+                >
+                <h1 className="text-2xl font-bold text-gray-800 mb-6">Mis Turnos</h1>
+                <p className="text-gray-700 text-center text-lg">
+                    Gestiona tus próximos turnos <span className="font-semibold">({misTurnos.length})</span>
+                </p>
+                </motion.div>
+                
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
@@ -230,9 +242,9 @@ export default function MisTurnos() {
                                     toast.error("No se encontró el turno seleccionado.");
                                     return;
                                 }
-
+                                const fechaNormalizada = t.fecha_hora.replace(" ", "+");
                                 navigate(
-                                    `/sacar-turno?reasignar=1&id_turno=${t.id}&id_medico=${t.id_medico}&fecha=${t.fecha_hora}`
+                                `/pacientes/sacarTurno?reasignar=1&id_turno=${t.id}&id_medico=${t.id_medico}&fecha=${fechaNormalizada}`
                                 );
                             }}
                         />

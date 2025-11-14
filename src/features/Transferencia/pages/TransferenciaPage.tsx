@@ -28,7 +28,13 @@ export default function TransferenciaPage() {
   const { tratamientos, embriones, loading: dataLoading, error: dataError, submitTransferencia } = useApi(selectedPacienteId);
   
   const { formData, updateField, toggleEmbrion, resetForm } = useTransferenciaForm();
-
+  console.log('formData', embriones);
+  const availableEmbriones = (embriones || []).filter(e => {
+    if (!e) return false;
+    const estado = String(e.estado || '').toLowerCase();
+    if (estado === 'transferido' ) return false;
+    return true;
+  });
   const handleEmbrionToggle = (embrionId: number) => {
     if (includeMultiple) {
       // allow the hook to toggle as usual for multi-select
@@ -159,7 +165,7 @@ export default function TransferenciaPage() {
               
               <TransferenciaSelector
                 tratamientos={tratamientos}
-                embriones={embriones}
+                embriones={availableEmbriones}
                 selectedTratamiento={formData.tratamiento}
                 selectedEmbriones={formData.embriones}
                 onTratamientoChange={(tratamiento) => updateField('tratamiento', tratamiento)}

@@ -27,8 +27,7 @@ export default function EmbrionForm({
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Deshabilitar edición si el estado es "descartado" o "transferido"
-  const isEditable = formData.estado !== "descartado" && formData.estado !== "transferido";
-
+  const isEditable = !isEdit || (initialData?.estado !== "descartado" && initialData?.estado !== "transferido");
   // Cargar datos iniciales cuando se está editando - SOLO UNA VEZ
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0 && !isInitialized) {

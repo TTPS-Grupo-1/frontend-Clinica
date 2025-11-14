@@ -11,7 +11,7 @@ import {
   ejecutarDescriPreservacion
 } from '../utils/fertilizacionHelpers';
 import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
-import { useHistorialOvocitosFetch } from '../../../shared/hooks/useHistorialOvocitosFetch';
+import { useHistorialOvocitoFetch } from '../../../shared/hooks/useHistorialOvocitoFetch';
 import { useTratamientoInfo } from '../hooks/useTratamientoInfo';
 import type { FertilizacionModalProps } from '../../../interfaces/Fertilizacion';
 
@@ -32,7 +32,7 @@ export default function FertilizacionModal({
 
   // Usar los hooks existentes
   const { ovocitos, loading: ovocitosLoading } = useOvocitosFetch(selectedPacienteId);
-  const { historial, loading: historialLoading } = useHistorialOvocitosFetch(selectedPacienteId);
+  const { historial, loading: historialLoading } = useHistorialOvocitoFetch(selectedPacienteId);
   const { tratamientoInfo, loading: tratamientoLoading } = useTratamientoInfo(selectedPacienteId?.toString() || null, isOpen);
 
   const loading = ovocitosLoading || historialLoading || tratamientoLoading;

@@ -29,7 +29,7 @@ export default function EmbryoPage() {
       tecnica: nuevoEmbryo.tecnica || "",
       tecnico_laboratorio: nuevoEmbryo.tecnico_laboratorio || "",
       calidad: Number(nuevoEmbryo.calidad),
-      estado: nuevoEmbryo.estado || "no_transferido",
+      estado: nuevoEmbryo.estado || "fresco",
       fecha_alta: new Date().toISOString().slice(0, 10),
       fecha_baja: nuevoEmbryo.fecha_baja || null,
       info_semen: nuevoEmbryo.info_semen || "",

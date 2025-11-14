@@ -26,10 +26,12 @@ export default function EmbrionForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Deshabilitar edición si el estado es "descartado" o "transferido"
+  const isEditable = formData.estado !== "descartado" && formData.estado !== "transferido";
+
   // Cargar datos iniciales cuando se está editando - SOLO UNA VEZ
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0 && !isInitialized) {
-      console.log('Cargando datos iniciales:', initialData);
       setFormData({
         calidad: initialData.calidad ? String(initialData.calidad) : "",
         pgt: initialData.pgt ? String(initialData.pgt) : "",
@@ -118,6 +120,13 @@ export default function EmbrionForm({
       <h2 className="text-3xl font-bold text-gray-800 mb-6">
         {isEdit ? "Editar Embrión" : "Registrar Datos del Embrión"}
       </h2>
+
+      {/* Mensaje si no se puede editar */}
+      {!isEditable && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-center font-semibold">
+          No se puede editar un embrión {formData.estado === "descartado" ? "descartado" : "transferido"}.
+        </div>
+      )}
       
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Calidad */}
@@ -130,6 +139,7 @@ export default function EmbrionForm({
             name="calidad"
             value={formData.calidad || ""}
             onChange={handleChange}
+            disabled={!isEditable}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white ${
               errors.calidad ? "border-red-500" : "border-gray-300"
             }`}
@@ -156,6 +166,7 @@ export default function EmbrionForm({
             name="pgt"
             value={formData.pgt || ""}
             onChange={handleChange}
+            disabled={!isEditable}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white"
           >
             <option value="">-- Seleccionar --</option>
@@ -174,6 +185,7 @@ export default function EmbrionForm({
             name="estado"
             value={formData.estado || "fresco"}
             onChange={handleChange}
+            disabled={!isEditable}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white ${
               errors.estado ? "border-red-500" : "border-gray-300"
             }`}
@@ -200,6 +212,7 @@ export default function EmbrionForm({
               name="fecha_baja"
               value={formData.fecha_baja || ""}
               onChange={handleChange}
+              disabled={!isEditable}
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white ${
                 errors.fecha_baja ? "border-red-500" : "border-gray-300"
               }`}
@@ -221,6 +234,7 @@ export default function EmbrionForm({
               name="causa_descarte"
               value={formData.causa_descarte || ""}
               onChange={handleChange}
+              disabled={!isEditable}
               placeholder="Describa la razón del descarte"
               rows={3}
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white ${
@@ -243,6 +257,7 @@ export default function EmbrionForm({
             name="observaciones"
             value={formData.observaciones || ""}
             onChange={handleChange}
+            disabled={!isEditable}
             placeholder="Observaciones adicionales sobre el embrión"
             rows={4}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white"
@@ -253,7 +268,8 @@ export default function EmbrionForm({
         <div className="flex gap-4 pt-4">
           <button
             type="submit"
-            className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-md"
+            disabled={!isEditable}
+            className={`flex-1 ${isEditable ? "bg-blue-600" : "bg-gray-400"} text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-md`}
           >
             {isEdit ? "Actualizar Embrión" : "Registrar Embrión"}
           </button>

@@ -1,4 +1,3 @@
-import React from 'react';
 import OvocitoStateDiagram from './OvocitoStateDiagram';
 import { useHistorialOvocitoFetch } from '../../../shared/hooks/useHistorialOvocitoFetch';
 
@@ -13,14 +12,10 @@ export default function OvocitoHistoryModal({ ovocitoId, ovocitoIdentificador, o
   // Intentar cargar historial real (si hay token en localStorage se enviará en headers)
   const { historial: historialReal, loading, error } = useHistorialOvocitoFetch(ovocitoId);
   // Si no hay historial real, usar datos hardcodeados de ejemplo para pruebas
-  const fallbackHistorial = (ovocitoId !== null && ovocitoId !== undefined) ? [
-    { id: -1, ovocito: ovocitoId, ovocito_identificador: ovocitoIdentificador ?? `OV-${ovocitoId}`, estado: 'recuperado', fecha: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), nota: 'Registro de ejemplo: recuperado', usuario_rep: 'Seed' },
-    { id: -2, ovocito: ovocitoId, ovocito_identificador: ovocitoIdentificador ?? `OV-${ovocitoId}`, estado: 'clasificado', fecha: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), nota: 'Registro de ejemplo: clasificado', usuario_rep: 'Seed' },
-    { id: -3, ovocito: ovocitoId, ovocito_identificador: ovocitoIdentificador ?? `OV-${ovocitoId}`, estado: 'fertilizado', fecha: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(), nota: 'Registro de ejemplo: fertilizado', usuario_rep: 'Seed' },
-  ] : [];
+  
 
   // Priorizar el historial real si llegó, si no usar fallback
-  const historial = (historialReal && historialReal.length > 0) ? historialReal : fallbackHistorial;
+  const historial = (historialReal && historialReal.length > 0) ? historialReal : [];
 
   if (!open) return null;
 

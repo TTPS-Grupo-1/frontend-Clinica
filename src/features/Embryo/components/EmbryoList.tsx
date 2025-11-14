@@ -12,7 +12,6 @@ export default function EmbryoList({ embryos, selectedPacienteId }: EmbryoListAd
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentEmbryos = embryos.slice(startIndex, startIndex + itemsPerPage);
 
-  // ✅ AGREGAR: Resetear paginación cuando cambian los embriones o el paciente
   useEffect(() => {
     setCurrentPage(1);
   }, [embryos, selectedPacienteId]);

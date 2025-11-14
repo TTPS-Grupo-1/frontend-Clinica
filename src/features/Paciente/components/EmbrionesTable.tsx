@@ -1,5 +1,5 @@
 import { useState } from "react";
-import EmbrionHistoryModal from "./History/EmbrionHistoryModal";
+import HistoryModal from "../../Punciones/components/OvocitoHistoryModal"; // ✅ Importar el modal generalizado
 
 // ✅ Definir la interfaz aquí mismo
 interface Embryo {
@@ -25,7 +25,7 @@ export default function EmbrionesTable({ embriones, onVerEmbrion }: EmbrionesTab
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Embriones Registrados</h3>
         
         {embriones.length === 0 ? (
@@ -123,13 +123,15 @@ export default function EmbrionesTable({ embriones, onVerEmbrion }: EmbrionesTab
         )}
       </div>
 
-      <EmbrionHistoryModal
-        embrionId={openHistorialId}
-        embrionIdentificador={
+      {/* ✅ Usar el modal generalizado */}
+      <HistoryModal
+        entityId={openHistorialId}
+        entityIdentificador={
           openHistorialId
             ? embriones.find((e) => e.id === openHistorialId)?.identificador
             : undefined
         }
+        entityType="embrion" // ✅ Especificar que es embrión
         open={openHistorialId !== null}
         onClose={() => setOpenHistorialId(null)}
       />

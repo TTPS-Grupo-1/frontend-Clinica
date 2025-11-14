@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { OvocitoModalRow } from "../../../types/Ovocito";
-import OvocitoHistoryModal from "./OvocitoHistoryModal";
+import HistoryModal from "./OvocitoHistoryModal";
 
 export default function OvocitosTable({ ovocitos }: { ovocitos: OvocitoModalRow[] }) {
   const [openId, setOpenId] = useState<number | null>(null);
@@ -40,9 +40,10 @@ export default function OvocitosTable({ ovocitos }: { ovocitos: OvocitoModalRow[
         </tbody>
       </table>
 
-      <OvocitoHistoryModal
-        ovocitoId={openId}
-        ovocitoIdentificador={openId ? ovocitos.find(x => (x.id_ovocito ?? null) === openId)?.identificador : undefined}
+      <HistoryModal
+        entityId={openId}
+        entityIdentificador={openId ? ovocitos.find(x => x.id_ovocito === openId)?.identificador : undefined}
+        entityType="ovocito" // ✅ Especificar que es ovocito
         open={openId !== null}
         onClose={() => setOpenId(null)}
       />

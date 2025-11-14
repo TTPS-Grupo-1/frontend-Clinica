@@ -7,7 +7,7 @@ import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
 import { useEmbryoFetch } from '../../../shared/hooks/useEmbryoFetch';
 import { useFertilizacionesFetch } from '../../../shared/hooks/useFertilizacionesFetch';
 import HistoriaClinicaDetails from '../components/History/HistoriaClinicaDetails';
-import EmbrionesTable from '../components/EmbrionesTable';
+
 
 export default function HistoriaClinicaPage() {
   const { pacienteId: pacienteIdParam } = useParams<{ pacienteId?: string }>();
@@ -74,10 +74,6 @@ export default function HistoriaClinicaPage() {
                 fertilizaciones={fertilizaciones}
                 loadingFert={loadingFert}
                 userType={userType}
-              />
-              <EmbrionesTable 
-                embriones={embriones} 
-                onVerEmbrion={(embrionId) => navigate(`/embriones/${embrionId}`)} 
               />
             </>
           )}

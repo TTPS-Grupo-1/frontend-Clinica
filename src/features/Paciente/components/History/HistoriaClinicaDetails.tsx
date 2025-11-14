@@ -1,6 +1,6 @@
 import OvocitosTable from '../../../Punciones/components/OvocitosTable';
 import { useState } from 'react';
-import EmbryoList from '../../../Embryo/components/EmbryoList';
+import EmbrionesTable from '../EmbrionesTable'; // ✅ Cambiar import
 import FertilizacionesTable from '../../../Fertilizacion/components/Fertilizaciones';
 import type { Props } from '../../../../interfaces/HistoriaClinica';
 import TreatmentsList from './TreatmentsList';
@@ -26,7 +26,7 @@ export default function HistoriaClinicaDetails({
 }: ExtendedProps) {
   const [selectedTratamientoId, setSelectedTratamientoId] = useState<number | null>(null);
 
-  // Vista para pacientes: datos personales + tratamientos + resumen general
+  // Vista para pacientes
   if (userType === 'paciente') {
     return (
       <>
@@ -74,7 +74,7 @@ export default function HistoriaClinicaDetails({
           {loadingEmbriones ? (
             <div className="text-gray-500">Cargando embriones...</div>
           ) : (
-            <EmbryoList embryos={embriones} selectedPacienteId={selectedPacienteId} />
+            <EmbrionesTable embriones={embriones || []} /> 
           )}
         </section>
 
@@ -90,7 +90,7 @@ export default function HistoriaClinicaDetails({
     );
   }
 
-  // Vista para médicos: solo lista de tratamientos y detalles específicos por tratamiento
+  // Vista para médicos
   return (
     <>
       <section className="mb-6">

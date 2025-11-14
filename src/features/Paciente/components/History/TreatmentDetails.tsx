@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import OvocitosTable from '../../../Punciones/components/OvocitosTable';
-import EmbryoList from '../../../Embryo/components/EmbryoList';
 import FertilizacionesTable from '../../../Fertilizacion/components/Fertilizaciones';
 import PatientDetails from './PatientDetails';
+import EmbrionesTable from "../EmbrionesTable"; // ✅ Importar
 
 type Props = {
   tratamientoId: number;
@@ -125,7 +125,7 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
         {embriones.length === 0 ? (
           <div className="text-gray-500">No se encontraron embriones relacionados al tratamiento.</div>
         ) : (
-          <EmbryoList embryos={embriones} selectedPacienteId={pacienteId} />
+          <EmbrionesTable embriones={embriones} />
         )}
       </div>
 

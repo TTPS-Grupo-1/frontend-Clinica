@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { FertilizacionData } from '../../../types/Fertilizacion';
+import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
 
 /**
  * Obtiene headers de autenticación desde localStorage
@@ -45,11 +46,41 @@ export async function verificarViabilidadOvocitos(pacienteId: number): Promise<b
 
 /**
  * Ejecuta el registro de fertilización usando el endpoint existente
+ * y crea el embrión si la fertilización fue exitosa
  */
-export async function ejecutarFertilizacion(datos: FertilizacionData): Promise<boolean> {
+export async function ejecutarFertilizacion(
+  datos: FertilizacionData,
+  ovocitos: any[] = []
+): Promise<boolean> {
   try {
     const headers = getAuthHeaders();
-    await axios.post('/api/fertilizacion/', datos, { headers });
+    
+    // Crear fertilización
+    const response = await axios.post('http://localhost:8000/api/fertilizacion/', datos, { headers });
+    const fertilizacionId = response.data.id_fertilizacion || response.data.id;
+    
+    // ✅ Crear embrión si la fertilización fue exitosa
+    if (datos.resultado === 'exitosa') {
+      const ovocitoSeleccionado = ovocitos.find(o => 
+        o.id_ovocito === Number(datos.ovocitos_utilizados) || o.id === Number(datos.ovocitos_utilizados)
+      );
+      
+      const identificadorEmbrion = generateUniqueId({
+        prefix: "EMB",
+        nombre: ovocitoSeleccionado?.identificador || "UNK",
+        apellido: "",
+      });
+
+      const embrionPayload = {
+        identificador: identificadorEmbrion,
+        fertilizacion: fertilizacionId,
+        estado: "no transferido",
+      };
+
+      await axios.post('http://localhost:8000/api/embriones/', embrionPayload, { headers });
+      console.log(`Embrión ${identificadorEmbrion} creado exitosamente`);
+    }
+    
     return true;
   } catch (error) {
     console.error('Error ejecutando fertilización:', error);

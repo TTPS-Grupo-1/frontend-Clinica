@@ -24,9 +24,9 @@ export async function fetchPacientesForMedico(medicoId: number, headers: Record<
 
   let tratamientos: any[] = [];
   try {
-    // Pedimos al backend que nos devuelva solo tratamientos asociados al medicoId para evitar traer datos extra
-    const tRes = await axios.get(`/api/tratamientos/?medico=${medicoId}`, { headers });
-    tratamientos = Array.isArray(tRes.data) ? tRes.data : (tRes.data.results ?? []);
+    // Usar el nuevo endpoint específico para tratamientos por médico
+    const tRes = await axios.get(`/api/tratamientos/por-medico/${medicoId}/`, { headers });
+    tratamientos = Array.isArray(tRes.data) ? tRes.data : [];
   } catch (err) {
     tratamientos = [];
   }

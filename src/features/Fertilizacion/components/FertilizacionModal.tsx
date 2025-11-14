@@ -72,32 +72,24 @@ export default function FertilizacionModal({
         await ejecutarDescriPreservacion(ovocitosParaDescripreservar, currentUserId);
       }
 
-      // Construir payload conforme al modelo backend
-      // El backend espera campos como 'ovocito' (FK) y 'fecha_fertilizacion' obligatorios,
-      // además de las booleans 'tecnica_icsi' / 'tecnica_fiv' y 'resultado' con valores
-      // 'exitosa' | 'no_exitosa'. Mapear los valores locales a ese contrato.
       const fechaHoy = new Date().toISOString().slice(0, 10);
 
       const fertilizacionData: any = {
-        // Backend espera un solo ovocito (FK)
         ovocito: ovocitoSeleccionado as number,
         fecha_fertilizacion: fechaHoy,
-        // Nombre / id del técnico: el modelo actual usa 'tecnico_laboratorio' como CharField
         tecnico_laboratorio: String(currentUserId),
-        // Técnica como booleans
         tecnica_icsi: tecnica === 'ICSI',
         tecnica_fiv: tecnica === 'FIV',
-        // Resultado: mapear 'fallida' -> 'no_exitosa'
         resultado: resultado === 'exitosa' ? 'exitosa' : 'no_exitosa',
-        // Notas/observaciones libres
         notas: `Técnica: ${tecnica}. TecnicoId: ${currentUserId}. ${observaciones}`,
-        // Opcionales que el modelo acepta
         semen_info: semenViable ? 'pareja' : null,
         banco_semen_id: null,
         razon_banco_semen: 'no_aplica',
       };
 
-      const exito = await ejecutarFertilizacion(fertilizacionData);
+      // ✅ Pasar todos los ovocitos (frescos + criopreservados) para la creación del embrión
+      const todosOvocitos = [...ovocitosFrescos, ...ovocitosCriopreservados];
+      const exito = await ejecutarFertilizacion(fertilizacionData, todosOvocitos);
       
       if (exito) {
         setPaso('completado');
@@ -110,7 +102,7 @@ export default function FertilizacionModal({
       
     } catch (error) {
       console.error('Error ejecutando fertilización:', error);
-      setPaso('confirmacion'); // Volver a confirmación en caso de error
+      setPaso('confirmacion');
     }
   };
 

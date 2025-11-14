@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import PacientCard from '../components/PacientCard';
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import type { PacienteMinimal } from '../utils/pacienteHelpers';
 import { getAuthHeaders, fetchPacientesForMedico, fetchPacienteIfHasTratamiento } from '../utils/pacienteHelpers';
 
@@ -91,7 +92,11 @@ export default function MedicoPacientesPage() {
     <div className="min-h-screen pt-20 pb-8 bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h1 className="text-2xl font-bold text-blue-700 mb-4">Pacientes atendidos</h1>
+          <div className="mb-4 flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-blue-700">Pacientes atendidos</h1>
+            {/* Render the role-aware home button as static so it doesn't overlap content */}
+            <RoleHomeButton className="!static" />
+          </div>
 
           <div className="mb-4">
             <label className="block text-sm text-gray-700 mb-2">Paciente ID</label>

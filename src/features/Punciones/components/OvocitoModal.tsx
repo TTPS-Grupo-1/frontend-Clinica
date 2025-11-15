@@ -1,12 +1,10 @@
 import { useState } from "react";
-import type { EstadoOvocito } from "../../../types/Ovocito";
-import type { OvocitoModalProps } from "../../../types/Ovocito";
+import type { MadurezOvocito, TipoEstadoOvocito, OvocitoModalProps } from "../../../types/Ovocito";
 import { generateUniqueId } from "../../../shared/utils/generateUniqueId";
 
 export default function OvocitoModal({ open, onClose, onAdd, nombreDonante, apellidoDonante }: OvocitoModalProps) {
-    const [estado, setEstado] = useState<EstadoOvocito>("maduro");
-    const [cripreservar, setCripreservar] = useState(false);
-    const [descartado, setDescartado] = useState(false);
+    const [madurez, setMadurez] = useState<MadurezOvocito>("maduro");
+    const [tipoEstado, setTipoEstado] = useState<TipoEstadoOvocito>("fresco");
 
     if (!open) return null;
 
@@ -17,10 +15,9 @@ export default function OvocitoModal({ open, onClose, onAdd, nombreDonante, apel
     });
 
     const handleAdd = () => {
-        onAdd({ identificador, estado, cripreservar, descartado });
-        setEstado("maduro");
-        setCripreservar(false);
-        setDescartado(false);
+        onAdd({ identificador, madurez, tipo_estado: tipoEstado });
+        setMadurez("maduro");
+        setTipoEstado("fresco");
         onClose();
     };
 
@@ -31,16 +28,16 @@ export default function OvocitoModal({ open, onClose, onAdd, nombreDonante, apel
                     <h2 className="text-2xl text-pink-700 font-bold mb-6 text-center tracking-tight">Registrar Ovocito</h2>
                 </header>
                 <dl className="mb-4 flex flex-col gap-1">
-                    <dt className="text-xs font-medium text-gray-600">Identificador</dt>
+                    <dt className="text-xs font-bold text-gray-700">Identificador</dt>
                     <dd className="text-black font-mono break-all text-xs sm:text-sm bg-blue-50 rounded px-2 py-1 select-all">{identificador}</dd>
                 </dl>
                 <form className="space-y-4" onSubmit={e => e.preventDefault()}>
                     <div>
-                        <label className="block text-sm font-medium mb-2" htmlFor="estado">Estado</label>
+                        <label className="block text-sm text-black font-bold mb-2" htmlFor="madurez">Nivel de madurez</label>
                         <select
-                            id="estado"
-                            value={estado}
-                            onChange={e => setEstado(e.target.value as EstadoOvocito)}
+                            id="madurez"
+                            value={madurez}
+                            onChange={e => setMadurez(e.target.value as MadurezOvocito)}
                             className="w-full border border-blue-300 rounded text-black px-2 py-1 focus:ring-2 focus:ring-blue-200"
                         >
                             <option value="muy inmaduro">Muy inmaduro</option>
@@ -48,27 +45,18 @@ export default function OvocitoModal({ open, onClose, onAdd, nombreDonante, apel
                             <option value="inmaduro">Inmaduro</option>
                         </select>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={cripreservar}
-                                onChange={e => setCripreservar(e.target.checked)}
-                                id="cripreservar"
-                                className="accent-blue-600"
-                            />
-                            <label htmlFor="cripreservar" className="text-black text-sm">Cripreservar</label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={descartado}
-                                onChange={e => setDescartado(e.target.checked)}
-                                id="descartado"
-                                className="accent-pink-600"
-                            />
-                            <label htmlFor="descartado" className="text-black text-sm">Descartado</label>
-                        </div>
+                    <div>
+                        <label className="block text-sm text-black font-bold mb-2" htmlFor="tipoEstado">Estado</label>
+                        <select
+                            id="tipoEstado"
+                            value={tipoEstado}
+                            onChange={e => setTipoEstado(e.target.value as TipoEstadoOvocito)}
+                            className="w-full border border-pink-300 rounded text-black px-2 py-1 focus:ring-2 focus:ring-pink-200"
+                        >
+                            <option value="fresco">Fresco</option>
+                            <option value="criopreservado">Criopreservado</option>
+                            <option value="descartado">Descartado</option>
+                        </select>
                     </div>
                     <footer className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
                         <button

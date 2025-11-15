@@ -1,28 +1,71 @@
-import type { FC } from "react";
+import { type FC } from "react";
 
-interface HorariosDisponiblesProps {
-  horarios: string[];
-  onSelect: (hora: string) => void;
+// 💡 Interfaz para el slot de horario
+interface HorarioSlot {
+    id: number;
+    hora: string; // HH:MM
 }
 
-const HorariosDisponibles: FC<HorariosDisponiblesProps> = ({ horarios, onSelect }) => {
-  if (horarios.length === 0) {
-    return <p className="text-gray-500 mt-3">No hay horarios disponibles para esta fecha.</p>;
-  }
+interface HorariosProps {
+    horarios: HorarioSlot[]; // 👈 Array de objetos {id, hora}
+    onSelect: (turnoId: number | null) => void; // 👈 Devuelve el ID del turno
+    loading: boolean;
+    selectedTurnoId: number | null; // ID del turno actualmente seleccionado
+}
 
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
-      {horarios.map((hora) => (
-        <button
-          key={hora}
-          onClick={() => onSelect(hora)}
-          className="mx-auto flex items-center justify-center gap-2 bg-white text-black border border-gray-400 py-2 px-6 rounded-md font-medium hover:bg-gray-100 transition"
-        >
-          {hora}
-        </button>
-      ))}
-    </div>
-  );
+const HorariosDisponibles: FC<HorariosProps> = ({ horarios, onSelect, loading, selectedTurnoId }) => {
+
+    const handleSelect = (slot: HorarioSlot) => {
+        // Alternar la selección: si el turno clicado ya estaba seleccionado, lo deselecciona (null)
+        const nuevoSeleccionadoId = slot.id === selectedTurnoId ? null : slot.id;
+        onSelect(nuevoSeleccionadoId); // Notifica al componente padre
+    };
+
+    if (loading) {
+        return <div className="text-center py-4 text-gray-500">Cargando horarios disponibles...</div>;
+    }
+
+    if (horarios.length === 0) {
+        return <div className="text-center py-4 text-gray-500">No hay turnos disponibles para esta fecha.</div>;
+    }
+
+    return (
+        <div className="space-y-4">
+            <h3 className="text-lg font-semibold border-b pb-2">Seleccione un Horario:</h3>
+            
+            {/* GRILLA: Muestra los horarios en múltiples columnas */}
+            <div className="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5">
+                {horarios.map((slot) => (
+                    <button
+                        key={slot.id}
+                        onClick={() => handleSelect(slot)}
+                        disabled={loading}
+                        className={`
+                            p-2 rounded-lg text-sm font-medium transition 
+                            border-2
+                            ${
+                                // Resaltar si el ID del turno coincide con el seleccionado
+                                slot.id === selectedTurnoId
+                                    ? 'bg-blue-600 text-white border-blue-600 shadow-md transform scale-105'
+                                    // Estilo base
+                                    : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
+                            }
+                            ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {slot.hora}
+                    </button>
+                ))}
+            </div>
+            
+            {/* Indicador del horario seleccionado */}
+            {selectedTurnoId && (
+                <p className="pt-2 text-center text-sm font-medium text-blue-600">
+                    Turno seleccionado: {horarios.find(h => h.id === selectedTurnoId)?.hora}
+                </p>
+            )}
+        </div>
+    );
 };
 
 export default HorariosDisponibles;

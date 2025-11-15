@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import axios from "axios";
+import { motion } from 'framer-motion';
 import EmbryoList from "../components/EmbryoList";
 import { useEmbryoFetch } from "../../../shared/hooks/useEmbryoFetch";
 import { usePacientesFetch } from "../../../shared/hooks/usePacientesFetch";
@@ -11,6 +11,11 @@ export default function EmbryoPage() {
   const { embriones } = useEmbryoFetch(selectedPacienteId);
   const { ovocitos } = useOvocitosFetch(selectedPacienteId);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // ✅ AGREGAR estos logs:
+  console.log('Paciente seleccionado:', selectedPacienteId);
+  console.log('Embriones cargados:', embriones);
+  
   console.log(ovocitos)
   // Modal submit handler
   const handleSubmitEmbrion = async (nuevoEmbryo: any) => {
@@ -24,7 +29,7 @@ export default function EmbryoPage() {
       tecnica: nuevoEmbryo.tecnica || "",
       tecnico_laboratorio: nuevoEmbryo.tecnico_laboratorio || "",
       calidad: Number(nuevoEmbryo.calidad),
-      estado: nuevoEmbryo.estado || "no_transferido",
+      estado: nuevoEmbryo.estado || "fresco",
       fecha_alta: new Date().toISOString().slice(0, 10),
       fecha_baja: nuevoEmbryo.fecha_baja || null,
       info_semen: nuevoEmbryo.info_semen || "",
@@ -40,23 +45,57 @@ export default function EmbryoPage() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-16 md:mt-22 px-4 sm:px-6 py-6 mb-10 bg-white rounded-lg shadow min-h-screen flex flex-col">
-      <h1 className="text-xl sm:text-2xl font-bold text-black mb-4 text-center">Registrar Embriones</h1>
-      <div className="mb-4 flex flex-col sm:flex-row gap-2 items-center">
-        <label className="block text-sm font-medium text-gray-700">Seleccionar paciente</label>
-        <select
-          value={selectedPacienteId ?? ""}
-          onChange={e => setSelectedPacienteId(Number(e.target.value))}
-          className="border border-gray-300 rounded px-3 py-2 w-full sm:w-80 bg-white focus:ring-2 text-black focus:ring-blue-300 shadow-sm"
-        >
-          <option className="text-black"value="">-- Selecciona un paciente --</option>
-          {pacientes.map(p => (
-            <option key={p.id} value={p.id}>{p.apellido}, {p.nombre}</option>
-          ))}
-        </select>
-        
+    <div className={`min-h-screen pt-20 pb-8 bg-gradient-to-br from-pink-50 to-rose-100`}>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8 min-h-screen flex flex-col">
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="text-xl sm:text-2xl font-bold text-rose-300 mb-4 text-center"
+          >
+            Registrar Embriones
+          </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="mb-4 flex flex-col sm:flex-row gap-2 items-center"
+          >
+            <label className="block text-sm font-medium text-gray-700">Seleccionar paciente</label>
+            <select
+              value={selectedPacienteId ?? ""}
+              onChange={e => setSelectedPacienteId(Number(e.target.value))}
+              className="border border-gray-300 rounded px-3 py-2 w-full sm:w-80 bg-white focus:ring-2 text-black focus:ring-blue-300 shadow-sm"
+            >
+              <option className="text-black" value="">-- Selecciona un paciente --</option>
+              {pacientes.map(p => (
+                <option key={p.id} value={p.id}>{p.last_name}, {p.first_name}</option>
+              ))}
+            </select>
+          </motion.div>
+
+          {selectedPacienteId ? (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.45, delay: 0.06 }}>
+              <EmbryoList 
+                key={selectedPacienteId} // ✅ AGREGAR esta línea
+                embryos={embriones} 
+                selectedPacienteId={selectedPacienteId} 
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.35 }}
+              className="py-8 text-center text-gray-500"
+            >
+              Selecciona un paciente para ver los embriones
+            </motion.div>
+          )}
+        </div>
       </div>
-  <EmbryoList embryos={embriones} selectedPacienteId={selectedPacienteId} />
     </div>
   );
 }

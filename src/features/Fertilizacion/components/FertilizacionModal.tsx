@@ -1,104 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import type { OvocitoModalRow } from '../../../../types/Ovocito';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import LoadingView from './modal/FertilizacionLoadingView';
+import EvaluationView from './modal/FertilizacionEvaluationView';
+import ConfirmationView from './modal/FertilizacionConfirmationView';
+import ExecutingView from './modal/FertilizacionExecutingView';
+import CompletedView from './modal/FertilizacionCompletedView';
+import { 
+  ejecutarFertilizacion,
+  ejecutarDescriPreservacion
+} from '../utils/fertilizacionHelpers';
+import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
+import { useHistorialOvocitoFetch } from '../../../shared/hooks/useHistorialOvocitoFetch';
+import { useTratamientoInfo } from '../hooks/useTratamientoInfo';
+import type { FertilizacionModalProps } from '../../../interfaces/Fertilizacion';
 
-type Props = {
-  isOpen: boolean;
-  onClose: () => void;
-  onFertilize: (data: any) => void; // callback cuando se completa la fertilización
-  ovocitos: OvocitoModalRow[];
-  semenes?: any[]; // placeholder: de dónde vendrán los semenes
-  selectedPacienteId: number | null;
-  currentUser?: { id: number; nombre: string } | null;
-};
+type PasoFertilizacion = 'evaluacion' | 'confirmacion' | 'ejecutando' | 'completado';
 
-export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovocitos, semenes = [], selectedPacienteId, currentUser }: Props) {
-  const [form, setForm] = useState({
-    ovocito: '',
-    semen: '',
-    fecha_fertilizacion: new Date().toISOString().slice(0,10),
-    tecnico_laboratorio: currentUser ? currentUser.nombre : '',
-    tecnica: '',
-    resultado: 'no_exitosa',
-  });
+export default function FertilizacionModal({ 
+  isOpen, 
+  onClose, 
+  selectedPacienteId, 
+  selectedPacienteNombre = null,
+  currentUserId
+}: FertilizacionModalProps) {
+  const [paso, setPaso] = useState<PasoFertilizacion>('evaluacion');
+  const [tecnica, setTecnica] = useState<'ICSI' | 'FIV'>('ICSI');
+  const [ovocitoSeleccionado, setOvocitoSeleccionado] = useState<number | null>(null);
+  const [resultado, setResultado] = useState<'exitosa' | 'fallida'>('exitosa');
+  const [observaciones, setObservaciones] = useState('');
 
-  useEffect(()=>{
-    setForm((f)=>({ ...f, tecnico_laboratorio: currentUser ? currentUser.nombre : '' }));
-  }, [currentUser]);
+  // Usar los hooks existentes
+  const { ovocitos, loading: ovocitosLoading } = useOvocitosFetch(selectedPacienteId);
+  const { historial, loading: historialLoading } = useHistorialOvocitoFetch(selectedPacienteId);
+  const { tratamientoInfo, loading: tratamientoLoading } = useTratamientoInfo(selectedPacienteId?.toString() || null, isOpen);
 
-  if(!isOpen) return null;
+  const loading = ovocitosLoading || historialLoading || tratamientoLoading;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const payload = {
-      ovocito: form.ovocito ? Number(form.ovocito) : null,
-      semen: form.semen || null,
-      fecha_fertilizacion: form.fecha_fertilizacion,
-      tecnico_laboratorio: form.tecnico_laboratorio,
-      tecnica: form.tecnica,
-      resultado: form.resultado,
-    };
+  // Reset cuando se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      setPaso('evaluacion');
+      setOvocitoSeleccionado(null);
+      setResultado('exitosa');
+      setObservaciones('');
+    }
+  }, [isOpen]);
 
-    onFertilize(payload);
-    onClose();
+  const semenViable = tratamientoInfo?.segunda_consulta?.semen_viable || false;
+  const ovocitosViables = tratamientoInfo?.segunda_consulta?.ovocito_viable || false;
+  const ovocitosFrescos = ovocitos.filter(o => o.tipo_estado === 'fresco');
+  const ovocitosCriopreservados = historial.filter(h => h.estado === 'criopreservado');
+
+  const puedeRealizar = semenViable && ovocitosViables && (ovocitosFrescos.length > 0 || ovocitosCriopreservados.length > 0);
+
+  const ejecutarProceso = async () => {
+    if (!selectedPacienteId || !currentUserId || ovocitoSeleccionado === null) {
+      return;
+    }
+
+    setPaso('ejecutando');
+    
+    try {
+      // Preparar ids seleccionados (ahora sólo uno) y, si está criopreservado, descriopreservarlo primero
+      const selectedIds = ovocitoSeleccionado ? [ovocitoSeleccionado] : [];
+      const ovocitosParaDescripreservar = selectedIds.filter(id => 
+        ovocitosCriopreservados.some(o => o.id === id)
+      );
+
+      if (ovocitosParaDescripreservar.length > 0) {
+        await ejecutarDescriPreservacion(ovocitosParaDescripreservar, currentUserId);
+      }
+
+      const fechaHoy = new Date().toISOString().slice(0, 10);
+
+      const fertilizacionData: any = {
+        ovocito: ovocitoSeleccionado as number,
+        fecha_fertilizacion: fechaHoy,
+        tecnico_laboratorio: String(currentUserId),
+        tecnica_icsi: tecnica === 'ICSI',
+        tecnica_fiv: tecnica === 'FIV',
+        resultado: resultado === 'exitosa' ? 'exitosa' : 'no_exitosa',
+        notas: `Técnica: ${tecnica}. TecnicoId: ${currentUserId}. ${observaciones}`,
+        semen_info: semenViable ? 'pareja' : null,
+        banco_semen_id: null,
+        razon_banco_semen: 'no_aplica',
+      };
+
+      // ✅ Pasar todos los ovocitos (frescos + criopreservados) para la creación del embrión
+      const todosOvocitos = [...ovocitosFrescos, ...ovocitosCriopreservados];
+      const exito = await ejecutarFertilizacion(fertilizacionData, todosOvocitos);
+      
+      if (exito) {
+        setPaso('completado');
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      } else {
+        throw new Error('Error al registrar fertilización');
+      }
+      
+    } catch (error) {
+      console.error('Error ejecutando fertilización:', error);
+      setPaso('confirmacion');
+    }
   };
 
+  // presentational components are imported from separate files
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
-        <h3 className="text-lg font-semibold mb-4">Registrar Fertilización</h3>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium">Ovocito</label>
-            <select value={form.ovocito} onChange={e=>setForm({...form, ovocito: e.target.value})} className="w-full border px-3 py-2">
-              <option value="">-- Selecciona ovocito --</option>
-              {ovocitos.map(o=> (
-                <option key={o.id_ovocito} value={o.id_ovocito}>{o.identificador}</option>
-              ))}
-            </select>
-          </div>
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden text-gray-900"
+          >
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-xl font-bold text-gray-900">
+                Fertilización - {selectedPacienteNombre ? `${selectedPacienteNombre}` : (selectedPacienteId ? `Paciente ${selectedPacienteId}` : 'Sin paciente')}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              {paso === 'evaluacion' && (loading ? <LoadingView /> : <EvaluationView
+                semenViable={semenViable}
+                ovocitosViables={ovocitosViables}
+                ovocitosFrescosCount={ovocitosFrescos.length}
+                ovocitosCriopreservadosCount={ovocitosCriopreservados.length}
+                puedeRealizar={puedeRealizar}
+                onContinue={() => setPaso('confirmacion')}
+              />)}
 
-          <div>
-            <label className="block text-sm font-medium">Semen (opcional)</label>
-            <select value={form.semen} onChange={e=>setForm({...form, semen: e.target.value})} className="w-full border px-3 py-2">
-              <option value="">-- Selecciona semen --</option>
-              {semenes.map((s:any,i)=> <option key={i} value={s.id ?? s}>{s.nombre ?? s}</option>)}
-            </select>
-          </div>
+              {paso === 'confirmacion' && (
+                <ConfirmationView
+                  tecnica={tecnica}
+                  setTecnica={setTecnica}
+                  ovocitosFrescos={ovocitosFrescos}
+                  ovocitosCriopreservados={ovocitosCriopreservados}
+                  ovocitoSeleccionado={ovocitoSeleccionado}
+                  setOvocitoSeleccionado={setOvocitoSeleccionado}
+                  resultado={resultado}
+                  setResultado={setResultado}
+                  observaciones={observaciones}
+                  setObservaciones={setObservaciones}
+                  onBack={() => setPaso('evaluacion')}
+                  onSubmit={ejecutarProceso}
+                />
+              )}
 
-          <div>
-            <label className="block text-sm font-medium">Fecha de fertilización</label>
-            <input type="date" value={form.fecha_fertilizacion} onChange={e=>setForm({...form, fecha_fertilizacion: e.target.value})} className="w-full border px-3 py-2" />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Técnico de laboratorio</label>
-            <input type="text" value={form.tecnico_laboratorio} onChange={e=>setForm({...form, tecnico_laboratorio: e.target.value})} className="w-full border px-3 py-2" readOnly />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Técnica</label>
-            <select value={form.tecnica} onChange={e=>setForm({...form, tecnica: e.target.value})} className="w-full border px-3 py-2">
-              <option value="">-- Selecciona técnica --</option>
-              <option value="icsi">ICSI</option>
-              <option value="fiv">FIV</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Resultado</label>
-            <select value={form.resultado} onChange={e=>setForm({...form, resultado: e.target.value})} className="w-full border px-3 py-2">
-              <option value="exitosa">Exitosa</option>
-              <option value="no_exitosa">No exitosa</option>
-            </select>
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="px-3 py-2 border rounded">Cancelar</button>
-            <button type="submit" className="px-3 py-2 bg-blue-600 text-white rounded">Registrar fertilización</button>
-          </div>
-        </form>
-      </div>
-    </div>
+              {paso === 'ejecutando' && <ExecutingView />}
+              {paso === 'completado' && <CompletedView />}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

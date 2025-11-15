@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import DashboardCard from "../../Medico/components/DashboardCard";
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 
 export default function HomePage() {
   const navigate = useNavigate();
 
   const handleDonarSemen = () => {
-    navigate("/operador/donaciones/nueva/semen");
+    navigate("/operador/donaciones/nueva/esperma");
     console.log("Navegando a formulario de donación de semen...");
   };
 
   const handleDonarOvocitos = () => {
-    navigate("/operador/donaciones/nueva/ovocitos");
+    navigate("/operador/donaciones/nueva/ovocito");
     console.log("Navegando a formulario de donación de ovocitos...");
   };
 
@@ -20,17 +21,19 @@ export default function HomePage() {
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <article className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Centro de Donaciones
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Registra y gestiona las donaciones de gametos. Completa los formularios con toda la información requerida para el proceso de fertilización asistida.
-            </p>
+            <div className="max-w-3xl mx-auto flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-4">Centro de Donaciones</h1>
+                <p className="text-xl text-gray-600">
+                  Registra y gestiona las donaciones de gametos. Completa los formularios con toda la información requerida para el proceso de fertilización asistida.
+                </p>
+              </div>
+              <RoleHomeButton className="!static ml-6" />
+            </div>
           </article>
 
           {/* Cards Grid */}
           <article className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            
             {/* Card 1: Donación de Semen */}
             <DashboardCard
               title="Donación de Semen"
@@ -61,6 +64,20 @@ export default function HomePage() {
               onClick={handleDonarOvocitos}
             />
 
+            {/* Card 3: Ver tanques */}
+            <DashboardCard
+              title="Ver tanques"
+              description="Visualiza todos los tanques disponibles, su tipo y el espacio restante."
+              count={0}
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={2} />
+                  <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" opacity="0.2" />
+                </svg>
+              }
+              iconColor="text-green-600"
+              onClick={() => navigate("/operador/tanques")}
+            />
           </article>
 
           {/* Información de proceso */}

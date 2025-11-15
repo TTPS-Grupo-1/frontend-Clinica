@@ -21,11 +21,10 @@ export function useOvocitosFetch(pacienteId: number | null): UseOvocitosFetchRes
             .then(({ data }) => {
                 const items = Array.isArray(data) ? data : (data.results ?? []);
                 setOvocitos(items.map((o: any) => ({
-                    id_ovocito: o.id_ovocito, // incluir el id autoincremental
+                    id_ovocito: o.id_ovocito,
                     identificador: o.identificador,
-                    estado: (o.estado || "").replace(/_/g, " "),
-                    cripreservar: !!o.cripreservar,
-                    descartado: !!o.descartado,
+                    madurez: (o.madurez || "").replace(/_/g, " "),
+                    tipo_estado: o.tipo_estado || "fresco",
                 })));
                
             })

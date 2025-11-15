@@ -11,28 +11,31 @@ export default function LoginPage() {
 
   const handleLogin = async (email: string, password: string) => {
     try {
+      console.log("Intentando login con:", { email, password });
       // Petición al backend
       const response = await axios.post("/api/login/", {
-        username: email,
+        email: email,
         password: password,
       });
 
-      const { token, user, role } = response.data;
-
-      // Guardar en Redux y localStorage
+      const { token, user } = response.data;
+      const role = user.rol;
+      console.log(role)
+      // Guardar usuario y token en Redux, y solo valores simples en localStorage
       dispatch(login({ token, user }));
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
       if (role) {
-        localStorage.setItem("role", JSON.stringify(role));
+        // Guardar role como string directa para evitar problemas de parseo
+        localStorage.setItem("role", role);
       }
+    console.log("Login exitoso, usuario:", user);
+    // Redirigir según rol
+    if (role === "MEDICO") navigate("/medico/home");
+    else if (role === "PACIENTE") navigate("/pacientes/home");
+    else if (role === "OPERADOR_LABORATORIO") navigate("/operador");
+    else navigate("/dashboard");
 
-      // Redirigir según rol
-      if (role === "MEDICO") navigate("/medicos");
-      else if (role === "paciente") navigate("/pacientes");
-      else navigate("/dashboard");
-
-      toast.success(`Bienvenido, ${user.username}`);
+      toast.success(`Bienvenido, ${user.first_name}!`);
     } catch (error: any) {
       const msg =
         error.response?.data?.message ||

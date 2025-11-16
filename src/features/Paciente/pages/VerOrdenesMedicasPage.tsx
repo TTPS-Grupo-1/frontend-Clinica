@@ -62,7 +62,9 @@ export default function OrdenesMedicas() {
     const handleDescargar = (pdfUrl: string) => {
         if (pdfUrl) {
             // Abre el archivo en una nueva pestaña
-            window.open(pdfUrl, '_blank');
+            console.log("PDF URL:", pdfUrl);
+            window.open(pdfUrl, "_blank");
+            //window.open(pdfUrl, '_blank');
         } else {
             toast.error("URL del archivo no disponible.");
         }

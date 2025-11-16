@@ -32,6 +32,7 @@ export default function FertilizacionModal({
 
   // Usar los hooks existentes
   const { ovocitos, loading: ovocitosLoading } = useOvocitosFetch(selectedPacienteId);
+  console.log("Ovocitos obtenidos:", ovocitos);
   const { historial, loading: historialLoading } = useHistorialOvocitoFetch(selectedPacienteId);
   const { tratamientoInfo, loading: tratamientoLoading } = useTratamientoInfo(selectedPacienteId?.toString() || null, isOpen);
 
@@ -66,10 +67,12 @@ export default function FertilizacionModal({
       const selectedIds = ovocitoSeleccionado ? [ovocitoSeleccionado] : [];
       const ovocitosParaDescripreservar = selectedIds.filter(id => 
         ovocitosCriopreservados.some(o => o.id === id)
+    
       );
 
       if (ovocitosParaDescripreservar.length > 0) {
-        await ejecutarDescriPreservacion(ovocitosParaDescripreservar, currentUserId);
+        const res = await ejecutarDescriPreservacion(ovocitosParaDescripreservar, currentUserId);
+        console.log('Ovocitos descriopreservados:', res);
       }
 
       const fechaHoy = new Date().toISOString().slice(0, 10);

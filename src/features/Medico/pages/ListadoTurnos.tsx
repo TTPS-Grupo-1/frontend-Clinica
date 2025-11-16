@@ -4,8 +4,16 @@ import TurnosSkeleton from "../components/TurnosSkeleton";
 import PacientCard from "../components/PacientCard";
 import Pagination from "../../../components/Pagination";
 import type { Turno } from "../../../types/Turno";
+import { useSelector } from "react-redux";
 
-
+interface UserState {
+    auth: {
+        user: {
+            id: number;
+            rol: string;
+        } | null;
+    };
+}
 
 export default function ListadoTurnos() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,12 +23,16 @@ export default function ListadoTurnos() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+    const userId = useSelector((state: UserState) => state.auth.user?.id);
+  const userRol = useSelector((state: UserState) => state.auth.user?.rol);
+
+  const MEDICO_ID = (userRol === 'MEDICO' && userId) ? userId : null;
   useEffect(() => {
     async function cargarTurnos() {
       setLoading(true);
       setError(null);
       try {
-        const turnos = await fetchTurnos(1);
+        const turnos = await fetchTurnos(MEDICO_ID);
         setTurnos(turnos);
       } catch (err: any) {
         setError(err);

@@ -6,7 +6,8 @@ import PacientCard from "../components/PacientCard";
 import Pagination from "../../../components/Pagination";
 import type { Turno } from "../../../types/Turno";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import { getTratamientoByPaciente } from "../components/SegundaConsulta/consultasService";
+import { fetchTurnoByIdExterno } from "../../../shared/hooks/fetchTurnos"; 
 
 interface UserState {
     auth: {
@@ -53,62 +54,35 @@ export default function ListadoTurnos() {
   const currentTurnos = turnosConPaciente.slice(startIndex, startIndex + itemsPerPage);
 
   const handleAtender = async (id_paciente: number, turnoId: number) => {
-    try {
-      // 1. Obtener los datos del turno actual
-      const turnoActual = turnos.find(t => t.id === turnoId);
-      
-      if (!turnoActual) {
-        alert("No se encontró el turno.");
-        return;
-      }
 
+
+      const turnoActual = await fetchTurnoByIdExterno(turnoId);
+      
+      console.log("Atendiendo turno:", turnoActual);
       // 2. Buscar si existe un tratamiento activo para este paciente usando el endpoint correcto
-      const token = localStorage.getItem("token");
-      console.log(token)
-      const response = await axios.get(
-        `/api/tratamientos/por-paciente/${id_paciente}/`,
-        {
-          headers: {
-            Authorization: token ? `Token ${token}` : "",
-          },
-        }
-      );
+      console.log("Buscando tratamiento para el paciente ID:", id_paciente);
       
-      // Si no hay tratamiento activo, el endpoint devuelve 404
-      if (response.status === 404 || !response.data) {
-        // No hay tratamiento activo: redirigir a Primera Consulta
-        console.log(`No hay tratamiento activo para paciente ${id_paciente}. Redirigiendo a Primera Consulta.`);
-        navigate(`/primer-consulta/${id_paciente}`);
-        return;
-      }
-
-      // 3. Obtener el tratamiento activo
-      const tratamiento = response.data;
+      const response = await getTratamientoByPaciente(id_paciente);
+      console.log("Respuesta del tratamiento:", response);
+      const tratamiento = response;
+ 
+     
 
       // 4. Determinar a dónde redirigir según las etapas completadas
       if (!tratamiento.primer_consulta) {
         // Primera consulta no completada
-        navigate(`/primer-consulta/${id_paciente}`);
+        navigate(`/pacientes/${id_paciente}/primeraConsulta`);
       } else if (!tratamiento.segunda_consulta) {
         // Primera completa, segunda pendiente
-        navigate(`/segunda-consulta/${id_paciente}/${tratamiento.id}`);
-      } else if (turnoActual.es_monitoreo) {
+        navigate(`/pacientes/${id_paciente}/segundaConsulta/${tratamiento.id}`);
+      } else if (turnoActual && turnoActual.es_monitoreo) {
         // Segunda completa y es un turno de monitoreo
         navigate(`/monitoreo/${id_paciente}/${tratamiento.id}`);
       } else {
         // Segunda completa pero el turno no es de monitoreo
         alert("Este turno no requiere atención médica. Será gestionado por el operador de laboratorio.");
       }
-    } catch (error: any) {
-      // Si el error es 404, significa que no hay tratamiento activo
-      if (error.response?.status === 404) {
-        console.log(`No hay tratamiento activo para paciente ${id_paciente}. Redirigiendo a Primera Consulta.`);
-        navigate(`/primer-consulta/${id_paciente}`);
-      } else {
-        console.error("Error al verificar tratamiento:", error);
-        alert("Error al verificar el tratamiento del paciente.");
-      }
-    }
+
   };
 
   const handleVerHistoria = (id: number) => {

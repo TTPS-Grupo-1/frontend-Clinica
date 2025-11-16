@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { fetchTurnos } from "../../../shared/hooks/fetchTurnos";
 import TurnosSkeleton from "../components/TurnosSkeleton";
@@ -37,8 +38,78 @@ export default function ListadoTurnos() {
       setLoading(true);
       setError(null);
       try {
-        const turnos = await fetchTurnos(MEDICO_ID);
-        setTurnos(turnos);
+        // 1) traer turnos remotos (proxy)
+        const externos = await fetchTurnos(MEDICO_ID).catch(() => []);
+        console.log('remotos raw:', externos)
+        const externosNorm = Array.isArray(externos) ? externos : (externos?.results ?? externos?.data ?? []);
+
+        // Filtrar en frontend: quedarnos sólo con los remotos que tienen paciente asignado
+        const extractPacienteId = (t: any) => {
+          return t?.Paciente ?? t?.paciente ?? t?.paciente_id ?? t?.id_paciente ?? null;
+        };
+        const externosConPaciente = externosNorm.filter((e: any) => {
+          const pid = extractPacienteId(e);
+          return pid !== null && pid !== undefined && pid !== '';
+        });
+        console.debug('remotos con paciente (count):', externosConPaciente.length);
+
+        // 2) extraer id_externo de los remotos filtrados (preferimos el campo `id_externo`)
+        const normalizeExternalId = (t: any) => t?.id_externo ?? t?.external_id ?? t?.turno_id ?? t?.id ?? null;
+        const externalIds = externosConPaciente.map((e: any) => normalizeExternalId(e)).filter((v: any) => v != null).map((v: any) => Number(v));
+
+        console.debug('externalIds:', externalIds);
+        if (externalIds.length === 0) {
+          setTurnos([]);
+        } else {
+          const idsParam = externalIds.join(',');
+          const token = localStorage.getItem('token');
+          const headers = token ? { Authorization: `Token ${token}` } : {};
+          // 3) pedir al backend local los turnos cuyos id_externo estén en la lista y que no estén atendidos
+          const localRes = await axios.get(`/api/local/turnos/por-externos/?ids=${encodeURIComponent(idsParam)}&atendido=false`, { headers }).catch((e) => {
+            console.debug('error getting por-externos', e?.response?.data ?? e?.message ?? e);
+            return ({ data: [] });
+          });
+          console.debug('por-externos response:', localRes?.data);
+          const localList = Array.isArray(localRes.data) ? localRes.data : (localRes.data?.results ?? localRes.data ?? []);
+
+          // fallback: si backend no devolvió nada, intentar consultar por-id-externo uno por uno (debugging)
+          if ((localList.length === 0 || !localList) && externalIds.length > 0) {
+            console.debug('por-externos devolvió vacío; intentando fetch por-id-externo en forma secuencial/paralela');
+            const promos = externalIds.map((extId: number) => fetchTurnoByIdExterno(extId).catch(() => null));
+            const encontrados = (await Promise.all(promos)).filter((x: any) => x !== null && x !== undefined);
+            console.debug('encontrados via por-id:', encontrados);
+            // filtrar no atendidos
+            const encontradosNoAtendidos = encontrados.filter((lt: any) => lt.atendido === false);
+            const normalizedFallback = encontradosNoAtendidos.map((lt: any) => {
+              const pacienteField = lt?.Paciente ?? lt?.paciente ?? null;
+              const idPaciente = typeof pacienteField === 'object' ? (pacienteField?.id ?? null) : pacienteField;
+              return {
+                id: lt.id,
+                id_paciente: idPaciente,
+                fecha_hora: lt?.fecha_hora ?? lt?.fecha ?? lt?.fechaHora,
+                es_monitoreo: lt?.es_monitoreo ?? false,
+                atendido: lt?.atendido ?? false,
+              };
+            });
+            setTurnos(normalizedFallback as unknown as Turno[]);
+            setLoading(false);
+            return;
+          }
+
+          // 4) normalizar shape mínimo para la UI
+          const normalized = localList.map((lt: any) => {
+            const pacienteField = lt?.Paciente ?? lt?.paciente ?? null;
+            const idPaciente = typeof pacienteField === 'object' ? (pacienteField?.id ?? null) : pacienteField;
+            return {
+              id: lt.id,
+              id_paciente: idPaciente,
+              fecha_hora: lt?.fecha_hora ?? lt?.fecha ?? lt?.fechaHora,
+              es_monitoreo: lt?.es_monitoreo ?? false,
+              atendido: lt?.atendido ?? false,
+            };
+          });
+          setTurnos(normalized as unknown as Turno[]);
+        }
       } catch (err: any) {
         setError(err);
       } finally {

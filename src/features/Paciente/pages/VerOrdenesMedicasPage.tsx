@@ -25,7 +25,7 @@ export default function OrdenesMedicas() {
     const userId = useSelector((state: UserState) => state.auth.user?.id); // ID del paciente logueado
     
     // URL de la API de Django (debe ser creada para filtrar órdenes)
-    const API_URL = "http://127.0.0.1:8000/api/ordenes/mis_ordenes/"; 
+    const API_URL = "http://127.0.0.1:8000/api/mis_ordenes/"; 
 
 
     const fetchOrdenes = useCallback(async () => {

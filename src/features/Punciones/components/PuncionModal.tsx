@@ -74,39 +74,7 @@ export default function PuncionModal({
             };
             await axios.post("/api/punciones/", payload);
 
-            // Asignar cada ovocito a la API de inventario
-            let assignError = null;
-            for (const o of ovocitos) {
-                try {
-                    const res = await axios.post(
-                        "https://ssewaxrnlmnyizqsbzxe.supabase.co/functions/v1/assign-ovocyte",
-                        {
-                            nro_grupo: 1,
-                            ovocito_id: String(o.identificador)
-                        },
-                        {
-                            headers: { "Content-Type": "application/json" }
-                        }
-                    );
-                    console.log("Asignación ovocito", o.identificador, res.data);
-                    if (!res.data?.success) {
-                        assignError = res.data?.error || `Error asignando ovocito ${o.identificador}`;
-                        break;
-                    }
-                } catch (err: any) {
-                    console.log(err)
-                    console.error("Error asignando ovocito", o.identificador, err);
-                    assignError = err?.response?.data?.error || err?.message || `Error asignando ovocito ${o.identificador}`;
-                    break;
-                }
-            }
-
-            if (assignError) {
-                setError(assignError);
-                setSubmitting(false);
-                return;
-            }
-
+            console.log("Punción registrada:", payload);
             onClose();
             window.location.reload();
             alert("Punción y asignación de ovocitos registrada correctamente");

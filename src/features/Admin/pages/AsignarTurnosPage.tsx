@@ -105,75 +105,83 @@ const GenerarAgenda = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center pt-[80px]">
-            <h1 className="text-2xl font-bold mb-6">Asignar Turnos</h1>
-            <Toaster position="top-center" />
-            <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-lg space-y-6">
-                
-                {/* 1. Selector de Médico */}
-                <SelectMedico
-                    medicos={medicos.map((m) => ({
-                        id: m.id, // ✅ Ahora usamos m.id como valor
-                        nombre: `${m.first_name} ${m.last_name}`,
-                    }))}
-                    selected={medicoId}
-                    onChange={setMedicoId}
-                />
-                
-                {/* 2. Selector de Día de la Semana */}
-                <div>
-                    <label className="block text-sm font-medium mb-2">Día de la Semana</label>
-                    <select
-                        value={diaSemana}
-                        onChange={(e) => setDiaSemana(e.target.value)}
-                        className="w-full border rounded-lg p-2"
-                    >
-                        <option value="">Seleccionar día...</option>
-                        {DIAS_SEMANA.map((d) => (
-                            <option key={d.id} value={d.id}>
-                                {d.nombre}
-                            </option>
-                        ))}
-                    </select>
+        <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+            <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-3xl mx-auto">
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900">Asignar Turnos</h1>
+                        <p className="mt-2 text-sm text-gray-600">Genera grillas de turnos periódicas para un médico</p>
+                    </div>
+
+                    <Toaster position="top-center" />
+
+                    <div className="bg-white p-6 rounded-2xl shadow-md w-full space-y-6">
+                        {/* 1. Selector de Médico */}
+                        <SelectMedico
+                            medicos={medicos.map((m) => ({
+                                id: m.id, // ✅ Ahora usamos m.id como valor
+                                nombre: `${m.first_name} ${m.last_name}`,
+                            }))}
+                            selected={medicoId}
+                            onChange={setMedicoId}
+                        />
+
+                        {/* 2. Selector de Día de la Semana */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Día de la Semana</label>
+                            <select
+                                value={diaSemana}
+                                onChange={(e) => setDiaSemana(e.target.value)}
+                                className="w-full border rounded-lg p-2"
+                            >
+                                <option value="">Seleccionar día...</option>
+                                {DIAS_SEMANA.map((d) => (
+                                    <option key={d.id} value={d.id}>
+                                        {d.nombre}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* 3. Horario de Inicio */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Hora de Inicio (HH:MM)</label>
+                            <input
+                                type="time"
+                                value={horaInicio}
+                                onChange={(e) => setHoraInicio(e.target.value)}
+                                className="w-full border rounded-lg p-2"
+                            />
+                        </div>
+
+                        {/* 4. Horario de Fin */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Hora de Fin (HH:MM)</label>
+                            <input
+                                type="time"
+                                value={horaFin}
+                                onChange={(e) => setHoraFin(e.target.value)}
+                                className="w-full border rounded-lg p-2"
+                            />
+                        </div>
+
+                        {/* Botón de Envío */}
+                        <button
+                            onClick={handleGenerarGrilla}
+                            disabled={loading || !medicoId || !diaSemana || !horaInicio || !horaFin}
+                            className={`mx-auto flex items-center justify-center gap-2 py-2 px-6 rounded-md font-medium transition w-full ${
+                                loading
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                            }`}
+                        >
+                            {loading ? "Generando..." : "Generar Turnos (Próximas 5 Semanas)"}
+                        </button>
+
+                    </div>
                 </div>
-
-                {/* 3. Horario de Inicio */}
-                <div>
-                    <label className="block text-sm font-medium mb-2">Hora de Inicio (HH:MM)</label>
-                    <input
-                        type="time"
-                        value={horaInicio}
-                        onChange={(e) => setHoraInicio(e.target.value)}
-                        className="w-full border rounded-lg p-2"
-                    />
-                </div>
-
-                {/* 4. Horario de Fin */}
-                <div>
-                    <label className="block text-sm font-medium mb-2">Hora de Fin (HH:MM)</label>
-                    <input
-                        type="time"
-                        value={horaFin}
-                        onChange={(e) => setHoraFin(e.target.value)}
-                        className="w-full border rounded-lg p-2"
-                    />
-                </div>
-
-                {/* Botón de Envío */}
-                <button
-                    onClick={handleGenerarGrilla}
-                    disabled={loading || !medicoId || !diaSemana || !horaInicio || !horaFin}
-                    className={`mx-auto flex items-center justify-center gap-2 py-2 px-6 rounded-md font-medium transition w-full ${
-                        loading
-                            ? "bg-gray-400 text-white cursor-not-allowed"
-                            : "bg-blue-600 text-white hover:bg-blue-700"
-                    }`}
-                >
-                    {loading ? "Generando..." : "Generar Turnos (Próximas 5 Semanas)"}
-                </button>
-
             </div>
-        </div>
+        </main>
     );
 };
 

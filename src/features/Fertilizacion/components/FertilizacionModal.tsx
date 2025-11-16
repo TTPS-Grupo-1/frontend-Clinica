@@ -11,7 +11,6 @@ import {
   ejecutarDescriPreservacion
 } from '../utils/fertilizacionHelpers';
 import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
-import { useHistorialOvocitoFetch } from '../../../shared/hooks/useHistorialOvocitoFetch';
 import { useTratamientoInfo } from '../hooks/useTratamientoInfo';
 import type { FertilizacionModalProps } from '../../../interfaces/Fertilizacion';
 
@@ -32,10 +31,22 @@ export default function FertilizacionModal({
 
   // Usar los hooks existentes
   const { ovocitos, loading: ovocitosLoading } = useOvocitosFetch(selectedPacienteId);
-  const { historial, loading: historialLoading } = useHistorialOvocitoFetch(selectedPacienteId);
-  const { tratamientoInfo, loading: tratamientoLoading } = useTratamientoInfo(selectedPacienteId?.toString() || null, isOpen);
 
-  const loading = ovocitosLoading || historialLoading || tratamientoLoading;
+  const { tratamientoInfo, loading: tratamientoLoading } = useTratamientoInfo(selectedPacienteId?.toString() || null, isOpen);
+  const [ovocitosCriopreservados, setOvocitosCriopreservados] = useState<any[]>([]);
+
+  const loading = ovocitosLoading || tratamientoLoading;
+
+  // Simplificar: identificar ovocitos criopreservados directamente por su estado
+  useEffect(() => {
+    if (!ovocitos || ovocitos.length === 0) {
+      setOvocitosCriopreservados([]);
+      return;
+    }
+
+    const crios = ovocitos.filter((o: any) => (o.tipo_estado || '').toString().toLowerCase() === 'criopreservado');
+    setOvocitosCriopreservados(crios);
+  }, [ovocitos]);
 
   // Reset cuando se abre el modal
   useEffect(() => {
@@ -50,32 +61,18 @@ export default function FertilizacionModal({
   const semenViable = tratamientoInfo?.segunda_consulta?.semen_viable || false;
   const ovocitosViables = tratamientoInfo?.segunda_consulta?.ovocito_viable || false;
   const ovocitosFrescos = ovocitos.filter(o => o.tipo_estado === 'fresco');
-  const ovocitosCriopreservados = historial.filter(h => h.estado === 'criopreservado');
+
 
   const puedeRealizar = semenViable && ovocitosViables && (ovocitosFrescos.length > 0 || ovocitosCriopreservados.length > 0);
 
   const ejecutarProceso = async () => {
-    if (!selectedPacienteId || !currentUserId || ovocitoSeleccionado === null) {
-      return;
-    }
+    if (!selectedPacienteId || !currentUserId) return;
 
     setPaso('ejecutando');
-    
     try {
-      // Preparar ids seleccionados (ahora sólo uno) y, si está criopreservado, descriopreservarlo primero
-      const selectedIds = ovocitoSeleccionado ? [ovocitoSeleccionado] : [];
-      const ovocitosParaDescripreservar = selectedIds.filter(id => 
-        ovocitosCriopreservados.some(o => o.id === id)
-      );
-
-      if (ovocitosParaDescripreservar.length > 0) {
-        await ejecutarDescriPreservacion(ovocitosParaDescripreservar, currentUserId);
-      }
-
       const fechaHoy = new Date().toISOString().slice(0, 10);
 
-      const fertilizacionData: any = {
-        ovocito: ovocitoSeleccionado as number,
+      const basePayload: any = {
         fecha_fertilizacion: fechaHoy,
         tecnico_laboratorio: String(currentUserId),
         tecnica_icsi: tecnica === 'ICSI',
@@ -87,19 +84,34 @@ export default function FertilizacionModal({
         razon_banco_semen: 'no_aplica',
       };
 
-      // ✅ Pasar todos los ovocitos (frescos + criopreservados) para la creación del embrión
       const todosOvocitos = [...ovocitosFrescos, ...ovocitosCriopreservados];
-      const exito = await ejecutarFertilizacion(fertilizacionData, todosOvocitos);
-      
-      if (exito) {
-        setPaso('completado');
-        setTimeout(() => {
-          onClose();
-        }, 2000);
-      } else {
-        throw new Error('Error al registrar fertilización');
+      if (todosOvocitos.length === 0) throw new Error('No hay ovocitos disponibles para fertilizar');
+
+      const resultados: boolean[] = [];
+      for (const ov of todosOvocitos) {
+        const ovId = (ov as any).id_ovocito ?? (ov as any).id;
+        const esCrio = (ov as any).tipo_estado && (ov as any).tipo_estado.toString().toLowerCase() === 'criopreservado';
+        if (esCrio) {
+          await ejecutarDescriPreservacion([ovId], currentUserId);
+        }
+
+        const fertilizacionData: any = {
+          ...basePayload,
+          ovocitos_utilizados: ovId,
+          ovocito: ovId,
+        };
+
+        const exitoIndividual = await ejecutarFertilizacion(fertilizacionData, [ov]);
+        resultados.push(Boolean(exitoIndividual));
       }
-      
+
+      const todosExitos = resultados.length > 0 && resultados.every(r => r === true);
+      if (todosExitos) {
+        setPaso('completado');
+        setTimeout(() => onClose(), 2000);
+      } else {
+        throw new Error('Algunas fertilizaciones fallaron');
+      }
     } catch (error) {
       console.error('Error ejecutando fertilización:', error);
       setPaso('confirmacion');

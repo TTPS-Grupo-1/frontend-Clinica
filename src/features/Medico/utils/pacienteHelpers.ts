@@ -132,3 +132,36 @@ export async function fetchPacienteIfHasTratamiento(pacienteId: number, headers:
     return null;
   }
 }
+
+/**
+ * Buscar pacientes por nombre (query). Devuelve solo aquellos que tienen un tratamiento
+ * asociado, para mantener el comportamiento previo (mostrar pacientes con tratamiento activo).
+ */
+export async function fetchPacientesByName(query: string, headers: Record<string, string> = {}): Promise<PacienteMinimal[]> {
+  if (!query || query.trim().length === 0) return [];
+  try {
+    // Intentar con parámetro `search` (DRF SearchFilter) y caer en fallback si es necesario
+    const q = encodeURIComponent(query.trim());
+    const res = await axios.get(`/api/pacientes/?search=${q}`, { headers });
+    const list = Array.isArray(res.data) ? res.data : (res.data?.results ?? res.data?.data ?? []);
+
+    const out: PacienteMinimal[] = [];
+    await Promise.all(list.map(async (p: any) => {
+      const id = p?.id ?? p?.pk ?? null;
+      if (!id) return;
+      // Validar que tenga tratamiento
+      try {
+        const tRes = await axios.get(`/api/tratamientos/por-paciente/${id}/`, { headers });
+        const tiene = Boolean(tRes.data && (Array.isArray(tRes.data) ? tRes.data.length > 0 : Object.keys(tRes.data).length > 0));
+        if (tiene) {
+          out.push({ id, first_name: p.first_name, last_name: p.last_name, dni: p.dni });
+        }
+      } catch (e) {
+        // si falla la consulta de tratamientos, omitimos ese paciente
+      }
+    }));
+    return out;
+  } catch (err) {
+    return [];
+  }
+}

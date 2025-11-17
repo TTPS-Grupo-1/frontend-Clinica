@@ -132,3 +132,17 @@ export async function fetchPacienteIfHasTratamiento(pacienteId: number, headers:
     return null;
   }
 }
+
+export async function marcarTurnoAtendido(id: number): Promise<boolean> {
+  try {
+    const headers = getAuthHeaders();
+    // El viewset define la acción con methods=['patch'], por eso usamos PATCH aquí.
+    const res = await axios.patch(`/api/local/turnos/${id}/marcar-atendido/`, {}, { headers });
+    console.debug(`Turno ${id} marcado como atendido`, res?.data);
+    return true;
+  } catch (err: any) {
+    console.error('Error marcando turno como atendido:', err?.response?.data ?? err?.message ?? err);
+    // Devolvemos false para que el llamador decida cómo proceder (toast, retry, permitir navegación, etc.)
+    return false;
+  }
+}

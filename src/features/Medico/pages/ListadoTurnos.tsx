@@ -9,15 +9,10 @@ import type { Turno } from "../../../types/Turno";
 import { useSelector } from "react-redux";
 import { getTratamientoByPaciente } from "../components/SegundaConsulta/consultasService";
 import { fetchTurnoByIdExterno } from "../../../shared/hooks/fetchTurnos"; 
+import type { UserState } from "../../../interfaces/Turnos";
+import { marcarTurnoAtendido } from "../utils/pacienteHelpers";
+import { toast } from "sonner";
 
-interface UserState {
-    auth: {
-        user: {
-            id: number;
-            rol: string;
-        } | null;
-    };
-}
 
 export default function ListadoTurnos() {
   const navigate = useNavigate();
@@ -40,7 +35,6 @@ export default function ListadoTurnos() {
       try {
         // 1) traer turnos remotos (proxy)
         const externos = await fetchTurnos(MEDICO_ID).catch(() => []);
-        console.log('remotos raw:', externos)
         const externosNorm = Array.isArray(externos) ? externos : (externos?.results ?? externos?.data ?? []);
 
         // Filtrar en frontend: quedarnos sólo con los remotos que tienen paciente asignado
@@ -51,7 +45,7 @@ export default function ListadoTurnos() {
           const pid = extractPacienteId(e);
           return pid !== null && pid !== undefined && pid !== '';
         });
-        console.debug('remotos con paciente (count):', externosConPaciente.length);
+        
 
         // 2) extraer id_externo de los remotos filtrados (preferimos el campo `id_externo`)
         const normalizeExternalId = (t: any) => t?.id_externo ?? t?.external_id ?? t?.turno_id ?? t?.id ?? null;
@@ -62,22 +56,21 @@ export default function ListadoTurnos() {
           setTurnos([]);
         } else {
           const idsParam = externalIds.join(',');
-          const token = localStorage.getItem('token');
-          const headers = token ? { Authorization: `Token ${token}` } : {};
+          // const token = localStorage.getItem('token');
+          // const headers = token ? { Authorization: `Token ${token}` } : {};
           // 3) pedir al backend local los turnos cuyos id_externo estén en la lista y que no estén atendidos
-          const localRes = await axios.get(`/api/local/turnos/por-externos/?ids=${encodeURIComponent(idsParam)}&atendido=false`, { headers }).catch((e) => {
-            console.debug('error getting por-externos', e?.response?.data ?? e?.message ?? e);
+          const localRes = await axios.get(`/api/local/turnos/por-externos/?ids=${encodeURIComponent(idsParam)}&atendido=false`).catch((e) => {
             return ({ data: [] });
           });
-          console.debug('por-externos response:', localRes?.data);
+         
           const localList = Array.isArray(localRes.data) ? localRes.data : (localRes.data?.results ?? localRes.data ?? []);
 
           // fallback: si backend no devolvió nada, intentar consultar por-id-externo uno por uno (debugging)
           if ((localList.length === 0 || !localList) && externalIds.length > 0) {
-            console.debug('por-externos devolvió vacío; intentando fetch por-id-externo en forma secuencial/paralela');
+            
             const promos = externalIds.map((extId: number) => fetchTurnoByIdExterno(extId).catch(() => null));
             const encontrados = (await Promise.all(promos)).filter((x: any) => x !== null && x !== undefined);
-            console.debug('encontrados via por-id:', encontrados);
+            
             // filtrar no atendidos
             const encontradosNoAtendidos = encontrados.filter((lt: any) => lt.atendido === false);
             const normalizedFallback = encontradosNoAtendidos.map((lt: any) => {
@@ -96,7 +89,6 @@ export default function ListadoTurnos() {
             return;
           }
 
-          // 4) normalizar shape mínimo para la UI
           const normalized = localList.map((lt: any) => {
             const pacienteField = lt?.Paciente ?? lt?.paciente ?? null;
             const idPaciente = typeof pacienteField === 'object' ? (pacienteField?.id ?? null) : pacienteField;
@@ -128,26 +120,33 @@ export default function ListadoTurnos() {
 
 
       const turnoActual = await fetchTurnoByIdExterno(turnoId);
-      
-      console.log("Atendiendo turno:", turnoActual);
-      // 2. Buscar si existe un tratamiento activo para este paciente usando el endpoint correcto
-      console.log("Buscando tratamiento para el paciente ID:", id_paciente);
-      
       const response = await getTratamientoByPaciente(id_paciente);
-      console.log("Respuesta del tratamiento:", response);
+
       const tratamiento = response;
  
      
 
       // 4. Determinar a dónde redirigir según las etapas completadas
+      // helper: marcar turno como atendido en la BD local
+      
+
       if (!tratamiento.primer_consulta) {
         // Primera consulta no completada
+        const resp = await marcarTurnoAtendido(turnoId);
+        if(resp) toast.success("Turno atendido.");
+        else toast.error("No se pudo marcar el turno como atendido.");
         navigate(`/pacientes/${id_paciente}/primeraConsulta`);
       } else if (!tratamiento.segunda_consulta) {
         // Primera completa, segunda pendiente
+        const resp = await marcarTurnoAtendido(turnoId);
+        if(resp) toast.success("Turno atendido.");
+        else toast.error("No se pudo marcar el turno como atendido.");
         navigate(`/pacientes/${id_paciente}/segundaConsulta/${tratamiento.id}`);
       } else if (turnoActual && turnoActual.es_monitoreo) {
         // Segunda completa y es un turno de monitoreo
+        const resp = await marcarTurnoAtendido(turnoId);
+        if(resp) toast.success("Turno atendido.");
+        else toast.error("No se pudo marcar el turno como atendido.");
         navigate(`/monitoreo/${id_paciente}/${tratamiento.id}`);
       } else {
         // Segunda completa pero el turno no es de monitoreo

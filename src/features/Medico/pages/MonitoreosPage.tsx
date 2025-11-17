@@ -198,7 +198,7 @@ export default function MonitoreosPage() {
       <div className="w-full max-w-2xl px-6">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">
-            Atender Monitoreo #{monitoreo.id}
+            Atender Monitoreo 
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -211,9 +211,6 @@ export default function MonitoreosPage() {
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Médico tratante:</strong> {monitoreo.medico_nombre}
-              </p>
-              <p className="text-sm text-gray-600">
-                <strong>Tratamiento ID:</strong> {monitoreo.tratamiento}
               </p>
             </div>
 

@@ -8,6 +8,7 @@ import type { Turno } from "../../../types/Turno";
 import { useSelector } from "react-redux";
 import { getTratamientoByPaciente } from "../components/SegundaConsulta/consultasService";
 import { fetchTurnoByIdExterno } from "../../../shared/hooks/fetchTurnos"; 
+import { obtenerMonitoreoMasProximo } from "../../../shared/hooks/useMonitoreoMasProximo";
 
 interface UserState {
     auth: {
@@ -67,17 +68,18 @@ export default function ListadoTurnos() {
       const tratamiento = response;
  
      
-
+      console.log("Tratamiento encontrado:", tratamiento);
       // 4. Determinar a dónde redirigir según las etapas completadas
-      if (!tratamiento.primer_consulta) {
+      console.log("esto imprime: ", tratamiento.primer_consulta)
+      if (!tratamiento.primera_consulta) {
         // Primera consulta no completada
         navigate(`/pacientes/${id_paciente}/primeraConsulta`);
       } else if (!tratamiento.segunda_consulta) {
         // Primera completa, segunda pendiente
-        navigate(`/pacientes/${id_paciente}/segundaConsulta/${tratamiento.id}`);
-      } else if (turnoActual && turnoActual.es_monitoreo) {
-        // Segunda completa y es un turno de monitoreo
-        navigate(`/monitoreo/${id_paciente}/${tratamiento.id}`);
+        navigate(`/pacientes/${id_paciente}/segundaConsulta/`);
+      } else if (turnoActual && turnoActual.es_monitoreo) {  
+        const monitoreoId = await obtenerMonitoreoMasProximo(tratamiento.id);
+        navigate(`/medico/monitoreos?monitoreoId=${monitoreoId}`);
       } else {
         // Segunda completa pero el turno no es de monitoreo
         alert("Este turno no requiere atención médica. Será gestionado por el operador de laboratorio.");

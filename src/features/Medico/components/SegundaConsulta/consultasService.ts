@@ -11,6 +11,8 @@ export const getTratamientoByPaciente = async (pacienteId: number) => {
     },
     withCredentials: true,
   });
+
+  
   return res.data;
 };
 

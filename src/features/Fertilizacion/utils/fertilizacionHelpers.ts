@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { FertilizacionData } from '../../../types/Fertilizacion';
 import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
+import toast from 'react-hot-toast';
 
 /**
  * Obtiene headers de autenticación desde localStorage
@@ -98,42 +99,44 @@ export async function descriopreservarOvocito(
   try {
     const headers = getAuthHeaders();
 
-    // 1️⃣ PATCH original (se deja tal cual)
-    await axios.patch(`/api/historial_ovocitos/${ovocitoId}/`, {
-      estado: 'fresco',
-      descripPreservado_por: usuarioId,
-      fecha_descripPreservacion: new Date().toISOString()
-    }, { headers });
 
+    await axios.post(
+      "/api/historial_ovocitos/",
+      {
+        ovocito: ovocitoId,
+        paciente: usuarioId,
+        estado: "fresco",
+        nota: `Preservado por usuario ${usuarioId}`
+      },
+      { headers }
+    );
+
+    
     // 2️⃣ GET al ovocito para buscar tanque y rack desde la BD
     const res = await axios.get(`/api/ovocitos/${ovocitoId}/`, { headers });
     const ovocito = res.data;
 
     const id_rack = ovocito.rack_id;
     const id_tanque = ovocito.tanque_id;
-    const nro_grupo = 1; // 🔥 tal como dijiste
+    const nro_grupo = 1;
+    
 
     if (id_rack == null || id_tanque == null) {
       console.error("El ovocito no tiene rack o tanque asignado en la BD.");
       return false;
     }
 
-    // 3️⃣ POST para liberar la posición (deallocate)
-    await axios.post(
-      " https://ssewaxrnlmnyizqsbzxe.supabase.co/functions/v1/deallocate-ovocyte",
-      {
-        ovocito_id: ovocitoId.toString(),
-        id_rack: id_rack,
-        id_tanque: id_tanque,
-        nro_grupo: nro_grupo
-      },
-      {
-        headers: {
-          ...headers,
-          "Content-Type": "application/json"
-        }
-      }
-    );
+    const ovocitoPresente = await buscarOvocito(ovocitoId, nro_grupo);
+    if (!ovocitoPresente) {
+      console.error("El ovocito ya se encuentra utilizado en otra fertilización.");
+      toast.error("El ovocito ya se encuentra utilizado en otra fertilización.");
+      return false;
+    }
+    const usado = await usarOvocitoTanque(ovocitoId, nro_grupo, id_tanque, id_rack);
+    if (!usado) {
+      console.error("No se pudo usar el ovocito en tanque y rack.");
+      return false;
+    }
 
     return true;
 
@@ -206,3 +209,53 @@ export async function procesarFertilizacion(pacienteId: number, usuarioId: numbe
     return plan;
   }
 }
+
+export async function buscarOvocito(ovocitoId:Number, numeroGrupo: Number) {
+  try {
+    const response = await axios.post(`https://ssewaxrnlmnyizqsbzxe.supabase.co/functions/v1/get-ovocito-posicion`,
+      { ovocito_id: ovocitoId.toString(),
+        nro_grupo: numeroGrupo  },
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    if (response.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error al buscar ovocito:", error);
+    return false;
+  }
+}
+
+export async function usarOvocitoTanque(ovocitoId:number, numeroGrupo:number, tanqueId:number, rackId:number) {
+  try {
+    const resp = await axios.post(
+        "https://ssewaxrnlmnyizqsbzxe.supabase.co/functions/v1/deallocate-ovocyte",
+        {
+          ovocito_id: ovocitoId.toString(),
+          nro_grupo: numeroGrupo.toString(),
+          id_rack: rackId,
+          id_tanque: tanqueId
+        },
+        {
+          headers: {  
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      return true;
+  }
+  catch (error) {
+    console.error("Error al usar ovocito en tanque:", error);
+    return false;
+  }
+    
+  
+}
+
+

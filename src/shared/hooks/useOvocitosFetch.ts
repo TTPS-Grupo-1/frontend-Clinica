@@ -17,7 +17,7 @@ export function useOvocitosFetch(pacienteId: number | null): UseOvocitosFetchRes
         }
         setLoading(true);
         setError(null);
-        axios.get(`/api/ovocitos/?paciente=${pacienteId}`)
+        axios.get(`/api/ovocitos/no-usados/${pacienteId}/`)
             .then(({ data }) => {
                 const items = Array.isArray(data) ? data : (data.results ?? []);
                 setOvocitos(items.map((o: any) => ({

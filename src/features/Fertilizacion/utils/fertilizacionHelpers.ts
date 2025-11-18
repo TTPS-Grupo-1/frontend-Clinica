@@ -91,18 +91,54 @@ export async function ejecutarFertilizacion(
 /**
  * Ejecuta la descriopreservación de un ovocito usando el endpoint de historial
  */
-export async function descriopreservarOvocito(ovocitoId: number, usuarioId: number): Promise<boolean> {
+export async function descriopreservarOvocito(
+  ovocitoId: number,
+  usuarioId: number
+): Promise<boolean> {
   try {
     const headers = getAuthHeaders();
+
+    // 1️⃣ PATCH original (se deja tal cual)
     await axios.patch(`/api/historial_ovocitos/${ovocitoId}/`, {
       estado: 'fresco',
       descripPreservado_por: usuarioId,
       fecha_descripPreservacion: new Date().toISOString()
     }, { headers });
-    
+
+    // 2️⃣ GET al ovocito para buscar tanque y rack desde la BD
+    const res = await axios.get(`/api/ovocitos/${ovocitoId}/`, { headers });
+    const ovocito = res.data;
+
+    const id_rack = ovocito.rack_id;
+    const id_tanque = ovocito.tanque_id;
+    const nro_grupo = 1; // 🔥 tal como dijiste
+
+    if (id_rack == null || id_tanque == null) {
+      console.error("El ovocito no tiene rack o tanque asignado en la BD.");
+      return false;
+    }
+
+    // 3️⃣ POST para liberar la posición (deallocate)
+    await axios.post(
+      " https://ssewaxrnlmnyizqsbzxe.supabase.co/functions/v1/deallocate-ovocyte",
+      {
+        ovocito_id: ovocitoId.toString(),
+        id_rack: id_rack,
+        id_tanque: id_tanque,
+        nro_grupo: nro_grupo
+      },
+      {
+        headers: {
+          ...headers,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
     return true;
+
   } catch (error) {
-    console.error('Error en descriopreservación:', error);
+    console.error("Error en descriopreservación:", error);
     return false;
   }
 }

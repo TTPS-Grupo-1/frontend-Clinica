@@ -54,7 +54,7 @@ export default function FertilizacionConfirmationView({
             ))}
 
             {ovocitosCriopreservados.map((ovocito) => (
-              <label key={ovocito.id} className="flex items-center space-x-2">
+              <label key={ovocito.id_ovocito} className="flex items-center space-x-2">
                 <input type="radio" name="ovocito" value={ovocito.id} checked={ovocitoSeleccionado === ovocito.id} onChange={() => setOvocitoSeleccionado(ovocito.id)} className="rounded" />
                 <span className="text-sm text-blue-600">Ovocito criopreservado (se descriopreservará)</span>
               </label>

@@ -19,6 +19,11 @@ export interface PacientCardProps {
   onVerHistoria: (id: number) => void;
 }
 
+// Permite controlar la visibilidad de acciones específicas en la tarjeta
+export interface PacientCardOptions {
+  showAtender?: boolean;
+}
+
 export interface DashboardCardProps {
   title: string;
   description: string;

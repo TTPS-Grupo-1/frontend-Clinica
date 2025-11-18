@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"; // ✅ Agregar useEffect
 import { useNavigate } from "react-router-dom";
 import type { EmbryoListAdaptedProps } from "../../../interfaces/Embryo";
 import Pagination from "../../../components/Pagination";
@@ -11,6 +11,10 @@ export default function EmbryoList({ embryos, selectedPacienteId }: EmbryoListAd
   const totalPages = Math.ceil(embryos.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentEmbryos = embryos.slice(startIndex, startIndex + itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [embryos, selectedPacienteId]);
 
   const handleVerEmbrion = (embrionId: string | number) => {
     navigate(`/embriones/${embrionId}`);

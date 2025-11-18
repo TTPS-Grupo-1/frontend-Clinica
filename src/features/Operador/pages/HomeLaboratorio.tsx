@@ -1,5 +1,6 @@
 import { useNavigate, Outlet } from "react-router-dom";
 import DashboardCard from "../../Medico/components/DashboardCard";
+
 export default function HomePage() {
   const navigate = useNavigate();
 
@@ -12,9 +13,15 @@ export default function HomePage() {
     navigate("/operador/punciones");
     console.log("Navegando a formulario de punciones...");
   };
-   const handleFertilize = () => {
+
+  const handleFertilize = () => {
     navigate("/operador/fertilizaciones");
     console.log("Navegando a formulario de fertilizaciones...");
+  };
+
+  const handleCriopreservacion = () => {
+    navigate("/operador/criopreservacion");
+    console.log("Navegando a criopreservación de semen...");
   };
 
   return (
@@ -24,6 +31,7 @@ export default function HomePage() {
         <div className="absolute top-0 left-0 w-72 h-72 bg-pink-200 rounded-full opacity-30 blur-2xl" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-200 rounded-full opacity-30 blur-2xl" />
       </div>
+
       <div className="pt-24 pb-10 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-7xl mx-auto">
           <article className="text-center mb-14">
@@ -31,14 +39,15 @@ export default function HomePage() {
               Panel de Laboratorio
             </h1>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-2">
-              Gestiona y registra donaciones, punciones y fertilizaciones de manera ágil y segura.
+              Gestiona y registra donaciones, punciones, fertilizaciones y criopreservación de manera ágil y segura.
             </p>
             <p className="text-base text-gray-500 max-w-xl mx-auto">
               Accede a cada apartado para iniciar el registro y consulta el estado de los procesos en cualquier momento.
             </p>
           </article>
 
-          <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {/* Card 1: Donaciones */}
             <div className="transition-transform duration-200 hover:-translate-y-1">
               <DashboardCard
                 title="Donaciones"
@@ -53,6 +62,8 @@ export default function HomePage() {
                 onClick={handleDonaciones}
               />
             </div>
+
+            {/* Card 2: Punciones */}
             <div className="transition-transform duration-200 hover:-translate-y-1">
               <DashboardCard
                 title="Punciones"
@@ -67,6 +78,8 @@ export default function HomePage() {
                 onClick={handlePunciones}
               />
             </div>
+
+            {/* Card 3: Fertilizaciones */}
             <div className="transition-transform duration-200 hover:-translate-y-1">
               <DashboardCard
                 title="Fertilizaciones"
@@ -81,6 +94,22 @@ export default function HomePage() {
                 onClick={handleFertilize}
               />
             </div>
+
+            {/* Card 4: Criopreservación Semen */}
+            <div className="transition-transform duration-200 hover:-translate-y-1">
+              <DashboardCard
+                title="Criopreservación Semen"
+                description="Gestiona tanques, congelar/descongelar muestras y consultar por DNI."
+                count={32}
+                icon={
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                }
+                iconColor="text-cyan-600"
+                onClick={handleCriopreservacion}
+              />
+            </div>
           </article>
 
           <div className="mt-20 text-center">
@@ -92,6 +121,7 @@ export default function HomePage() {
               Ten a mano la documentación necesaria antes de iniciar el proceso. Podrás actualizar la información desde el panel en cualquier momento.
             </p>
           </div>
+
           {/* Renderiza subrutas aquí */}
           <div className="mt-12">
             <Outlet />

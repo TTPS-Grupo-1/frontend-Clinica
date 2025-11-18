@@ -32,6 +32,14 @@ const ObjetivoParejaFemeninaDonacion: React.FC<ObjetivoXProps> = ({ onDataChange
       complexion: '',
       etnia: '',
     },
+    fenotipo2: {
+      ojos: '',
+      peloColor: '',
+      peloTipo: '',
+      altura: '',
+      complexion: '',
+      etnia: '',
+    },
     antecedentes_ginecologicos: { datos1: {}, datos2: {} },
   });
 
@@ -93,12 +101,22 @@ const ObjetivoParejaFemeninaDonacion: React.FC<ObjetivoXProps> = ({ onDataChange
       ),
     },
     {
-      title: 'Fenotipo Donación',
+      title: 'Fenotipo Donación - Mujer 1',
       content: (
         <FenotipoDonacion
           visible
           value={formData.fenotipo}
           onDataChange={(d) => handleSectionChange('fenotipo', d)}
+        />
+      ),
+    },
+    {
+      title: 'Fenotipo Donación - Mujer 2',
+      content: (
+        <FenotipoDonacion
+          visible
+          value={formData.fenotipo2}
+          onDataChange={(d) => handleSectionChange('fenotipo2', d)}
         />
       ),
     },

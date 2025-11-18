@@ -1,166 +1,180 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
-import type { fertilizacionModalProps as Props } from '../../../interfaces/Fertilizacion';
-import { NotebookPen } from 'lucide-react';
+import { X } from 'lucide-react';
+import LoadingView from './modal/FertilizacionLoadingView';
+import EvaluationView from './modal/FertilizacionEvaluationView';
+import ConfirmationView from './modal/FertilizacionConfirmationView';
+import ExecutingView from './modal/FertilizacionExecutingView';
+import CompletedView from './modal/FertilizacionCompletedView';
+import { 
+  ejecutarFertilizacion,
+  ejecutarDescriPreservacion
+} from '../utils/fertilizacionHelpers';
+import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
+import { useTratamientoInfo } from '../hooks/useTratamientoInfo';
+import type { FertilizacionModalProps } from '../../../interfaces/Fertilizacion';
+
+type PasoFertilizacion = 'evaluacion' | 'confirmacion' | 'ejecutando' | 'completado';
+
+export default function FertilizacionModal({ 
+  isOpen, 
+  onClose, 
+  selectedPacienteId, 
+  selectedPacienteNombre = null,
+  currentUserId
+}: FertilizacionModalProps) {
+  const [paso, setPaso] = useState<PasoFertilizacion>('evaluacion');
+  const [tecnica, setTecnica] = useState<'ICSI' | 'FIV'>('ICSI');
+  const [ovocitoSeleccionado, setOvocitoSeleccionado] = useState<number | null>(null);
+  const [resultado, setResultado] = useState<'exitosa' | 'fallida'>('exitosa');
+  const [observaciones, setObservaciones] = useState('');
+
+  // Usar los hooks existentes
+  const { ovocitos, loading: ovocitosLoading } = useOvocitosFetch(selectedPacienteId);
+
+  const { tratamientoInfo, loading: tratamientoLoading } = useTratamientoInfo(selectedPacienteId?.toString() || null, isOpen);
+  const [ovocitosCriopreservados, setOvocitosCriopreservados] = useState<any[]>([]);
+
+  const loading = ovocitosLoading || tratamientoLoading;
+
+  // Simplificar: identificar ovocitos criopreservados directamente por su estado
+  useEffect(() => {
+    if (!ovocitos || ovocitos.length === 0) {
+      setOvocitosCriopreservados([]);
+      return;
+    }
+
+    const crios = ovocitos.filter((o: any) => (o.tipo_estado || '').toString().toLowerCase() === 'criopreservado');
+    setOvocitosCriopreservados(crios);
+  }, [ovocitos]);
+
+  // Reset cuando se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      setPaso('evaluacion');
+      setOvocitoSeleccionado(null);
+      setResultado('exitosa');
+      setObservaciones('');
+    }
+  }, [isOpen]);
+
+  const semenViable = tratamientoInfo?.segunda_consulta?.semen_viable || false;
+  const ovocitosViables = tratamientoInfo?.segunda_consulta?.ovocito_viable || false;
+  const ovocitosFrescos = ovocitos.filter(o => o.tipo_estado === 'fresco');
 
 
-// Se espera que el modal reciba también la lista de fertilizaciones actuales
-// Si no, puedes agregar la prop fertilizaciones: Fertilizacion[]
-export default function FertilizacionModal({ isOpen, onClose, onFertilize, ovocitos, semenes = [], selectedPacienteId, currentUser, fertilizaciones = [] }: Props & { fertilizaciones?: any[] }) {
-  const [form, setForm] = useState({
-    ovocito: '',
-    semen_info: '',
-    fecha_fertilizacion: new Date().toISOString().slice(0,10),
-    tecnico_laboratorio: currentUser ? currentUser.nombre : '',
-    tecnica: '',
-    resultado: 'no_exitosa',
-  });
-  // Filtrar ovocitos que no estén en fertilizaciones
-  const fertilizadosIds = fertilizaciones.map(f => f.ovocito?.id_ovocito ?? f.ovocito).filter(Boolean);
-  const ovocitosDisponibles = ovocitos.filter(o => !fertilizadosIds.includes(o.id_ovocito));
-  const [submitting, setSubmitting] = useState(false);
+  const puedeRealizar = semenViable && ovocitosViables && (ovocitosFrescos.length > 0 || ovocitosCriopreservados.length > 0);
 
-  useEffect(()=>{
-    setForm((f)=>({ ...f, tecnico_laboratorio: currentUser ? currentUser.nombre : f.tecnico_laboratorio }));
-  }, [currentUser]);
+  const ejecutarProceso = async () => {
+    if (!selectedPacienteId || !currentUserId) return;
 
-
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    const tecnica_icsi = form.tecnica === "icsi";
-    const tecnica_fiv = form.tecnica === "fiv";
-    const payload: any = {
-      ovocito: form.ovocito ? Number(form.ovocito) : null,
-      semen_info: form.semen_info || null,
-      fecha_fertilizacion: form.fecha_fertilizacion,
-      tecnico_laboratorio: form.tecnico_laboratorio,
-      tecnica_icsi,
-      tecnica_fiv,
-      resultado: form.resultado,
-    };
+    setPaso('ejecutando');
     try {
-      const fertilizacionResponse = await axios.post('http://localhost:8000/api/fertilizacion/', payload);
-      const fertilizacionId = fertilizacionResponse.data.id_fertilizacion || fertilizacionResponse.data.id;
-      toast.success('Fertilización registrada exitosamente');
-      if (form.resultado === 'exitosa' && form.ovocito) {
-        const ovocitoSeleccionado = ovocitos.find(o => o.id_ovocito === Number(form.ovocito));
-        const identificadorEmbrion = generateUniqueId({
-          prefix: "EMB",
-          nombre: ovocitoSeleccionado?.identificador || "UNK",
-          apellido: "",
-        });
-        const embrionPayload = {
-          identificador: identificadorEmbrion,
-          fertilizacion: fertilizacionId,
-          estado: "no transferido",
+      const fechaHoy = new Date().toISOString().slice(0, 10);
+
+      const basePayload: any = {
+        fecha_fertilizacion: fechaHoy,
+        tecnico_laboratorio: String(currentUserId),
+        tecnica_icsi: tecnica === 'ICSI',
+        tecnica_fiv: tecnica === 'FIV',
+        resultado: resultado === 'exitosa' ? 'exitosa' : 'no_exitosa',
+        notas: `Técnica: ${tecnica}. TecnicoId: ${currentUserId}. ${observaciones}`,
+        semen_info: semenViable ? 'pareja' : null,
+        banco_semen_id: null,
+        razon_banco_semen: 'no_aplica',
+      };
+
+      const todosOvocitos = [...ovocitosFrescos, ...ovocitosCriopreservados];
+      if (todosOvocitos.length === 0) throw new Error('No hay ovocitos disponibles para fertilizar');
+
+      const resultados: boolean[] = [];
+      for (const ov of todosOvocitos) {
+        const ovId = (ov as any).id_ovocito ?? (ov as any).id;
+        const esCrio = (ov as any).tipo_estado && (ov as any).tipo_estado.toString().toLowerCase() === 'criopreservado';
+        if (esCrio) {
+          await ejecutarDescriPreservacion([ovId], currentUserId);
+        }
+
+        const fertilizacionData: any = {
+          ...basePayload,
+          ovocitos_utilizados: ovId,
+          ovocito: ovId,
         };
-        await axios.post('http://localhost:8000/api/embriones/', embrionPayload);
-        toast.success(`Embrión ${identificadorEmbrion} creado exitosamente`);
+
+        const exitoIndividual = await ejecutarFertilizacion(fertilizacionData, [ov]);
+        resultados.push(Boolean(exitoIndividual));
       }
-      setSubmitting(false);
-      onClose();
-    } catch (error: any) {
-      setSubmitting(false);
-      console.error('Error completo:', error);
-      const errorMsg = error?.response?.data?.detail || 
-                       error?.response?.data?.message || 
-                       error?.message || 
-                       'Error al registrar';
-      toast.error(errorMsg);
+
+      const todosExitos = resultados.length > 0 && resultados.every(r => r === true);
+      if (todosExitos) {
+        setPaso('completado');
+        setTimeout(() => onClose(), 2000);
+      } else {
+        throw new Error('Algunas fertilizaciones fallaron');
+      }
+    } catch (error) {
+      console.error('Error ejecutando fertilización:', error);
+      setPaso('confirmacion');
     }
   };
 
-    return (
-      <AnimatePresence>
-        {isOpen && (
+  // presentational components are imported from separate files
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden text-gray-900"
           >
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <motion.div
-              initial={{ y: 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 40, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-gray-100 flex flex-col"
-              role="dialog"
-              aria-modal="true"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <NotebookPen className="w-6 h-6 text-blue-600" />
-                <h3 className="text-lg text-blue-700 font-bold">Registrar Fertilización</h3>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <div>
-                  <label className="block text-sm text-gray-900 font-medium">Ovocito</label>
-                  <select value={form.ovocito} onChange={e=>setForm({...form, ovocito: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300">
-                    <option className="text-gray-500" value="">-- Selecciona ovocito --</option>
-                    {ovocitosDisponibles.length === 0 ? (
-                      <option disabled value="">No hay ovocitos disponibles</option>
-                    ) : (
-                      ovocitosDisponibles.map(o=> (
-                        <option key={o.id_ovocito} value={o.id_ovocito} className="text-gray-900">{o.identificador}</option>
-                      ))
-                    )}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-900 font-medium">Semen (opcional)</label>
-                  <input
-                    type="text"
-                    value={form.semen_info}
-                    onChange={e=>setForm({...form, semen_info: e.target.value})}
-                    className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300"
-                    placeholder="Identificador, notas, etc."
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <div className="w-1/2">
-                    <label className="block text-gray-900 text-sm font-medium">Fecha de fertilización</label>
-                    <input type="date" value={form.fecha_fertilizacion} onChange={e=>setForm({...form, fecha_fertilizacion: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300" />
-                  </div>
-                  <div className="w-1/2">
-                    <label className="block text-gray-900 text-sm font-medium">Técnico de laboratorio</label>
-                    <input type="text" value={form.tecnico_laboratorio} onChange={e=>setForm({...form, tecnico_laboratorio: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300" placeholder="Nombre del operador" />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="w-1/2">
-                    <label className="block text-gray-900 text-sm font-medium">Técnica</label>
-                    <select value={form.tecnica} onChange={e=>setForm({...form, tecnica: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300">
-                      <option className="text-gray-500" value="">-- Selecciona técnica --</option>
-                      <option className="text-gray-900" value="icsi">ICSI</option>
-                      <option className="text-gray-900" value="fiv">FIV</option>
-                    </select>
-                  </div>
-                  <div className="w-1/2">
-                    <label className="block text-gray-900 text-sm font-medium">Resultado</label>
-                    <select value={form.resultado} onChange={e=>setForm({...form, resultado: e.target.value})} className="w-full border border-gray-300 bg-gray-50 text-gray-900 px-3 py-2 rounded focus:ring-2 focus:ring-blue-300">
-                      <option className="text-gray-900" value="exitosa">Exitosa</option>
-                      <option className="text-gray-900" value="no_exitosa">No exitosa</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="flex text-gray-900 justify-end gap-2 mt-4">
-                  <button type="button" onClick={onClose} className="px-3 py-2 border border-gray-300 bg-gray-50 text-gray-900 rounded hover:bg-gray-100 transition">Cancelar</button>
-                  <button type="submit" disabled={submitting} className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
-                    {submitting && <span className="animate-spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full" />}
-                    Registrar fertilización
-                  </button>
-                </div>
-              </form>
-            </motion.div>
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-xl font-bold text-gray-900">
+                Fertilización - {selectedPacienteNombre ? `${selectedPacienteNombre}` : (selectedPacienteId ? `Paciente ${selectedPacienteId}` : 'Sin paciente')}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              {paso === 'evaluacion' && (loading ? <LoadingView /> : <EvaluationView
+                semenViable={semenViable}
+                ovocitosViables={ovocitosViables}
+                ovocitosFrescosCount={ovocitosFrescos.length}
+                ovocitosCriopreservadosCount={ovocitosCriopreservados.length}
+                puedeRealizar={puedeRealizar}
+                onContinue={() => setPaso('confirmacion')}
+              />)}
+
+              {paso === 'confirmacion' && (
+                <ConfirmationView
+                  tecnica={tecnica}
+                  setTecnica={setTecnica}
+                  ovocitosFrescos={ovocitosFrescos}
+                  ovocitosCriopreservados={ovocitosCriopreservados}
+                  ovocitoSeleccionado={ovocitoSeleccionado}
+                  setOvocitoSeleccionado={setOvocitoSeleccionado}
+                  resultado={resultado}
+                  setResultado={setResultado}
+                  observaciones={observaciones}
+                  setObservaciones={setObservaciones}
+                  onBack={() => setPaso('evaluacion')}
+                  onSubmit={ejecutarProceso}
+                />
+              )}
+
+              {paso === 'ejecutando' && <ExecutingView />}
+              {paso === 'completado' && <CompletedView />}
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    );
+        </div>
+      )}
+    </AnimatePresence>
+  );
 }

@@ -82,23 +82,34 @@ export default function ListadoMedicosPage() {
 
     if (loading) {
         return (
-            <main className="pt-28 flex flex-col items-center min-h-screen">
-                <div className="text-xl">Cargando médicos...</div>
-            </main>
+            <div className={`min-h-screen pt-20 pb-8 bg-gradient-to-br from-blue-50 to-indigo-100`}>
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+                        <div className="text-xl">Cargando médicos...</div>
+                    </div>
+                </div>
+            </div>
         );
     }
 
     return (
-        <main className="pt-28 flex flex-col items-center min-h-screen">
-            <Toaster position="top-center" />
-            <div className="max-w-4xl w-full p-6 bg-white rounded-lg shadow">
-                <h1 className="text-2xl font-bold text-black mb-4">Listado de Médicos</h1>
-                {medicos.length === 0 ? (
-                    <p className="text-gray-500">No hay médicos registrados</p>
-                ) : (
-                    <MedicoList medicos={medicos} onEliminar={handleEliminar} />
-                )}
+        <div className={`min-h-screen pt-20 pb-8 bg-gradient-to-br from-blue-50 to-indigo-100`}>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="bg-white rounded-2xl shadow-xl p-8">
+                    <Toaster position="top-center" />
+                    <h1 className="text-2xl font-bold text-black mb-4">Listado de Médicos</h1>
+                    {medicos.length === 0 ? (
+                        <p className="text-gray-500">No hay médicos registrados</p>
+                    ) : (
+                        <MedicoList
+                            medicos={medicos}
+                            onEliminar={handleEliminar}
+                            canEliminar={(m) => verificarSiPuedeEliminar(m).puedeEliminar}
+                            razonNoEliminar={(m) => verificarSiPuedeEliminar(m).razon}
+                        />
+                    )}
+                </div>
             </div>
-        </main>
+        </div>
     );
 }

@@ -1,22 +1,35 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, User } from "lucide-react";
+import { ChevronRight, User, MessageCircle } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
+import { persistor } from '../store';
 import { logout } from '../store/authSlice';
 import axios from 'axios';
 import { toast } from 'sonner';
+import Chatbot from './Chatbot';
 
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   // Only one dropdown open at a time: 'embriones', 'donaciones', 'profile', or null
   const [openDropdown, setOpenDropdown] = useState<null | 'embriones' | 'donaciones' | 'profile'>(null);
   const navigate = useNavigate();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const user = useSelector((state: RootState) => state.auth.user);
-  const role = user?.role || user?.rol || localStorage.getItem('role');
+  const isAuthenticated = useSelector((state: RootState) => (state.auth as any)?.isAuthenticated);
+  const user = useSelector((state: RootState) => (state.auth as any)?.user);
+  // Parse stored role from localStorage (it may be JSON-stringified or plain)
+  const _storedRoleRaw = localStorage.getItem('role');
+  let _storedRole: string | null = null;
+  if (_storedRoleRaw) {
+    try {
+      _storedRole = JSON.parse(_storedRoleRaw);
+    } catch (e) {
+      _storedRole = _storedRoleRaw;
+    }
+  }
+  const role = user?.role || user?.rol || _storedRole;
   const dispatch = useDispatch();
 
  const handleLogout = async () => {
@@ -31,9 +44,26 @@ export default function Navbar() {
     console.error('Logout request failed', err);
     // opcional: mostrar toast de advertencia
   } finally {
-    // Limpiar el estado de Redux y el token
+    // Limpiar el estado de Redux en memoria
     dispatch(logout()); // Limpia usuario y autenticación en Redux
-    localStorage.removeItem('token'); // Solo el token, el usuario está en Redux
+
+    // Purgar el storage persistido (elimina la copia guardada en localStorage)
+    try {
+      await persistor.purge();
+    } catch (e) {
+      console.warn('Error purging persistor', e);
+    }
+
+    // Borrar claves usadas en localStorage por seguridad
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      // clave usada por redux-persist suele ser `persist:<key>`
+      localStorage.removeItem('persist:auth');
+    } catch (e) {
+      console.warn('Error clearing localStorage on logout', e);
+    }
+
     toast.success('Sesión cerrada');
     navigate('/'); // Redirige al home normal
   }
@@ -51,10 +81,10 @@ export default function Navbar() {
           onClick={() => {
             if (role === 'PACIENTE') {
               navigate('/pacientes/home');
-            } else if (role === 'OPERADOR') {
+              } else if (role === 'OPERADOR' || role === 'OPERADOR_LABORATORIO') {
               navigate('/operador');
             } else if (role === 'MEDICO') {
-              navigate('/medico');
+              navigate('/medico/home');
             } else {
               navigate('/');
             }
@@ -110,9 +140,9 @@ export default function Navbar() {
           </svg>
         </button>
 
-        {/* Enlaces en escritorio (dropdown) */}
-          <section className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
-            {/* Operador Dropdown (ahora incluye embriones y fertilizaciones) */}
+        {/* Enlaces en escritorio (dropdown + acciones de usuario) */}
+        <section className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
+          {role === 'OPERADOR_LABORATORIO' && (
             <div className="relative z-50 group">
               <button
                 aria-haspopup="true"
@@ -171,17 +201,30 @@ export default function Navbar() {
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      to="operador/fertilizaciones"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                    >
-                      Fertilizaciones
-                    </Link>
+                      <Link
+                        to="/operador/fertilizaciones"
+                        onClick={() => setOpenDropdown(null)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                      >
+                        Fertilizaciones
+                      </Link>
                   </li>
                 </ul>
               </div>
             </div>
+          )}
+
+          {/* Chatbot Button */}
+          {isAuthenticated && (
+            <button
+              onClick={() => setIsChatbotOpen(!isChatbotOpen)}
+              className="text-white font-medium hover:text-yellow-500 transition-colors duration-200 mr-4"
+              title="Chatbot de asistencia"
+            >
+              <MessageCircle className="h-6 w-6" />
+            </button>
+          )}
+
           {/* User Menu */}
           {isAuthenticated && (
             <div className="relative z-50 group">
@@ -224,56 +267,66 @@ export default function Navbar() {
             }`}
           >
             <ul className="flex flex-col gap-4 text-white text-sm">
-              <li>
-                <Link
-                  to="/operador"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block hover:text-yellow-400"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/operador/donaciones"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block hover:text-yellow-400"
-                >
-                  Donaciones
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/operador/punciones"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block hover:text-yellow-400"
-                >
-                  Punciones
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/embriones"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block hover:text-yellow-400"
-                >
-                  Listado de embriones
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="operador/fertilizaciones"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block hover:text-yellow-400"
-                >
-                  Fertilizaciones
-                </Link>
-              </li>
+              {role === 'OPERADOR_LABORATORIO' && (
+                <>
+                  <li>
+                    <Link
+                      to="/operador"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block hover:text-yellow-400"
+                    >
+                      Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/operador/donaciones"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block hover:text-yellow-400"
+                    >
+                      Donaciones
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/operador/punciones"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block hover:text-yellow-400"
+                    >
+                      Punciones
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/embriones"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block hover:text-yellow-400"
+                    >
+                      Listado de embriones
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/operador/fertilizaciones"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block hover:text-yellow-400"
+                    >
+                      Fertilizaciones
+                    </Link>
+                  </li>
+                </>
+              )}
               <li className="pt-2 border-t border-white/20">
               </li>
             </ul>
           </article>
       </section>
+
+      {/* Chatbot Component */}
+      <Chatbot 
+        isOpen={isChatbotOpen} 
+        onClose={() => setIsChatbotOpen(false)} 
+      />
     </nav>
   );
 }

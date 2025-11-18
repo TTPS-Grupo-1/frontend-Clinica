@@ -1,46 +1,230 @@
 import TurnoCard from "../components/TurnosPacienteComponente";
 import Pagination from "../../../components/Pagination";
-import { useState } from "react";
-
-
-
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { toast, Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
+import ConfirmModal from "../components/ModalConfirmacionComponente";
+import { useNavigate } from "react-router-dom";
+
+// --- INTERFACES ---
+interface TurnoAPI {
+    id: number;
+    id_medico: number;
+    id_paciente: number;
+    fecha_hora: string; // "YYYY-MM-DDTHH:MM:SS+00:00"
+    es_monitoreo: boolean;
+}
+
+interface Turnos {
+    id: number;
+    fecha: string;
+    hora: string;
+    medico: string;
+    es_monitoreo: boolean;
+    
+}
+
+interface UserState {
+    auth: {
+        user: {
+            id: number;
+            rol: string;
+        } | null;
+    };
+}
+
+interface Medico {
+    id: number;
+    first_name: string;
+    last_name: string;
+}
+
 
 export default function MisTurnos() {
+
+    const navigate = useNavigate();
+    const [medicos, setMedicos] = useState<Medico[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [misTurnos, setMisTurnos] = useState<TurnoAPI[]>([]); // Almacena los datos de la API
+    const [loading, setLoading] = useState(true);
     const itemsPerPage = 2;
-    const misTurnos = [
-        { id: 1, fecha: "10/10/2025", hora: "09:00", medico: "Dra. Pérez" },
-        { id: 2, fecha: "12/10/2025", hora: "10:30", medico: "Dr. Gómez" },
-        { id: 3, fecha: "15/10/2025", hora: "10:30", medico: "Dr. Gómez" },
-        { id: 4, fecha: "19/11/2025", hora: "10:30", medico: "Dr. Gómez" },
-        { id: 5, fecha: "22/11/2025", hora: "10:30", medico: "Dr. Gómez" },
-    ];
-    const totalPages = Math.ceil(misTurnos.length / itemsPerPage);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [turnoIdToCancel, setTurnoIdToCancel] = useState<number | null>(null);
+
+    const userId = useSelector((state: UserState) => state.auth.user?.id);
+    const userRol = useSelector((state: UserState) => state.auth.user?.rol);
+
+    // Handlers del Modal
+    const handleOpenModal = (id: number) => {
+        setTurnoIdToCancel(id);
+        setIsModalOpen(true); 
+    };
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setTurnoIdToCancel(null);
+    };
+
+    // ID del paciente (Se obtiene del estado de Redux)
+    const PACIENTE_ID = (userRol === 'PACIENTE' && userId) ? userId : null;
+
+    // URLs de los proxies de Django
+    const PROXY_CONSULTA_URL = "http://127.0.0.1:8000/api/turnos/mis_turnos/"; 
+    const PROXY_CANCELAR_URL = "http://127.0.0.1:8000/api/turnos/cancelar_turno/";
+
+
+    // 1. FETCH DE MÉDICOS (No bloqueante)
+    const fetchMedicos = useCallback(async () => {
+        try {
+            const res = await fetch("http://127.0.0.1:8000/api/medicos/");
+            if (!res.ok) throw new Error("Error al obtener datos de médicos");
+            const data = await res.json();
+            setMedicos(data || []);
+        } catch (err) {
+            console.error("Error al cargar lista de médicos:", err);
+        }
+    }, []);
+
+
+    // 2. FETCH DE TURNOS DEL PACIENTE (Depende del ID)
+    const fetchMisTurnos = useCallback(async () => {
+        // 🚨 PREVENCIÓN: No intentar el fetch si el ID no es válido (null)
+        if (!PACIENTE_ID) { 
+            setLoading(false);
+            setMisTurnos([]); 
+            return;
+        }
+        
+        setLoading(true);
+        // Esperar la lista de médicos para poder mapear los nombres
+        if (medicos.length === 0) {
+            await fetchMedicos(); 
+        }
+
+        try {
+            const url = `${PROXY_CONSULTA_URL}?id_paciente=${PACIENTE_ID}`; 
+            
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("Error al obtener tus turnos.");
+
+            const { data } = await res.json(); 
+            console.log("TURNOS DESDE API ---->", data);
+            setMisTurnos(data || []);
+            
+        } catch (err) {
+            console.error("Error al cargar turnos:", err);
+            toast.error("No se pudieron cargar tus turnos.");
+            setMisTurnos([]); // Limpiar en caso de fallo para evitar pantalla en blanco
+        } finally {
+            setLoading(false);
+        }
+    }, [PACIENTE_ID, fetchMedicos, medicos.length]);
+
+    // Ejecutar fetch al cargar y cuando las dependencias cambien
+    useEffect(() => {
+        fetchMisTurnos();
+    }, [fetchMisTurnos]);
+
+
+    // --- LÓGICA DE CANCELACIÓN ---
+    const handleCancelarTurno = async () => {
+        const idTurno = turnoIdToCancel; 
+        handleCloseModal(); // 1. Cerrar el modal
+
+        if (!idTurno) {
+            toast.error("Error: ID del turno para cancelar es nulo.");
+            return;
+        }
+        
+        try {
+            const url = `${PROXY_CANCELAR_URL}?id_turno=${idTurno}`;
+            const res = await fetch(url, {
+                method: "PATCH", 
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                const errorMessage = errData.error || errData.message || `Fallo la cancelación. Código: ${res.status}.`;
+                throw new Error(errorMessage); 
+            }
+
+            // 3. ÉXITO: MOSTRAR TOAST Y RECARGAR CON RETRASO
+            toast.success('Turno cancelado exitosamente!'); 
+            
+            // 💡 SOLUCIÓN: Usar setTimeout para priorizar el renderizado del toast
+            
+            fetchMisTurnos(); // Recargar la lista
+
+            
+        } catch (error) {
+            // Mostrar error si el fetch falló
+            const errorMessage = (error as Error).message || "Error desconocido al cancelar el turno.";
+            toast.error(errorMessage);
+        } 
+    };
+
+    // --- Mapeo de Datos y Paginación (Renderizado) ---
+    const turnosParaMostrar: Turnos[] = misTurnos.map(turno => {
+        const [fechaParte, horaParteConOffset] = turno.fecha_hora.split("T");
+        const horaLimpia = horaParteConOffset.substring(0, 5);
+
+        // Resolver el nombre del médico (requiere que 'medicos' esté cargado)
+        const medicoEncontrado = medicos.find(m => m.id === turno.id_medico);
+        
+        const nombreCompleto = medicoEncontrado 
+            ? `${medicoEncontrado.first_name} ${medicoEncontrado.last_name}` 
+            : "Médico Desconocido";
+
+        return {
+            id: turno.id,
+            fecha: fechaParte.split("-").reverse().join("/"),
+            hora: horaLimpia,
+            medico: nombreCompleto,
+            es_monitoreo: Boolean(turno.es_monitoreo), 
+        };
+    });
+
+    const totalPages = Math.ceil(turnosParaMostrar.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentTurnos = misTurnos.slice(startIndex, startIndex + itemsPerPage);
+    const currentTurnos = turnosParaMostrar.slice(startIndex, startIndex + itemsPerPage);
+    
+    // --- Renderizado Condicional ---
+    if (loading) {
+        return ( /* ... Mensaje de carga */
+            <div className="text-center py-20 min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-300">
+                <p className="text-xl font-medium text-blue-700">Cargando tus turnos...</p>
+            </div>
+        );
+    }
+    
+    if (misTurnos.length === 0) {
+        return ( /* ... Mensaje de no turnos */
+            <div className="text-center py-20 min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-300">
+                <h1 className="text-3xl font-bold text-blue-700">No tienes turnos agendados.</h1>
+                <p className="mt-4 text-gray-600">Puedes sacar un nuevo turno desde la sección correspondiente.</p>
+            </div>
+        );
+    }
+
     return (
         <div className="relative w-full max-w-7xl mx-auto mt-16 md:mt-20 px-4 sm:px-6 py-6 min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-300 overflow-x-hidden">
-            {/* Fondo decorativo */}
-            <div className="absolute inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full opacity-30 blur-2xl" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full opacity-30 blur-2xl" />
-            </div>
+        <Toaster position="top-center" />
+{/* ... (Fondo decorativo y Header) ... */}
+
             <div className="relative z-10">
-                {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
                     className="mb-6"
                 >
-                    <h1 className="text-3xl font-bold mb-4 text-center text-blue-700 drop-shadow-lg">Mis Turnos</h1>
-                    <p className="text-gray-700 text-center text-lg">
-                        Gestiona tus próximos turnos <span className="font-semibold">({misTurnos.length})</span>
-                    </p>
+                <h1 className="text-2xl font-bold text-gray-800 mb-6">Mis Turnos</h1>
+                <p className="text-gray-700 text-center text-lg">
+                    Gestiona tus próximos turnos <span className="font-semibold">({misTurnos.length})</span>
+                </p>
                 </motion.div>
-
-                {/* Turnos */}
+                
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -51,22 +235,46 @@ export default function MisTurnos() {
                         <TurnoCard
                             key={turno.id}
                             turno={turno}
-                            onCancelar={(id) => console.log("Cancelar turno", id)}
+                            onCancelar={handleOpenModal}
+                            onReasignar={(idTurno: number) => {
+                                const t = misTurnos.find(t => t.id === idTurno);
+                                if (!t) {
+                                    toast.error("No se encontró el turno seleccionado.");
+                                    return;
+                                }
+                                const fechaNormalizada = t.fecha_hora.replace(" ", "+");
+                                navigate(
+                                `/pacientes/sacarTurno?reasignar=1&id_turno=${t.id}&id_medico=${t.id_medico}&fecha=${fechaNormalizada}`
+                                );
+                            }}
                         />
                     ))}
                 </motion.div>
 
                 {/* Paginación */}
-                <div className="mt-8 flex justify-center">
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        itemsPerPage={itemsPerPage}
-                        totalItems={misTurnos.length}
-                    />
-                </div>
+                {totalPages > 1 && ( /* ... */
+                    <div className="mt-8 flex justify-center">
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                            itemsPerPage={itemsPerPage}
+                            totalItems={turnosParaMostrar.length}
+                        />
+                    </div>
+                )}
             </div>
+
+            {/* Modal de Confirmación */}
+            {isModalOpen && turnoIdToCancel !== null && (
+                <ConfirmModal 
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    title="Cancelar Turno"
+                    message={`¿Estás seguro de que desea cancelar el turno? Esta acción no podrá revertirse.`}
+                    onConfirm={handleCancelarTurno} 
+                />
+            )}
         </div>
     );
 }

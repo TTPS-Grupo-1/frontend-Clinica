@@ -10,12 +10,15 @@ export default function LandingPage() {
       {/* Header/logo */}
   <header className="w-full pt-24 pb-4 flex flex-col items-center z-10 relative">
         <div className="mb-4 flex justify-center">
-          <svg className="w-16 h-16 text-blue-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" strokeWidth="2" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 2" />
-          </svg>
+          <img
+            src="/logo.png"
+            alt="Logo Envy Fertilidad"
+            className="w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 drop-shadow-lg"
+            width={384}
+            height={384}
+          />
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-700 mb-2 text-center tracking-tight drop-shadow-lg">Envy Fertilidad</h1>
+
         <p className="text-base sm:text-lg md:text-xl text-gray-700 mb-4 text-center max-w-2xl mx-auto">
           Clínica especializada en fertilidad, acompañando a las familias en cada paso de su camino.
         </p>

@@ -26,7 +26,7 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
   return (
     <div className="max-w-xl mx-auto mt-6 rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black">
       <h2 className="text-2xl font-bold mb-4 text-center text-black">
-        Fenotipo de la paciente
+        Fenotipo de la paciente/acompañante
       </h2>
 
       <div className="space-y-4">

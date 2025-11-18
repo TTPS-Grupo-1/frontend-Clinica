@@ -2,14 +2,20 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import ObjetivoModal from './ObjetivoModal';
+import { useSelector } from "react-redux";
 import {
   ObjetivoMujerSola,
   ObjetivoParejaHeterosexual,
   ObjetivoParejaFemeninaDonacion,
   ObjetivoParejaFemeninaRopa,
 } from './Objetivos';
+import { useParams }from 'react-router-dom';
 
 const PrimerConsulta: React.FC = () => {
+
+  const { pacienteId } = useParams();
+  const user = useSelector((state: any) => state.auth.user);
+  const medicoId = user.id;
   const [objetivoSeleccionado, setObjetivoSeleccionado] = useState<string | null>(null);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [formData, setFormData] = useState<any>({});
@@ -19,11 +25,14 @@ const PrimerConsulta: React.FC = () => {
   };
 
   const handleConfirmar = async () => {
-    const datos = { objetivo: objetivoSeleccionado, form: formData, paciente_id: 1, medico_id: 19 }; // Reemplazar con IDs reales
+
+
+    const datos = { objetivo: objetivoSeleccionado, form: formData, paciente_id: Number(pacienteId), medico_id: medicoId };
 
     try {
       console.log('🧾 Datos listos para enviar:', datos);
-      await axios.post('/api/primeras-consultas/', datos, { withCredentials: true });
+      const res = await axios.post('/api/primeras-consultas/', datos, { withCredentials: true });
+      console.log('✅ Respuesta del servidor:', res.data);
       toast.success('Datos enviados correctamente');
       setFormData({});
       setObjetivoSeleccionado(null);

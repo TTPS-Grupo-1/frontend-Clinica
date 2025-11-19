@@ -78,6 +78,8 @@ export default function FertilizacionConfirmationView({
                 <span className="text-sm text-blue-600">Ovocito criopreservado (se descriopreservará)</span>
               </label>
             ))}
+              </>
+            )}
           </div>
         </div>
 

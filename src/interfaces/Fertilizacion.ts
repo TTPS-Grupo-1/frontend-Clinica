@@ -39,3 +39,30 @@ export interface FertilizacionData {
   resultado: 'exitosa' | 'fallida';
   observaciones?: string;
 }
+
+
+export interface FertilizacionParams {
+  selectedPacienteId: number | null;
+  currentUserId: number | null;
+  tecnica: 'ICSI' | 'FIV';
+  resultado: 'exitosa' | 'fallida';
+  observaciones: string;
+  semenViable: boolean;
+  ovocitoSeleccionado: number | null;
+  ovocitoDonadoSeleccionado: any | null;
+  bancoSemenSeleccionado: any | null;
+  razonBanco: string | null;
+  ovocitosFrescos: any[];
+  ovocitosCriopreservados: any[];
+}
+
+export interface FertilizacionForm {
+  ovocito: string;
+  semen_info: string;
+  fecha_fertilizacion: string;
+  tecnico_laboratorio: string;
+  tecnica: string;
+  resultado: string;
+  banco_semen_id: string;
+  razon_banco_semen: string;
+}

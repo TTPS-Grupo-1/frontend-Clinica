@@ -48,3 +48,5 @@ export type FertilizacionData = {
   resultado: 'exitosa' | 'fallida';
   observaciones?: string;
 }
+
+export type PasoFertilizacion = 'evaluacion' | 'confirmacion' | 'ejecutando' | 'completado';

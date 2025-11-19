@@ -5,9 +5,10 @@ const API_BASE = "/api"; // base común
 const token = localStorage.getItem("token");
 // 🔹 Obtener el tratamiento activo por paciente
 export const getTratamientoByPaciente = async (pacienteId: number) => {
+  const token = localStorage.getItem("token");
   const res = await axios.get(`${API_BASE}/tratamientos/por-paciente/${pacienteId}/`, {
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: token ? `Token ${token}` : "",
     },
     withCredentials: true,
   });
@@ -32,7 +33,7 @@ export const getEstudiosAgrupadosPorConsulta = async (consultaId: number) => {
   
   const res = await axios.get(`${API_BASE}/resultado_estudio/agrupados-por-consulta/${consultaId}/`, {
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     withCredentials: true,
   });

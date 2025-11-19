@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { getAuthHeaders } from '../utils/fertilizacionHelpers';
+import { getAuthHeaders, ejecutarFertilizacion, ejecutarDescriPreservacion } from '../utils/fertilizacionHelpers';
 import { toast } from 'sonner';
 import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
-
-interface FertilizacionForm {
-  ovocito: string;
-  semen_info: string;
-  fecha_fertilizacion: string;
-  tecnico_laboratorio: string;
-  tecnica: string;
-  resultado: string;
-  banco_semen_id: string;
-  razon_banco_semen: string;
-}
-
+import type { FertilizacionParams, FertilizacionForm } from '../../../interfaces/Fertilizacion';
 export const useFertilizacionForm = (
   currentUser: any,
   ovocitos: any[],
@@ -105,5 +94,137 @@ export const useFertilizacionForm = (
     updateForm,
     handleSubmit,
     submitting
+  };
+};
+
+
+export const useFertilizacionProceso = () => {
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const ejecutarProceso = async (params: FertilizacionParams): Promise<boolean> => {
+    const {
+      selectedPacienteId,
+      currentUserId,
+      tecnica,
+      resultado,
+      observaciones,
+      semenViable,
+      ovocitoSeleccionado,
+      ovocitoDonadoSeleccionado,
+      bancoSemenSeleccionado,
+      razonBanco,
+      ovocitosFrescos,
+      ovocitosCriopreservados
+    } = params;
+
+    if (!selectedPacienteId || !currentUserId) {
+      setError('Faltan datos del paciente o usuario');
+      return false;
+    }
+
+    setIsExecuting(true);
+    setError(null);
+
+    try {
+      const fechaHoy = new Date().toISOString().slice(0, 10);
+      const tieneBancoSeleccionado = Boolean(bancoSemenSeleccionado);
+
+      const basePayload: any = {
+        fecha_fertilizacion: fechaHoy,
+        tecnico_laboratorio: String(currentUserId),
+        tecnica_icsi: tecnica === 'ICSI',
+        tecnica_fiv: tecnica === 'FIV',
+        resultado: resultado === 'exitosa' ? 'exitosa' : 'no_exitosa',
+        notas: `Técnica: ${tecnica}. TecnicoId: ${currentUserId}. ${observaciones}`,
+        // Definir origen del semen: 'pareja' cuando semenViable, 'banco' cuando se usó banco
+        semen_info: semenViable ? 'pareja' : (tieneBancoSeleccionado ? 'banco' : null),
+        banco_semen_id: tieneBancoSeleccionado ? (bancoSemenSeleccionado.id ?? bancoSemenSeleccionado.identificador ?? null) : null,
+        razon_banco_semen: tieneBancoSeleccionado ? (razonBanco || 'no_aplica') : 'no_aplica',
+      };
+
+      // Si hay un ovocito donado seleccionado, usarlo directamente
+      if (ovocitoDonadoSeleccionado) {
+        const fertilizacionData: any = {
+          ...basePayload,
+          ovocitos_utilizados: ovocitoDonadoSeleccionado.id,
+          ovocito: ovocitoDonadoSeleccionado.id,
+          // Agregar información del ovocito donado
+          ovocito_donado_id: ovocitoDonadoSeleccionado.id,
+          ovocito_info: 'donado',
+        };
+
+        const exitoIndividual = await ejecutarFertilizacion(fertilizacionData, [ovocitoDonadoSeleccionado]);
+        const todosExitos = Boolean(exitoIndividual);
+        
+        if (todosExitos) {
+          setIsExecuting(false);
+          return true;
+        } else {
+          throw new Error('La fertilización con ovocito donado falló');
+        }
+      }
+
+      // Si no hay ovocito donado, usar la lógica original con ovocitos propios
+      const todosOvocitos = [...ovocitosFrescos, ...ovocitosCriopreservados];
+      if (todosOvocitos.length === 0) {
+        throw new Error('No hay ovocitos disponibles para fertilizar');
+      }
+
+      // Si el usuario seleccionó un ovocito en la confirmación, sólo procesar ese ovocito.
+      // Esto evita ejecutar la misma fertilización múltiples veces cuando sólo se quiso
+      // confirmar un ovocito específico.
+      const targetOvocitos = ovocitoSeleccionado !== null
+        ? todosOvocitos.filter(o => {
+            const idOv = (o as any).id_ovocito ?? (o as any).id;
+            return idOv === ovocitoSeleccionado;
+          })
+        : todosOvocitos;
+
+      if (ovocitoSeleccionado !== null && targetOvocitos.length === 0) {
+        throw new Error('El ovocito seleccionado no fue encontrado');
+      }
+
+      const resultados: boolean[] = [];
+      for (const ov of targetOvocitos) {
+        const ovId = (ov as any).id_ovocito ?? (ov as any).id;
+        const esCrio = (ov as any).tipo_estado && (ov as any).tipo_estado.toString().toLowerCase() === 'criopreservado';
+        
+        if (esCrio) {
+          await ejecutarDescriPreservacion([ovId], currentUserId);
+        }
+
+        const fertilizacionData: any = {
+          ...basePayload,
+          ovocitos_utilizados: ovId,
+          ovocito: ovId,
+        };
+
+        const exitoIndividual = await ejecutarFertilizacion(fertilizacionData, [ov]);
+        resultados.push(Boolean(exitoIndividual));
+      }
+
+      const todosExitos = resultados.length > 0 && resultados.every(r => r === true);
+      
+      if (todosExitos) {
+        setIsExecuting(false);
+        return true;
+      } else {
+        throw new Error('Algunas fertilizaciones fallaron');
+      }
+
+    } catch (error) {
+      console.error('Error ejecutando fertilización:', error);
+      setError(error instanceof Error ? error.message : 'Error desconocido');
+      setIsExecuting(false);
+      return false;
+    }
+  };
+
+  return {
+    ejecutarProceso,
+    isExecuting,
+    error,
+    clearError: () => setError(null)
   };
 };

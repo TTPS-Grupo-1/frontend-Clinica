@@ -7,16 +7,14 @@ import ConfirmationView from './modal/FertilizacionConfirmationView';
 import ExecutingView from './modal/FertilizacionExecutingView';
 import CompletedView from './modal/FertilizacionCompletedView';
 import { BancoSemenSelector } from './BancoSemenSelector';
-import { 
-  ejecutarFertilizacion,
-  ejecutarDescriPreservacion
-} from '../utils/fertilizacionHelpers';
 import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
 import { useTratamientoInfo } from '../hooks/useTratamientoInfo';
 import type { FertilizacionModalProps } from '../../../interfaces/Fertilizacion';
 import { useBancoSemen } from '../hooks';
+import { useBancoOvocitos } from '../hooks/useBancoOvocitos';
+import { useFertilizacionProceso } from '../hooks/useFertilizacionForm';
+import type { PasoFertilizacion } from '../../../types/Fertilizacion';
 
-type PasoFertilizacion = 'evaluacion' | 'confirmacion' | 'ejecutando' | 'completado';
 
 export default function FertilizacionModal({ 
   isOpen, 
@@ -36,8 +34,30 @@ export default function FertilizacionModal({
 
   const { tratamientoInfo, loading: tratamientoLoading } = useTratamientoInfo(selectedPacienteId?.toString() || null, isOpen);
   const [ovocitosCriopreservados, setOvocitosCriopreservados] = useState<any[]>([]);
+  
+  // Hooks para banco de semen y ovocitos
+  const { bancoSemenSeleccionado, loadingBanco, razonBanco } = useBancoSemen(tratamientoInfo);
+  const { 
+    bancoOvocitos, 
+    loadingBancoOvocitos, 
+    ovocitoDonadoSeleccionado, 
+    setOvocitoDonadoSeleccionado
+  } = useBancoOvocitos(tratamientoInfo);
+
+  // Hook para el proceso de fertilización
+  const { ejecutarProceso } = useFertilizacionProceso();
 
   const loading = ovocitosLoading || tratamientoLoading;
+
+  const semenViable = tratamientoInfo?.segunda_consulta?.semen_viable || false;
+  const ovocitosViables = tratamientoInfo?.segunda_consulta?.ovocito_viable || false;
+  const ovocitosFrescos = ovocitos.filter(o => o.tipo_estado === 'fresco');
+
+  const tieneBancoSeleccionado = Boolean(bancoSemenSeleccionado);
+  const tieneOvocitosDonados = bancoOvocitos.length > 0;
+
+  // Permitir continuar si hay ovocitos disponibles (propios o donados) y existe semen (pareja) o muestra del banco.
+  const puedeRealizar = (ovocitosFrescos.length > 0 || ovocitosCriopreservados.length > 0 || tieneOvocitosDonados) && (semenViable || tieneBancoSeleccionado);
 
   // Simplificar: identificar ovocitos criopreservados directamente por su estado
   useEffect(() => {
@@ -57,84 +77,36 @@ export default function FertilizacionModal({
       setOvocitoSeleccionado(null);
       setResultado('exitosa');
       setObservaciones('');
+      setOvocitoDonadoSeleccionado(null);
     }
   }, [isOpen]);
   
-  const semenViable = tratamientoInfo?.segunda_consulta?.semen_viable || false;
-  const ovocitosViables = tratamientoInfo?.segunda_consulta?.ovocito_viable || false;
-  const ovocitosFrescos = ovocitos.filter(o => o.tipo_estado === 'fresco');
-  const { bancoSemenSeleccionado, loadingBanco, razonBanco } = useBancoSemen(tratamientoInfo);
+  // (Variables ya declaradas arriba)
 
-  const tieneBancoSeleccionado = Boolean(bancoSemenSeleccionado);
-  // Permitir continuar si hay ovocitos disponibles y existe semen (pareja) o muestra del banco.
-  // Esto quita la dependencia estricta de `ovocitosViables` para habilitar el botón cuando
-  // ya se trajo una muestra del banco.
-  const puedeRealizar = (ovocitosFrescos.length > 0 || ovocitosCriopreservados.length > 0) && (semenViable || tieneBancoSeleccionado);
-
-  const ejecutarProceso = async () => {
+  const handleEjecutarProceso = async () => {
     if (!selectedPacienteId || !currentUserId) return;
 
     setPaso('ejecutando');
-    try {
-      const fechaHoy = new Date().toISOString().slice(0, 10);
+    
+    const success = await ejecutarProceso({
+      selectedPacienteId,
+      currentUserId,
+      tecnica,
+      resultado,
+      observaciones,
+      semenViable,
+      ovocitoSeleccionado,
+      ovocitoDonadoSeleccionado,
+      bancoSemenSeleccionado,
+      razonBanco,
+      ovocitosFrescos,
+      ovocitosCriopreservados
+    });
 
-      const basePayload: any = {
-        fecha_fertilizacion: fechaHoy,
-        tecnico_laboratorio: String(currentUserId),
-        tecnica_icsi: tecnica === 'ICSI',
-        tecnica_fiv: tecnica === 'FIV',
-        resultado: resultado === 'exitosa' ? 'exitosa' : 'no_exitosa',
-        notas: `Técnica: ${tecnica}. TecnicoId: ${currentUserId}. ${observaciones}`,
-        // Definir origen del semen: 'pareja' cuando semenViable, 'banco' cuando se usó banco
-        semen_info: semenViable ? 'pareja' : (tieneBancoSeleccionado ? 'banco' : null),
-        banco_semen_id: tieneBancoSeleccionado ? (bancoSemenSeleccionado.id ?? bancoSemenSeleccionado.identificador ?? null) : null,
-        razon_banco_semen: tieneBancoSeleccionado ? (razonBanco || 'no_aplica') : 'no_aplica',
-      };
-
-      const todosOvocitos = [...ovocitosFrescos, ...ovocitosCriopreservados];
-      if (todosOvocitos.length === 0) throw new Error('No hay ovocitos disponibles para fertilizar');
-
-      // Si el usuario seleccionó un ovocito en la confirmación, sólo procesar ese ovocito.
-      // Esto evita ejecutar la misma fertilización múltiples veces cuando sólo se quiso
-      // confirmar un ovocito específico.
-      const targetOvocitos = ovocitoSeleccionado !== null
-        ? todosOvocitos.filter(o => {
-            const idOv = (o as any).id_ovocito ?? (o as any).id;
-            return idOv === ovocitoSeleccionado;
-          })
-        : todosOvocitos;
-
-      if (ovocitoSeleccionado !== null && targetOvocitos.length === 0) {
-        throw new Error('El ovocito seleccionado no fue encontrado');
-      }
-
-      const resultados: boolean[] = [];
-      for (const ov of targetOvocitos) {
-        const ovId = (ov as any).id_ovocito ?? (ov as any).id;
-        const esCrio = (ov as any).tipo_estado && (ov as any).tipo_estado.toString().toLowerCase() === 'criopreservado';
-        if (esCrio) {
-          await ejecutarDescriPreservacion([ovId], currentUserId);
-        }
-
-        const fertilizacionData: any = {
-          ...basePayload,
-          ovocitos_utilizados: ovId,
-          ovocito: ovId,
-        };
-
-        const exitoIndividual = await ejecutarFertilizacion(fertilizacionData, [ov]);
-        resultados.push(Boolean(exitoIndividual));
-      }
-
-      const todosExitos = resultados.length > 0 && resultados.every(r => r === true);
-      if (todosExitos) {
-        setPaso('completado');
-        setTimeout(() => onClose(), 2000);
-      } else {
-        throw new Error('Algunas fertilizaciones fallaron');
-      }
-    } catch (error) {
-      console.error('Error ejecutando fertilización:', error);
+    if (success) {
+      setPaso('completado');
+      setTimeout(() => onClose(), 2000);
+    } else {
       setPaso('confirmacion');
     }
   };
@@ -179,6 +151,9 @@ export default function FertilizacionModal({
                           setOvocitoSeleccionado(((ovocitosFrescos[0] as any).id_ovocito ?? (ovocitosFrescos[0] as any).id) ?? null);
                         } else if (ovocitosCriopreservados.length > 0) {
                           setOvocitoSeleccionado(((ovocitosCriopreservados[0] as any).id ?? (ovocitosCriopreservados[0] as any).id_ovocito) ?? null);
+                        } else if (bancoOvocitos.length > 0) {
+                          // Seleccionar primer ovocito donado disponible
+                          setOvocitoDonadoSeleccionado(bancoOvocitos[0]);
                         }
                       }
                       setPaso('confirmacion');
@@ -194,6 +169,52 @@ export default function FertilizacionModal({
                       tratamientoInfo={tratamientoInfo}
                     />
                   )}
+
+                  {/* Mostrar el selector del banco de ovocitos cuando los ovocitos NO son viables */}
+                  {!ovocitosViables && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
+                      <h4 className="font-medium text-yellow-800 mb-3">Banco de Ovocitos Donados</h4>
+                      
+                      {loadingBancoOvocitos ? (
+                        <div className="text-center py-4">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-600 mx-auto"></div>
+                          <p className="text-sm text-yellow-600 mt-2">Buscando ovocitos compatibles...</p>
+                        </div>
+                      ) : bancoOvocitos.length > 0 ? (
+                        <div className="space-y-2">
+                          <p className="text-sm text-yellow-700 mb-2">
+                            Se encontraron {bancoOvocitos.length} ovocitos donados compatibles:
+                          </p>
+                          {bancoOvocitos.map((ovocito, idx) => (
+                            <div key={idx} className="flex items-center justify-between bg-white p-3 rounded border border-yellow-200">
+                              <div className="flex-1">
+                                <p className="font-medium text-gray-800">{ovocito.identificador}</p>
+                                <p className="text-xs text-gray-600">
+                                  Compatibilidad: {ovocito.compatibilidad}% | 
+                                  Donante: {ovocito.edad_donante} años | 
+                                  Disponibles: {ovocito.cantidad_disponible}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => setOvocitoDonadoSeleccionado(ovocito)}
+                                className={`px-3 py-1 rounded text-xs ${
+                                  ovocitoDonadoSeleccionado?.id === ovocito.id
+                                    ? 'bg-yellow-600 text-white'
+                                    : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                }`}
+                              >
+                                {ovocitoDonadoSeleccionado?.id === ovocito.id ? 'Seleccionado' : 'Seleccionar'}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-yellow-700">
+                          No se encontraron ovocitos donados compatibles con el fenotipo de la paciente.
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
 
@@ -205,12 +226,13 @@ export default function FertilizacionModal({
                   ovocitosCriopreservados={ovocitosCriopreservados}
                   ovocitoSeleccionado={ovocitoSeleccionado}
                   setOvocitoSeleccionado={setOvocitoSeleccionado}
+                  ovocitoDonadoSeleccionado={ovocitoDonadoSeleccionado}
                   resultado={resultado}
                   setResultado={setResultado}
                   observaciones={observaciones}
                   setObservaciones={setObservaciones}
                   onBack={() => setPaso('evaluacion')}
-                  onSubmit={ejecutarProceso}
+                  onSubmit={handleEjecutarProceso}
                 />
               )}
 

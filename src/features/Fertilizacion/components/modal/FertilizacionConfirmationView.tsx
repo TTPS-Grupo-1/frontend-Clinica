@@ -7,6 +7,7 @@ export default function FertilizacionConfirmationView({
   ovocitosCriopreservados,
   ovocitoSeleccionado,
   setOvocitoSeleccionado,
+  ovocitoDonadoSeleccionado,
   resultado,
   setResultado,
   observaciones,
@@ -20,6 +21,7 @@ export default function FertilizacionConfirmationView({
   ovocitosCriopreservados: any[];
   ovocitoSeleccionado: number | null;
   setOvocitoSeleccionado: (id: number | null) => void;
+  ovocitoDonadoSeleccionado: any | null;
   resultado: 'exitosa' | 'fallida';
   setResultado: (r: 'exitosa' | 'fallida') => void;
   observaciones: string;
@@ -46,19 +48,38 @@ export default function FertilizacionConfirmationView({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Ovocitos a utilizar</label>
           <div className="space-y-2 max-h-32 overflow-y-auto">
-            {ovocitosFrescos.map((ovocito) => (
-              <label key={ovocito.id_ovocito} className="flex items-center space-x-2">
-                <input type="radio" name="ovocito" value={ovocito.id_ovocito} checked={ovocitoSeleccionado === ovocito.id_ovocito} onChange={() => setOvocitoSeleccionado(ovocito.id_ovocito)} className="rounded" />
-                <span className="text-sm">Ovocito fresco: {ovocito.identificador}</span>
-              </label>
-            ))}
+            {ovocitoDonadoSeleccionado ? (
+              // Si hay un ovocito donado seleccionado, mostrarlo directamente
+              <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-purple-800">
+                    Ovocito donado seleccionado: {ovocitoDonadoSeleccionado.identificador}
+                  </span>
+                </div>
+                <div className="text-xs text-purple-600 mt-1">
+                  Compatibilidad: {ovocitoDonadoSeleccionado.compatibilidad}% | 
+                  Color de ojos: {ovocitoDonadoSeleccionado.color_ojos} | 
+                  Color de pelo: {ovocitoDonadoSeleccionado.color_pelo}
+                </div>
+              </div>
+            ) : (
+              // Si no hay ovocito donado, mostrar opciones normales
+              <>
+                {ovocitosFrescos.map((ovocito) => (
+                  <label key={ovocito.id_ovocito} className="flex items-center space-x-2">
+                    <input type="radio" name="ovocito" value={ovocito.id_ovocito} checked={ovocitoSeleccionado === ovocito.id_ovocito} onChange={() => setOvocitoSeleccionado(ovocito.id_ovocito)} className="rounded" />
+                    <span className="text-sm">Ovocito fresco: {ovocito.identificador}</span>
+                  </label>
+                ))}
 
-            {ovocitosCriopreservados.map((ovocito) => (
-              <label key={ovocito.id} className="flex items-center space-x-2">
-                <input type="radio" name="ovocito" value={ovocito.id} checked={ovocitoSeleccionado === ovocito.id} onChange={() => setOvocitoSeleccionado(ovocito.id)} className="rounded" />
-                <span className="text-sm text-blue-600">Ovocito criopreservado (se descriopreservará)</span>
-              </label>
-            ))}
+                {ovocitosCriopreservados.map((ovocito) => (
+                  <label key={ovocito.id} className="flex items-center space-x-2">
+                    <input type="radio" name="ovocito" value={ovocito.id} checked={ovocitoSeleccionado === ovocito.id} onChange={() => setOvocitoSeleccionado(ovocito.id)} className="rounded" />
+                    <span className="text-sm text-blue-600">Ovocito criopreservado (se descriopreservará)</span>
+                  </label>
+                ))}
+              </>
+            )}
           </div>
         </div>
 
@@ -77,7 +98,7 @@ export default function FertilizacionConfirmationView({
 
         <div className="flex justify-between">
           <button onClick={onBack} className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Volver</button>
-          <button onClick={onSubmit} disabled={ovocitoSeleccionado === null} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">Registrar Fertilización</button>
+          <button onClick={onSubmit} disabled={ovocitoSeleccionado === null && !ovocitoDonadoSeleccionado} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">Registrar Fertilización</button>
         </div>
       </div>
     </div>

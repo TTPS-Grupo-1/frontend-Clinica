@@ -33,7 +33,7 @@ export const getEstudiosAgrupadosPorConsulta = async (consultaId: number) => {
   
   const res = await axios.get(`${API_BASE}/resultado_estudio/agrupados-por-consulta/${consultaId}/`, {
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     withCredentials: true,
   });

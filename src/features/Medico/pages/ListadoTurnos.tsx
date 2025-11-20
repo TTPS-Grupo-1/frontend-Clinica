@@ -230,10 +230,7 @@ export default function ListadoTurnos() {
     }
   };
 
-  const handleVerHistoria = (id: number) => {
-    console.log(`Viendo historia clínica del paciente con ID: ${id}`);
-    // Aquí iría la lógica para ver la historia clínica
-  };
+
 
   return (
     <div className="mx-auto mt-16 min-h-screen w-full max-w-7xl bg-gray-50 px-4 py-6 sm:px-6 md:mt-20">
@@ -268,7 +265,7 @@ export default function ListadoTurnos() {
                   horaTurno: new Date(turno.fecha_hora).toLocaleTimeString(),
                 }}
                 onAtender={() => handleAtender(turno.id_paciente!, turno.id_externo!, turno.id)}
-                onVerHistoria={handleVerHistoria}
+              
               />
             ))}
           </div>

@@ -16,7 +16,7 @@ export interface FormMedicoProps {
 export interface PacientCardProps {
   paciente: Paciente;
   onAtender: (id: number) => void;
-  onVerHistoria: (id: number) => void;
+  onVerHistoria?: (id: number) => void;
 }
 
 // Permite controlar la visibilidad de acciones específicas en la tarjeta

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import type { Embryo } from '../../../types/Embryo';
 
 interface EmbrionFormProps {
@@ -25,10 +26,53 @@ export default function EmbrionForm({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isInitialized, setIsInitialized] = useState(false);
+  const [fueCriopreservado, setFueCriopreservado] = useState(false);
 
   // Deshabilitar edición si el estado es "descartado" o "transferido"
   const isEditable =
     !isEdit || (initialData?.estado !== 'descartado' && initialData?.estado !== 'transferido');
+
+  // ✅ Determinar opciones de estado permitidas
+  const getOpcionesEstado = () => {
+    // Si actualmente es criopreservado, solo puede pasar a fresco
+    if (initialData?.estado === 'criopreservado') {
+      return ['criopreservado', 'fresco'];
+    }
+
+    // Si fue criopreservado antes y ahora es fresco, solo transferido o descartado
+    if (fueCriopreservado && formData.estado === 'fresco') {
+      return ['fresco', 'transferido', 'descartado'];
+    }
+
+    // Si es fresco y nunca fue criopreservado, todas las opciones
+    if (formData.estado === 'fresco' && !fueCriopreservado) {
+      return ['fresco', 'criopreservado', 'transferido', 'descartado'];
+    }
+
+    // Por defecto, todas las opciones
+    return ['fresco', 'criopreservado', 'transferido', 'descartado'];
+  };
+
+  const opcionesEstado = getOpcionesEstado();
+
+  // ✅ Verificar si el embrión ya fue criopreservado
+  useEffect(() => {
+    const verificarHistorial = async () => {
+      if (isEdit && initialData?.id) {
+        try {
+          const response = await axios.get(
+            `/api/historial-embrion/verificar-criopreservacion/${initialData.id}/`
+          );
+          setFueCriopreservado(response.data.fue_criopreservado);
+        } catch (error) {
+          console.error('Error al verificar historial:', error);
+        }
+      }
+    };
+
+    verificarHistorial();
+  }, [isEdit, initialData?.id]);
+
   // Cargar datos iniciales cuando se está editando - SOLO UNA VEZ
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0 && !isInitialized) {
@@ -63,7 +107,6 @@ export default function EmbrionForm({
       ...prev,
       [name]: value,
     }));
-    // Limpiar error cuando el usuario empieza a escribir
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -101,11 +144,9 @@ export default function EmbrionForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      // Preservar todos los campos del initialData al editar
       const dataToSubmit =
         isEdit && initialData ? { ...initialData, ...formData } : { ...formData };
 
-      // Limpiar campos opcionales vacíos
       if (!dataToSubmit.pgt?.trim()) delete dataToSubmit.pgt;
       if (!dataToSubmit.fecha_baja) delete dataToSubmit.fecha_baja;
       if (!dataToSubmit.causa_descarte?.trim()) delete dataToSubmit.causa_descarte;
@@ -126,6 +167,20 @@ export default function EmbrionForm({
         <div className="mb-4 rounded-lg bg-red-100 p-3 text-center font-semibold text-red-700">
           No se puede editar un embrión{' '}
           {formData.estado === 'descartado' ? 'descartado' : 'transferido'}.
+        </div>
+      )}
+
+      {/* ✅ Mensaje si actualmente es criopreservado */}
+      {initialData?.estado === 'criopreservado' && (
+        <div className="mb-4 rounded-lg bg-blue-100 p-3 text-center font-semibold text-blue-700">
+          Este embrión está criopreservado. Solo puede cambiar a estado fresco.
+        </div>
+      )}
+
+      {/* ✅ Mensaje si ya fue criopreservado y ahora es fresco */}
+      {fueCriopreservado && formData.estado === 'fresco' && initialData?.estado !== 'criopreservado' && (
+        <div className="mb-4 rounded-lg bg-yellow-100 p-3 text-center font-semibold text-yellow-700">
+          Este embrión ya fue criopreservado anteriormente. Solo puede ser transferido o descartado.
         </div>
       )}
 
@@ -190,10 +245,11 @@ export default function EmbrionForm({
               errors.estado ? 'border-red-500' : 'border-gray-300'
             }`}
           >
-            <option value="fresco">Fresco</option>
-            <option value="criopreservado">Criopreservado</option>
-            <option value="transferido">Transferido</option>
-            <option value="descartado">Descartado</option>
+            {/* ✅ Renderizar solo las opciones permitidas */}
+            {opcionesEstado.includes('fresco') && <option value="fresco">Fresco</option>}
+            {opcionesEstado.includes('criopreservado') && <option value="criopreservado">Criopreservado</option>}
+            {opcionesEstado.includes('transferido') && <option value="transferido">Transferido</option>}
+            {opcionesEstado.includes('descartado') && <option value="descartado">Descartado</option>}
           </select>
           {errors.estado && <p className="mt-1 text-sm text-red-500">{errors.estado}</p>}
         </div>

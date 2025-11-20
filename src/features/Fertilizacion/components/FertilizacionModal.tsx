@@ -14,6 +14,7 @@ import { useBancoSemen } from '../hooks';
 import { useBancoOvocitos } from '../hooks/useBancoOvocitos';
 import { useFertilizacionProceso } from '../hooks/useFertilizacionForm';
 import type { PasoFertilizacion } from '../../../types/Fertilizacion';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function FertilizacionModal({ 
@@ -23,6 +24,7 @@ export default function FertilizacionModal({
   selectedPacienteNombre = null,
   currentUserId
 }: FertilizacionModalProps) {
+  const navigate = useNavigate();  // ✅ Agregar useNavigate
   const [paso, setPaso] = useState<PasoFertilizacion>('evaluacion');
   const [tecnica, setTecnica] = useState<'ICSI' | 'FIV'>('ICSI');
   const [ovocitoSeleccionado, setOvocitoSeleccionado] = useState<number | null>(null);
@@ -56,9 +58,9 @@ export default function FertilizacionModal({
   const tieneBancoSeleccionado = Boolean(bancoSemenSeleccionado);
   const tieneOvocitosDonados = bancoOvocitos.length > 0;
 
-  // Permitir continuar si hay ovocitos disponibles (propios o donados) y existe semen (pareja) o muestra del banco.
-  const puedeRealizar = (ovocitosFrescos.length > 0 || ovocitosCriopreservados.length > 0 || tieneOvocitosDonados) && (semenViable || tieneBancoSeleccionado);
 
+  const puedeRealizar = (ovocitosFrescos.length > 0 || ovocitosCriopreservados.length > 0 || tieneOvocitosDonados) && (semenViable || tieneBancoSeleccionado);
+  // Permitir continuar si hay ovocitos disponibles (propios o donados) y existe
   // Simplificar: identificar ovocitos criopreservados directamente por su estado
   useEffect(() => {
     if (!ovocitos || ovocitos.length === 0) {
@@ -88,7 +90,7 @@ export default function FertilizacionModal({
 
     setPaso('ejecutando');
     
-    const success = await ejecutarProceso({
+    const result = await ejecutarProceso({
       selectedPacienteId,
       currentUserId,
       tecnica,
@@ -103,9 +105,18 @@ export default function FertilizacionModal({
       ovocitosCriopreservados
     });
 
-    if (success) {
+    if (result.success) {
       setPaso('completado');
-      setTimeout(() => onClose(), 2000);
+      
+      // ✅ Si se creó un embrión, redirigir después de cerrar el modal
+      if (result.embrionId) {
+        setTimeout(() => {
+          onClose();
+          navigate(`/embriones/${result.embrionId}`);  // ✅ Redirigir al embrión
+        }, 2000);
+      } else {
+        setTimeout(() => onClose(), 2000);
+      }
     } else {
       setPaso('confirmacion');
     }

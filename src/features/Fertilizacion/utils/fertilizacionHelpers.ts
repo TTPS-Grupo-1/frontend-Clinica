@@ -52,7 +52,7 @@ export async function verificarViabilidadOvocitos(pacienteId: number): Promise<b
 export async function ejecutarFertilizacion(
   datos: FertilizacionData,
   ovocitos: any[] = []
-): Promise<boolean> {
+): Promise<{ success: boolean; embrionId?: number }> {  // ✅ Cambiar tipo de retorno
   try {
     const headers = getAuthHeaders();
     
@@ -75,17 +75,21 @@ export async function ejecutarFertilizacion(
       const embrionPayload = {
         identificador: identificadorEmbrion,
         fertilizacion: fertilizacionId,
-        estado: "no transferido",
+        estado: "Fresco",
       };
 
-      await axios.post('http://localhost:8000/api/embriones/', embrionPayload, { headers });
-      console.log(`Embrión ${identificadorEmbrion} creado exitosamente`);
+      const embrionResponse = await axios.post('http://localhost:8000/api/embriones/', embrionPayload, { headers });
+      const embrionId = embrionResponse.data.id;  // ✅ Capturar el ID del embrión
+      
+      console.log(`✅ Embrión ${identificadorEmbrion} creado con ID: ${embrionId}`);
+      
+      return { success: true, embrionId };  // ✅ Devolver el ID del embrión
     }
     
-    return true;
+    return { success: true };
   } catch (error) {
     console.error('Error ejecutando fertilización:', error);
-    return false;
+    return { success: false };
   }
 }
 

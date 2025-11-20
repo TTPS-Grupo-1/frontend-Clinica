@@ -233,7 +233,7 @@ export async function procesarFertilizacion(pacienteId: number, usuarioId: numbe
   }
 }
 
-export async function buscarOvocito(ovocitoId: Number, numeroGrupo: Number) {
+export async function buscarOvocito(ovocitoId: number, numeroGrupo: number) {
   try {
     const response = await axios.post(
       `https://ssewaxrnlmnyizqsbzxe.supabase.co/functions/v1/get-ovocito-posicion`,

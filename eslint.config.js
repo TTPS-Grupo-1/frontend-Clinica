@@ -2,9 +2,9 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from '@typescript-eslint/eslint-plugin';
-import tailwindcss from 'eslint-plugin-tailwindcss';
+import tsParser from '@typescript-eslint/parser';
 import { defineConfig, globalIgnores } from 'eslint/config';
-import js from 'eslint/conf/eslint-all';
+import js from '@eslint/js';
 import prettierConfig from 'eslint-config-prettier';
 
 export default defineConfig([
@@ -25,7 +25,7 @@ export default defineConfig([
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parser: '@typescript-eslint/parser',
+      parser: tsParser,
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
@@ -36,10 +36,9 @@ export default defineConfig([
     plugins: {
       '@typescript-eslint': tseslint
     },
-    extends: [
-      // Nota: `recommended` de tseslint contiene reglas útiles
-      'plugin:@typescript-eslint/recommended'
-    ],
+    // Not using `extends` here because tseslint.configs.recommended
+    // can contain nested `extends` which the config helper disallows.
+    // We instead merge the recommended rules below.
     rules: {
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       ...tseslint.configs?.recommended?.rules
@@ -51,14 +50,11 @@ export default defineConfig([
     files: ['**/*.{jsx,tsx}'],
     plugins: {
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-      'tailwindcss': tailwindcss
+      'react-refresh': reactRefresh
     },
     rules: {
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-      // Reglas del plugin tailwind (warn para evitar interrupciones)
-      'tailwindcss/classnames-order': 'warn'
+      'react-hooks/exhaustive-deps': 'warn'
     }
   },
 

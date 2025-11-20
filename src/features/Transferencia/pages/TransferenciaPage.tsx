@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTransferenciaForm } from '../hooks/useTransferenciaForm';
 import { useApi } from '../hooks/useApi';
-import { usePacientesFetch } from '../../../shared/hooks/usePacientesFetch';
+import { usePacientesFetch } from '@/shared/hooks/usePacientesFetch';
 import {
   PacienteSelector,
   TransferenciaSelector,

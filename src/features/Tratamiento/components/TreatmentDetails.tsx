@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import OvocitosTable from '../../../Punciones/components/OvocitosTable';
-import FertilizacionesTable from '../../../Fertilizacion/components/Fertilizaciones';
-import PatientDetails from './PatientDetails';
-import EmbrionesTable from "../EmbrionesTable"; // ✅ Importar
+import OvocitosTable from '../../Punciones/components/OvocitosTable';
+import FertilizacionesTable from '../../Fertilizacion/components/Fertilizaciones';
+import PatientDetails from '../../Paciente/components/History/PatientDetails';
+import EmbrionesTable from "../../Paciente/components/EmbrionesTable"; // ✅ Importar
 
 type Props = {
   tratamientoId: number;
@@ -98,7 +98,6 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
         <h3 className="text-lg font-semibold mb-2">Resumen del tratamiento</h3>
         {tratamiento ? (
           <div className="text-gray-700">
-            <div><strong>ID:</strong> {tratamiento.id}</div>
             <div><strong>Estado:</strong> {tratamiento.activo ? 'Activo' : 'Inactivo'}</div>
             <div><strong>Inicio:</strong> {tratamiento.fecha_inicio}</div>
             <div><strong>Médico:</strong> {tratamiento.medico_nombre || `ID: ${tratamiento.medico}`}</div>

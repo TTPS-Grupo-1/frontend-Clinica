@@ -1,16 +1,7 @@
-import useTratamientosPorPaciente from '../../../../shared/hooks/useTratamientosPorPaciente';
+import useTratamientosPorPaciente from '../../../shared/hooks/useTratamientosPorPaciente';
 
 export default function TreatmentsList({ pacienteId, onSelect }: { pacienteId: number | null; onSelect: (id: number) => void }) {
   const { tratamientos, loading, error } = useTratamientosPorPaciente(pacienteId);
-  
-  // Debug logs
-  console.log('TreatmentsList - Debug:', {
-    pacienteId,
-    tratamientos,
-    loading,
-    error
-  });
-
   return (
     <>
       {!pacienteId && (

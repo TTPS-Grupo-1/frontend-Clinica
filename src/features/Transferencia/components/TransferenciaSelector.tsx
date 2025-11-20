@@ -18,23 +18,21 @@ export default function TransferenciaSelector({
   selectedEmbriones,
   onTratamientoChange,
   onEmbrionToggle,
-  isLoading
+  isLoading,
 }: TransferenciaSelectorProps) {
   return (
     <div className="space-y-6">
       {/* Selector de Tratamiento */}
       <div>
-        <label className="block text-sm font-medium text-gray-800 mb-2">
-          Tratamiento
-        </label>
+        <label className="mb-2 block text-sm font-medium text-gray-800">Tratamiento</label>
         <select
-          className="w-full border border-gray-300 rounded-lg p-3 text-gray-800 bg-white disabled:opacity-50"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800 disabled:opacity-50"
           value={selectedTratamiento ?? ''}
           onChange={(e) => onTratamientoChange(e.target.value ? Number(e.target.value) : null)}
           disabled={isLoading}
         >
           <option value="">Seleccionar tratamiento...</option>
-          {tratamientos.map(t => (
+          {tratamientos.map((t) => (
             <option key={t.id} value={t.id}>
               {t.nombre || `Tratamiento #${t.id}`}
             </option>
@@ -44,22 +42,22 @@ export default function TransferenciaSelector({
 
       {/* Selector de Embriones */}
       <div>
-        <label className="block text-sm font-medium text-gray-800 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-800">
           Embriones disponibles
         </label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {embriones.map(e => {
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {embriones.map((e) => {
             const embrionId = Number(e.id);
             if (!embrionId) return null;
-            
+
             return (
-              <label 
-                key={e.id} 
-                className={`border rounded-lg p-3 flex items-center justify-between cursor-pointer transition-colors ${
-                  selectedEmbriones.includes(embrionId) 
-                    ? 'bg-blue-50 border-blue-400' 
-                    : 'bg-white border-gray-300 hover:border-gray-400'
-                } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              <label
+                key={e.id}
+                className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-colors ${
+                  selectedEmbriones.includes(embrionId)
+                    ? 'border-blue-400 bg-blue-50'
+                    : 'border-gray-300 bg-white hover:border-gray-400'
+                } ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
               >
                 <div>
                   <div className="font-medium text-gray-800">{e.identificador}</div>
@@ -67,18 +65,18 @@ export default function TransferenciaSelector({
                     Estado: {e.estado || 'N/A'} - Calidad: {e.calidad ?? 'N/A'}
                   </div>
                 </div>
-                <input 
-                  type="checkbox" 
-                  checked={selectedEmbriones.includes(embrionId)} 
+                <input
+                  type="checkbox"
+                  checked={selectedEmbriones.includes(embrionId)}
                   onChange={() => onEmbrionToggle(embrionId)}
                   disabled={isLoading}
-                  className="w-4 h-4"
+                  className="h-4 w-4"
                 />
               </label>
             );
           })}
           {embriones.length === 0 && (
-            <div className="text-sm text-gray-600 col-span-full text-center py-8 bg-gray-50 rounded-lg">
+            <div className="col-span-full rounded-lg bg-gray-50 py-8 text-center text-sm text-gray-600">
               No hay embriones disponibles para esta paciente.
             </div>
           )}

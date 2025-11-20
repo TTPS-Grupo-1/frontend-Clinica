@@ -13,7 +13,7 @@ export const useBancoSemen = (tratamientoInfo: any) => {
     if (!tratamientoInfo) return;
 
     const { segunda_consulta, tipo_pareja, tiene_ovocitos } = tratamientoInfo;
-    
+
     // Validar si la paciente tiene ovocitos (sin mostrar toast, solo la alerta del form se encarga)
     if (!tiene_ovocitos) {
       setRazonBanco('no_aplica');
@@ -52,14 +52,17 @@ export const useBancoSemen = (tratamientoInfo: any) => {
     setLoadingBanco(true);
     console.log('Buscando en banco de semen con fenotipo:', tratamientoInfo.fenotipo);
     try {
-      const response = await axios.post('http://localhost:8000/api/fertilizacion/buscar-banco-semen/', {
-        color_ojos: tratamientoInfo.fenotipo.color_ojos,
-        color_pelo: tratamientoInfo.fenotipo.color_pelo,
-        tipo_pelo: tratamientoInfo.fenotipo.tipo_pelo,
-        altura_cm: tratamientoInfo.fenotipo.altura_cm,
-        complexion_corporal: tratamientoInfo.fenotipo.complexion_corporal,
-        rasgos_etnicos: tratamientoInfo.fenotipo.rasgos_etnicos
-      });
+      const response = await axios.post(
+        'http://localhost:8000/api/fertilizacion/buscar-banco-semen/',
+        {
+          color_ojos: tratamientoInfo.fenotipo.color_ojos,
+          color_pelo: tratamientoInfo.fenotipo.color_pelo,
+          tipo_pelo: tratamientoInfo.fenotipo.tipo_pelo,
+          altura_cm: tratamientoInfo.fenotipo.altura_cm,
+          complexion_corporal: tratamientoInfo.fenotipo.complexion_corporal,
+          rasgos_etnicos: tratamientoInfo.fenotipo.rasgos_etnicos,
+        }
+      );
       // El banco devuelve UNA sola muestra, la más compatible
       const mejorOpcion = response.data.resultados?.[0] || null;
       setBancoSemenSeleccionado(mejorOpcion);
@@ -82,6 +85,6 @@ export const useBancoSemen = (tratamientoInfo: any) => {
     bancoSemenSeleccionado,
     loadingBanco,
     razonBanco,
-    buscarBancoSemen
+    buscarBancoSemen,
   };
 };

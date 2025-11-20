@@ -31,9 +31,7 @@ const EstudiosPrequirurgicos: React.FC<EstudiosPrequirurgicosProps> = ({
           headers: { 'Content-Type': 'application/json' },
         });
 
-        const data = Array.isArray(response.data.data)
-          ? response.data.data
-          : response.data;
+        const data = Array.isArray(response.data.data) ? response.data.data : response.data;
 
         setEstudios(data || []);
       } catch (err: unknown) {
@@ -62,8 +60,8 @@ const EstudiosPrequirurgicos: React.FC<EstudiosPrequirurgicosProps> = ({
 
   // 🧱 Render
   return (
-    <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px]">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
+    <div className="mx-auto flex min-h-[400px] max-w-2xl flex-col justify-between rounded-xl border border-gray-300 bg-white p-8 text-black shadow-lg">
+      <h2 className="mb-4 text-center text-2xl font-bold text-black">
         {titulo || 'Estudios Prequirúrgicos'}
       </h2>
 

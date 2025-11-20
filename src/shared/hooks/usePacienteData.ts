@@ -1,11 +1,11 @@
-import axios from "axios";
+import axios from 'axios';
 
 export async function fetchPacienteById(pacienteId: number) {
   try {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     const response = await axios.get(`/api/pacientes/${pacienteId}/`, {
       headers: {
-        Authorization: token ? `Bearer ${token}` : "",
+        Authorization: token ? `Bearer ${token}` : '',
       },
     });
     return response.data;

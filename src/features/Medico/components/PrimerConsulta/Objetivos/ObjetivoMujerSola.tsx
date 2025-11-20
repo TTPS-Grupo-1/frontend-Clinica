@@ -115,7 +115,9 @@ const ObjetivoMujerSola: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
       content: (
         <EstudiosPrequirurgicos
           value={formData.prequirurgicos}
-          onDataChange={(d: typeof formData.prequirurgicos) => handleSectionChange('prequirurgicos', d)}
+          onDataChange={(d: typeof formData.prequirurgicos) =>
+            handleSectionChange('prequirurgicos', d)
+          }
         />
       ),
     },
@@ -146,7 +148,7 @@ const ObjetivoMujerSola: React.FC<ObjetivoXProps> = ({ onDataChange }) => {
 
   // 🧭 Render
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex w-full flex-col items-center">
       <Card title={cards[pagina - 1].title}>{cards[pagina - 1].content}</Card>
       <Pagination
         currentPage={pagina}

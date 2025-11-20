@@ -29,14 +29,12 @@ export default function HistoriaClinicaDetails({
     return (
       <>
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-black mb-2">Datos personales</h2>
+          <h2 className="mb-2 text-lg font-semibold text-black">Datos personales</h2>
           <PatientDetails paciente={paciente} loading={loadingPaciente} />
         </section>
 
-       
-
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Ovocitos</h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">Ovocitos</h2>
           {loadingOvocitos ? (
             <div className="text-gray-500">Cargando ovocitos...</div>
           ) : (
@@ -47,16 +45,16 @@ export default function HistoriaClinicaDetails({
         </section>
 
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Embriones</h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">Embriones</h2>
           {loadingEmbriones ? (
             <div className="text-gray-500">Cargando embriones...</div>
           ) : (
-            <EmbrionesTable embriones={embriones || []} /> 
+            <EmbrionesTable embriones={embriones || []} />
           )}
         </section>
 
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Fertilizaciones</h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">Fertilizaciones</h2>
           {loadingFert ? (
             <div className="text-gray-500">Cargando fertilizaciones...</div>
           ) : (
@@ -71,26 +69,25 @@ export default function HistoriaClinicaDetails({
   return (
     <>
       <section className="mb-6">
-        <h2 className="text-lg font-semibold text-black mb-2">Datos del paciente</h2>
+        <h2 className="mb-2 text-lg font-semibold text-black">Datos del paciente</h2>
         <PatientDetails paciente={paciente} loading={loadingPaciente} />
       </section>
 
-       <section className="mb-6">
-          <h2 className="text-lg font-semibold text-black mb-2">Tratamientos</h2>
-          <TreatmentsList 
-            pacienteId={selectedPacienteId} 
-            onSelect={(id) => {
-              navigate(`/tratamiento/${id}`, {
-                state: {
-                  tratamientoId: id,
-                  pacienteId: selectedPacienteId,
-                  paciente,
-                }
-              });
-            }} 
-          />
-        </section>
-      
+      <section className="mb-6">
+        <h2 className="mb-2 text-lg font-semibold text-black">Tratamientos</h2>
+        <TreatmentsList
+          pacienteId={selectedPacienteId}
+          onSelect={(id) => {
+            navigate(`/tratamiento/${id}`, {
+              state: {
+                tratamientoId: id,
+                pacienteId: selectedPacienteId,
+                paciente,
+              },
+            });
+          }}
+        />
+      </section>
     </>
   );
 }

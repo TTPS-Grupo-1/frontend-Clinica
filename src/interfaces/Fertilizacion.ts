@@ -1,5 +1,5 @@
-import type { Fertilizacion } from "../types/Fertilizacion";
-import type { OvocitoModalRow } from "../types/Ovocito";
+import type { Fertilizacion } from '../types/Fertilizacion';
+import type { OvocitoModalRow } from '../types/Ovocito';
 export interface fertilizacionesProps {
   fertilizaciones: Fertilizacion[];
 }
@@ -11,7 +11,7 @@ export interface fertilizacionModalProps {
   semenes?: any[]; // placeholder: de dónde vendrán los semenes
   selectedPacienteId: number | null;
   currentUser?: { id: number; nombre: string } | null;
-};
+}
 
 export interface FertilizacionHeaderProps {
   pacientes: any[];
@@ -19,7 +19,6 @@ export interface FertilizacionHeaderProps {
   setSelectedPacienteId: (id: number | null) => void;
   onOpenModal: () => void;
 }
-
 
 export interface FertilizacionModalProps {
   isOpen: boolean;
@@ -39,7 +38,6 @@ export interface FertilizacionData {
   resultado: 'exitosa' | 'fallida';
   observaciones?: string;
 }
-
 
 export interface FertilizacionParams {
   selectedPacienteId: number | null;

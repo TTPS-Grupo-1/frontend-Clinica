@@ -1,5 +1,5 @@
-import type { FC } from "react";
-import { Download, FileText } from "lucide-react";
+import type { FC } from 'react';
+import { Download, FileText } from 'lucide-react';
 
 interface OrdenCardProps {
   orden: {
@@ -13,22 +13,23 @@ interface OrdenCardProps {
 
 const OrdenCard: FC<OrdenCardProps> = ({ orden, onDescargar }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-200 border border-gray-100 flex flex-col justify-between min-h-[180px]">
-      <div className="flex flex-col items-center mb-4">
-        <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-2 shadow">
-          <FileText className="w-8 h-8 text-blue-600" />
+    <div className="flex min-h-[180px] flex-col justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-lg transition-shadow duration-200 hover:shadow-xl">
+      <div className="mb-4 flex flex-col items-center">
+        <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 shadow">
+          <FileText className="h-8 w-8 text-blue-600" />
         </div>
-        <h3 className="text-md font-bold text-blue-700 text-center mb-1">{orden.tipo}</h3>
+        <h3 className="text-md mb-1 text-center font-bold text-blue-700">{orden.tipo}</h3>
       </div>
       <div className="mb-4 text-center">
         <p className="text-sm text-gray-700">
-          <span className="font-medium">Fecha de orden:</span> <span className="text-blue-700 font-semibold">{orden.fecha}</span>
+          <span className="font-medium">Fecha de orden:</span>{' '}
+          <span className="font-semibold text-blue-700">{orden.fecha}</span>
         </p>
       </div>
-      <div className="flex flex-col gap-2 mt-auto">
+      <div className="mt-auto flex flex-col gap-2">
         <button
           onClick={() => onDescargar(orden.archivo)}
-          className="mx-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white border-none py-2 px-6 rounded-md font-semibold hover:scale-105 hover:from-blue-600 hover:to-blue-800 transition-all shadow"
+          className="mx-auto flex items-center justify-center gap-2 rounded-md border-none bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-2 font-semibold text-white shadow transition-all hover:scale-105 hover:from-blue-600 hover:to-blue-800"
         >
           Descargar
           <Download size={18} />

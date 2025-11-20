@@ -1,8 +1,8 @@
 export interface UserState {
-    auth: {
-        user: {
-            id: number;
-            rol: string;
-        } | null;
-    };
+  auth: {
+    user: {
+      id: number;
+      rol: string;
+    } | null;
+  };
 }

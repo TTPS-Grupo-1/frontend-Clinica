@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useTransferenciaForm } from '../hooks/useTransferenciaForm';
 import { useApi } from '../hooks/useApi';
 import { usePacientesFetch } from '../../../shared/hooks/usePacientesFetch';
-import { 
+import {
   PacienteSelector,
-  TransferenciaSelector, 
+  TransferenciaSelector,
   TransferenciaForm,
   TransferenciaSkeleton,
   NoTratamientosState,
   NoPacienteSelectedState,
-  NoEmbrionesState
+  NoEmbrionesState,
 } from '../components';
 import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import type { MessageType } from '../../../types/Transferencia';
@@ -23,16 +23,22 @@ export default function TransferenciaPage() {
 
   // Cargar pacientes
   const { pacientes, loading: pacientesLoading, error: pacientesError } = usePacientesFetch();
-  
+
   // Cargar tratamientos y embriones del paciente seleccionado
-  const { tratamientos, embriones, loading: dataLoading, error: dataError, submitTransferencia } = useApi(selectedPacienteId);
-  
+  const {
+    tratamientos,
+    embriones,
+    loading: dataLoading,
+    error: dataError,
+    submitTransferencia,
+  } = useApi(selectedPacienteId);
+
   const { formData, updateField, toggleEmbrion, resetForm } = useTransferenciaForm();
   console.log('formData', embriones);
-  const availableEmbriones = (embriones || []).filter(e => {
+  const availableEmbriones = (embriones || []).filter((e) => {
     if (!e) return false;
     const estado = String(e.estado || '').toLowerCase();
-    if (estado === 'transferido' ) return false;
+    if (estado === 'transferido') return false;
     return true;
   });
   const handleEmbrionToggle = (embrionId: number) => {
@@ -87,7 +93,7 @@ export default function TransferenciaPage() {
         tratamiento: formData.tratamiento!,
         embriones: formData.embriones,
         test_positivo: formData.testPositivo,
-        observaciones: ''
+        observaciones: '',
       };
 
       await submitTransferencia(payload);
@@ -112,16 +118,16 @@ export default function TransferenciaPage() {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen pt-[80px]">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg relative">
+    <div className="min-h-screen bg-gray-50 p-6 pt-[80px]">
+      <div className="relative mx-auto max-w-4xl rounded-xl bg-white p-6 shadow-lg">
         <RoleHomeButton />
-        
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800 mt-12">
+
+        <h2 className="mt-12 mb-6 text-2xl font-semibold text-gray-800">
           Registrar Transferencia Embrionaria
         </h2>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg border bg-red-50 border-red-300 text-red-800">
+          <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-3 text-red-800">
             {error}
           </div>
         )}
@@ -137,8 +143,8 @@ export default function TransferenciaPage() {
           {!selectedPacienteId ? (
             <NoPacienteSelectedState />
           ) : dataLoading && tratamientos.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+            <div className="py-8 text-center">
+              <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
               <span className="text-gray-600">Cargando tratamientos y embriones...</span>
             </div>
           ) : tratamientos.length === 0 ? (
@@ -150,7 +156,7 @@ export default function TransferenciaPage() {
               {/* Toggle para habilitar selección múltiple de embriones - Solo aparece cuando hay MÁS DE 1 embrión */}
               {embriones.length > 1 && (
                 <div className="flex items-center gap-3">
-                  <label className="flex items-center cursor-pointer select-none">
+                  <label className="flex cursor-pointer items-center select-none">
                     <input
                       type="checkbox"
                       checked={includeMultiple}
@@ -159,10 +165,12 @@ export default function TransferenciaPage() {
                     />
                     <span className="text-sm text-gray-700">Incluir más de un embrión</span>
                   </label>
-                  <span className="text-xs text-gray-400">{includeMultiple ? 'Modo múltiple' : 'Modo único'}</span>
+                  <span className="text-xs text-gray-400">
+                    {includeMultiple ? 'Modo múltiple' : 'Modo único'}
+                  </span>
                 </div>
               )}
-              
+
               <TransferenciaSelector
                 tratamientos={tratamientos}
                 embriones={availableEmbriones}

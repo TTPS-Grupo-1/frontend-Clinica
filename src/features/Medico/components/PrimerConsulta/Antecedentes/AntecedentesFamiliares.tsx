@@ -11,17 +11,15 @@ const AntecedentesFamiliares: React.FC<AntecedentesFamiliaresProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px] mt-6">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
-        Antecedentes Familiares
-      </h2>
+    <div className="mx-auto mt-6 flex min-h-[400px] max-w-2xl flex-col justify-between rounded-xl border border-gray-300 bg-white p-8 text-black shadow-lg">
+      <h2 className="mb-4 text-center text-2xl font-bold text-black">Antecedentes Familiares</h2>
 
       <div className="mb-4">
-        <label className="block font-medium mb-1 text-black">
+        <label className="mb-1 block font-medium text-black">
           Describa los antecedentes familiares relevantes:
         </label>
         <textarea
-          className="w-full border border-black rounded px-2 py-1 bg-white text-black focus:outline-none focus:border-blue-600"
+          className="w-full rounded border border-black bg-white px-2 py-1 text-black focus:border-blue-600 focus:outline-none"
           value={value}
           onChange={handleChange}
           placeholder="Campo libre"

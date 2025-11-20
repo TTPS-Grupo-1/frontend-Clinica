@@ -9,18 +9,18 @@ export function useTransferenciaForm() {
   });
 
   const updateField = (field: keyof TransferenciaFormData, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const toggleEmbrion = (embrionId: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       embriones: prev.embriones.includes(embrionId)
-        ? prev.embriones.filter(id => id !== embrionId)
-        : [...prev.embriones, embrionId]
+        ? prev.embriones.filter((id) => id !== embrionId)
+        : [...prev.embriones, embrionId],
     }));
   };
 
@@ -36,6 +36,6 @@ export function useTransferenciaForm() {
     formData,
     updateField,
     toggleEmbrion,
-    resetForm
+    resetForm,
   };
 }

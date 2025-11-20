@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import type { Embryo } from "../../../types/Embryo";
+import { useState, useEffect } from 'react';
+import type { Embryo } from '../../../types/Embryo';
 
 interface EmbrionFormProps {
   onSubmit: (data: Partial<Embryo>) => void;
@@ -8,36 +8,37 @@ interface EmbrionFormProps {
   initialData?: Partial<Embryo>;
 }
 
-export default function EmbrionForm({ 
-  onSubmit, 
-  onCancel, 
+export default function EmbrionForm({
+  onSubmit,
+  onCancel,
   isEdit = false,
-  initialData 
+  initialData,
 }: EmbrionFormProps) {
   const [formData, setFormData] = useState<Partial<Embryo>>({
-    calidad: "",
-    pgt: "",
-    estado: "fresco",
-    fecha_baja: "",
-    causa_descarte: "",
-    observaciones: "",
+    calidad: '',
+    pgt: '',
+    estado: 'fresco',
+    fecha_baja: '',
+    causa_descarte: '',
+    observaciones: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Deshabilitar edición si el estado es "descartado" o "transferido"
-  const isEditable = !isEdit || (initialData?.estado !== "descartado" && initialData?.estado !== "transferido");
+  const isEditable =
+    !isEdit || (initialData?.estado !== 'descartado' && initialData?.estado !== 'transferido');
   // Cargar datos iniciales cuando se está editando - SOLO UNA VEZ
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0 && !isInitialized) {
       setFormData({
-        calidad: initialData.calidad ? String(initialData.calidad) : "",
-        pgt: initialData.pgt ? String(initialData.pgt) : "",
-        estado: initialData.estado || "fresco",
-        fecha_baja: initialData.fecha_baja ? String(initialData.fecha_baja) : "",
-        causa_descarte: initialData.causa_descarte ? String(initialData.causa_descarte) : "",
-        observaciones: initialData.observaciones ? String(initialData.observaciones) : "",
+        calidad: initialData.calidad ? String(initialData.calidad) : '',
+        pgt: initialData.pgt ? String(initialData.pgt) : '',
+        estado: initialData.estado || 'fresco',
+        fecha_baja: initialData.fecha_baja ? String(initialData.fecha_baja) : '',
+        causa_descarte: initialData.causa_descarte ? String(initialData.causa_descarte) : '',
+        observaciones: initialData.observaciones ? String(initialData.observaciones) : '',
       });
       setIsInitialized(true);
     }
@@ -45,11 +46,11 @@ export default function EmbrionForm({
 
   // Actualizar cuando cambia el estado a "descartado"
   useEffect(() => {
-    if (formData.estado !== "descartado") {
-      setFormData(prev => ({
+    if (formData.estado !== 'descartado') {
+      setFormData((prev) => ({
         ...prev,
-        fecha_baja: "",
-        causa_descarte: "",
+        fecha_baja: '',
+        causa_descarte: '',
       }));
     }
   }, [formData.estado]);
@@ -66,7 +67,7 @@ export default function EmbrionForm({
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
-        [name]: "",
+        [name]: '',
       }));
     }
   };
@@ -75,20 +76,21 @@ export default function EmbrionForm({
     const newErrors: Record<string, string> = {};
 
     if (!formData.calidad?.trim()) {
-      newErrors.calidad = "La calidad es requerida";
+      newErrors.calidad = 'La calidad es requerida';
     }
 
     if (!formData.estado) {
-      newErrors.estado = "El estado es requerido";
+      newErrors.estado = 'El estado es requerido';
     }
 
     // Validaciones condicionales para estado "descartado"
-    if (formData.estado === "descartado") {
+    if (formData.estado === 'descartado') {
       if (!formData.fecha_baja) {
-        newErrors.fecha_baja = "La fecha de baja es requerida cuando el embrión está descartado";
+        newErrors.fecha_baja = 'La fecha de baja es requerida cuando el embrión está descartado';
       }
       if (!formData.causa_descarte?.trim()) {
-        newErrors.causa_descarte = "La causa del descarte es requerida cuando el embrión está descartado";
+        newErrors.causa_descarte =
+          'La causa del descarte es requerida cuando el embrión está descartado';
       }
     }
 
@@ -100,47 +102,47 @@ export default function EmbrionForm({
     e.preventDefault();
     if (validateForm()) {
       // Preservar todos los campos del initialData al editar
-      const dataToSubmit = isEdit && initialData 
-        ? { ...initialData, ...formData } 
-        : { ...formData };
-      
+      const dataToSubmit =
+        isEdit && initialData ? { ...initialData, ...formData } : { ...formData };
+
       // Limpiar campos opcionales vacíos
       if (!dataToSubmit.pgt?.trim()) delete dataToSubmit.pgt;
       if (!dataToSubmit.fecha_baja) delete dataToSubmit.fecha_baja;
       if (!dataToSubmit.causa_descarte?.trim()) delete dataToSubmit.causa_descarte;
       if (!dataToSubmit.observaciones?.trim()) delete dataToSubmit.observaciones;
-      
+
       onSubmit(dataToSubmit);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">
-        {isEdit ? "Editar Embrión" : "Registrar Datos del Embrión"}
+    <div className="mx-auto max-w-4xl rounded-lg bg-white p-8 shadow-lg">
+      <h2 className="mb-6 text-3xl font-bold text-gray-800">
+        {isEdit ? 'Editar Embrión' : 'Registrar Datos del Embrión'}
       </h2>
 
       {/* Mensaje si no se puede editar */}
       {!isEditable && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-center font-semibold">
-          No se puede editar un embrión {formData.estado === "descartado" ? "descartado" : "transferido"}.
+        <div className="mb-4 rounded-lg bg-red-100 p-3 text-center font-semibold text-red-700">
+          No se puede editar un embrión{' '}
+          {formData.estado === 'descartado' ? 'descartado' : 'transferido'}.
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Calidad */}
         <div>
-          <label htmlFor="calidad" className="block text-sm font-semibold text-gray-700 mb-2">
+          <label htmlFor="calidad" className="mb-2 block text-sm font-semibold text-gray-700">
             Calidad <span className="text-red-500">*</span>
           </label>
           <select
             id="calidad"
             name="calidad"
-            value={formData.calidad || ""}
+            value={formData.calidad || ''}
             onChange={handleChange}
             disabled={!isEditable}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white ${
-              errors.calidad ? "border-red-500" : "border-gray-300"
+            className={`w-full rounded-lg border bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              errors.calidad ? 'border-red-500' : 'border-gray-300'
             }`}
           >
             <option value="">-- Seleccionar --</option>
@@ -150,23 +152,22 @@ export default function EmbrionForm({
             <option value="4">4</option>
             <option value="5">5</option>
           </select>
-          {errors.calidad && (
-            <p className="text-red-500 text-sm mt-1">{errors.calidad}</p>
-          )}
+          {errors.calidad && <p className="mt-1 text-sm text-red-500">{errors.calidad}</p>}
         </div>
 
         {/* PGT (opcional) */}
         <div>
-          <label htmlFor="pgt" className="block text-sm font-semibold text-gray-700 mb-2">
-            PGT (Prueba Genética Preimplantacional) <span className="text-gray-400 text-xs">(opcional)</span>
+          <label htmlFor="pgt" className="mb-2 block text-sm font-semibold text-gray-700">
+            PGT (Prueba Genética Preimplantacional){' '}
+            <span className="text-xs text-gray-400">(opcional)</span>
           </label>
           <select
             id="pgt"
             name="pgt"
-            value={formData.pgt || ""}
+            value={formData.pgt || ''}
             onChange={handleChange}
             disabled={!isEditable}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white"
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           >
             <option value="">-- Seleccionar --</option>
             <option value="exitoso">Exitoso</option>
@@ -176,17 +177,17 @@ export default function EmbrionForm({
 
         {/* Estado */}
         <div>
-          <label htmlFor="estado" className="block text-sm font-semibold text-gray-700 mb-2">
+          <label htmlFor="estado" className="mb-2 block text-sm font-semibold text-gray-700">
             Estado <span className="text-red-500">*</span>
           </label>
           <select
             id="estado"
             name="estado"
-            value={formData.estado || "fresco"}
+            value={formData.estado || 'fresco'}
             onChange={handleChange}
             disabled={!isEditable}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white ${
-              errors.estado ? "border-red-500" : "border-gray-300"
+            className={`w-full rounded-lg border bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              errors.estado ? 'border-red-500' : 'border-gray-300'
             }`}
           >
             <option value="fresco">Fresco</option>
@@ -194,72 +195,71 @@ export default function EmbrionForm({
             <option value="transferido">Transferido</option>
             <option value="descartado">Descartado</option>
           </select>
-          {errors.estado && (
-            <p className="text-red-500 text-sm mt-1">{errors.estado}</p>
-          )}
+          {errors.estado && <p className="mt-1 text-sm text-red-500">{errors.estado}</p>}
         </div>
 
         {/* Fecha de baja - solo si está descartado */}
-        {formData.estado === "descartado" && (
+        {formData.estado === 'descartado' && (
           <div>
-            <label htmlFor="fecha_baja" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label htmlFor="fecha_baja" className="mb-2 block text-sm font-semibold text-gray-700">
               Fecha de Baja <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
               id="fecha_baja"
               name="fecha_baja"
-              value={formData.fecha_baja || ""}
+              value={formData.fecha_baja || ''}
               onChange={handleChange}
               disabled={!isEditable}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white ${
-                errors.fecha_baja ? "border-red-500" : "border-gray-300"
+              className={`w-full rounded-lg border bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+                errors.fecha_baja ? 'border-red-500' : 'border-gray-300'
               }`}
             />
-            {errors.fecha_baja && (
-              <p className="text-red-500 text-sm mt-1">{errors.fecha_baja}</p>
-            )}
+            {errors.fecha_baja && <p className="mt-1 text-sm text-red-500">{errors.fecha_baja}</p>}
           </div>
         )}
 
         {/* Causa del descarte - solo si está descartado */}
-        {formData.estado === "descartado" && (
+        {formData.estado === 'descartado' && (
           <div>
-            <label htmlFor="causa_descarte" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label
+              htmlFor="causa_descarte"
+              className="mb-2 block text-sm font-semibold text-gray-700"
+            >
               Causa del Descarte <span className="text-red-500">*</span>
             </label>
             <textarea
               id="causa_descarte"
               name="causa_descarte"
-              value={formData.causa_descarte || ""}
+              value={formData.causa_descarte || ''}
               onChange={handleChange}
               disabled={!isEditable}
               placeholder="Describa la razón del descarte"
               rows={3}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white ${
-                errors.causa_descarte ? "border-red-500" : "border-gray-300"
+              className={`w-full rounded-lg border bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+                errors.causa_descarte ? 'border-red-500' : 'border-gray-300'
               }`}
             />
             {errors.causa_descarte && (
-              <p className="text-red-500 text-sm mt-1">{errors.causa_descarte}</p>
+              <p className="mt-1 text-sm text-red-500">{errors.causa_descarte}</p>
             )}
           </div>
         )}
 
         {/* Observaciones */}
         <div>
-          <label htmlFor="observaciones" className="block text-sm font-semibold text-gray-700 mb-2">
-            Observaciones <span className="text-gray-400 text-xs">(opcional)</span>
+          <label htmlFor="observaciones" className="mb-2 block text-sm font-semibold text-gray-700">
+            Observaciones <span className="text-xs text-gray-400">(opcional)</span>
           </label>
           <textarea
             id="observaciones"
             name="observaciones"
-            value={formData.observaciones || ""}
+            value={formData.observaciones || ''}
             onChange={handleChange}
             disabled={!isEditable}
             placeholder="Observaciones adicionales sobre el embrión"
             rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 bg-white"
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 
@@ -268,14 +268,14 @@ export default function EmbrionForm({
           <button
             type="submit"
             disabled={!isEditable}
-            className={`flex-1 ${isEditable ? "bg-blue-600" : "bg-gray-400"} text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-md`}
+            className={`flex-1 ${isEditable ? 'bg-blue-600' : 'bg-gray-400'} rounded-lg px-6 py-3 font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-700`}
           >
-            {isEdit ? "Actualizar Embrión" : "Registrar Embrión"}
+            {isEdit ? 'Actualizar Embrión' : 'Registrar Embrión'}
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+            className="flex-1 rounded-lg bg-gray-500 px-6 py-3 font-semibold text-white shadow-md transition-colors duration-200 hover:bg-gray-600"
           >
             Cancelar
           </button>

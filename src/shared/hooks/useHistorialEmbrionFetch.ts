@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 interface HistorialEmbrion {
   id: number;
@@ -40,8 +40,8 @@ export function useHistorialEmbrionFetch(embrionId: number | null): UseHistorial
         setHistorial(data);
       })
       .catch((err) => {
-        console.error("Error fetching historial embrion:", err);
-        setError(err?.response?.data?.detail || err?.message || "Error al cargar historial");
+        console.error('Error fetching historial embrion:', err);
+        setError(err?.response?.data?.detail || err?.message || 'Error al cargar historial');
         setHistorial([]);
       })
       .finally(() => setLoading(false));

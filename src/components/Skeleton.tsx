@@ -5,14 +5,14 @@ interface SkeletonProps {
   rounded?: boolean;
 }
 
-export default function Skeleton({ 
-  className = '', 
-  height = 'h-4', 
+export default function Skeleton({
+  className = '',
+  height = 'h-4',
   width = 'w-full',
-  rounded = true 
+  rounded = true,
 }: SkeletonProps) {
   return (
-    <div 
+    <div
       className={`animate-pulse bg-gray-200 ${height} ${width} ${rounded ? 'rounded' : ''} ${className}`}
     />
   );

@@ -1,7 +1,7 @@
-import type { FC } from "react";
-import { DayPicker } from "react-day-picker";
-import { es } from "date-fns/locale";
-import "react-day-picker/dist/style.css";
+import type { FC } from 'react';
+import { DayPicker } from 'react-day-picker';
+import { es } from 'date-fns/locale';
+import 'react-day-picker/dist/style.css';
 
 interface CalendarPickerProps {
   selected: Date | undefined;
@@ -20,8 +20,8 @@ const CalendarPicker: FC<CalendarPickerProps> = ({
 }) => {
   return (
     <div>
-      <label className="block text-sm font-medium mb-2">Fecha</label>
-      <div className="border rounded-lg bg-white flex justify-center items-center py-4 capitalize">
+      <label className="mb-2 block text-sm font-medium">Fecha</label>
+      <div className="flex items-center justify-center rounded-lg border bg-white py-4 capitalize">
         <DayPicker
           mode="single"
           selected={selected}

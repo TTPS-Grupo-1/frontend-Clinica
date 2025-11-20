@@ -15,8 +15,7 @@ const EstudiosHormonales: React.FC<EstudiosHormonalesProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL =
-    'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_hormonales';
+  const API_URL = 'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_hormonales';
 
   // 🔹 Llamada real a la API de Supabase con Axios
   useEffect(() => {
@@ -29,9 +28,7 @@ const EstudiosHormonales: React.FC<EstudiosHormonalesProps> = ({
           headers: { 'Content-Type': 'application/json' },
         });
 
-        const data = Array.isArray(response.data.data)
-          ? response.data.data
-          : response.data;
+        const data = Array.isArray(response.data.data) ? response.data.data : response.data;
 
         setCampos(data || []);
       } catch (err: any) {
@@ -62,10 +59,8 @@ const EstudiosHormonales: React.FC<EstudiosHormonalesProps> = ({
 
   // 🧱 Render
   return (
-    <div className="max-w-2xl mx-auto mt-6 rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px]">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
-        Estudios Hormonales
-      </h2>
+    <div className="mx-auto mt-6 flex min-h-[400px] max-w-2xl flex-col justify-between rounded-xl border border-gray-300 bg-white p-8 text-black shadow-lg">
+      <h2 className="mb-4 text-center text-2xl font-bold text-black">Estudios Hormonales</h2>
 
       {loading ? (
         <p className="text-center text-gray-600">Cargando estudios...</p>

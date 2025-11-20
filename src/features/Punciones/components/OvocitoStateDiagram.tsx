@@ -29,7 +29,9 @@ export default function OvocitoStateDiagram({ historial = [], onNodeClick }: Pro
       cyRef.current = null;
     }
 
-    const ordered = [...historial].sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+    const ordered = [...historial].sort(
+      (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+    );
     const nodesMap = new Map<string, any>();
     const elements: any[] = [];
     let prevEstado: string | null = null;
@@ -37,14 +39,29 @@ export default function OvocitoStateDiagram({ historial = [], onNodeClick }: Pro
     ordered.forEach((ev, idx) => {
       if (!nodesMap.has(ev.estado)) {
         const id = ev.estado;
-        nodesMap.set(ev.estado, { data: { id, label: ev.estado, lastSeen: ev.fecha, nota: ev.nota, usuario: ev.usuario_rep } });
+        nodesMap.set(ev.estado, {
+          data: {
+            id,
+            label: ev.estado,
+            lastSeen: ev.fecha,
+            nota: ev.nota,
+            usuario: ev.usuario_rep,
+          },
+        });
       } else {
         const n = nodesMap.get(ev.estado);
         n.data.lastSeen = ev.fecha;
       }
 
       if (prevEstado) {
-        elements.push({ data: { id: `e-${prevEstado}-${ev.estado}-${idx}`, source: prevEstado, target: ev.estado, label: new Date(ev.fecha).toLocaleDateString() } });
+        elements.push({
+          data: {
+            id: `e-${prevEstado}-${ev.estado}-${idx}`,
+            source: prevEstado,
+            target: ev.estado,
+            label: new Date(ev.fecha).toLocaleDateString(),
+          },
+        });
       }
       prevEstado = ev.estado;
     });
@@ -122,7 +139,7 @@ export default function OvocitoStateDiagram({ historial = [], onNodeClick }: Pro
       ],
       // dagre layout options are typed loosely here; cast to any to avoid TS errors
       // Increased node/rank/edge separation so edge labels (dates) don't overlap nodes
-      layout: ({ name: 'dagre', rankDir: 'LR', nodeSep: 140, rankSep: 160, edgeSep: 40 } as any),
+      layout: { name: 'dagre', rankDir: 'LR', nodeSep: 140, rankSep: 160, edgeSep: 40 } as any,
     });
 
     // Apply computed pixel sizes (if measured) to each node so the box fits the label
@@ -135,8 +152,7 @@ export default function OvocitoStateDiagram({ historial = [], onNodeClick }: Pro
         if (w) el.style('width', `${w}px`);
         if (h) el.style('height', `${h}px`);
       }
-    }
-    catch (e) {
+    } catch (e) {
       // ignore
     }
 

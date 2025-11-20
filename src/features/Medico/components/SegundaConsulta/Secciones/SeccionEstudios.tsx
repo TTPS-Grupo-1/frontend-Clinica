@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 interface SeccionEstudiosProps {
   estudiosAgrupados: {
@@ -12,7 +12,11 @@ interface SeccionEstudiosProps {
   initialData?: { [key: string]: string };
 }
 
-export default function SeccionEstudios({ estudiosAgrupados, onDataChange, initialData }: SeccionEstudiosProps) {
+export default function SeccionEstudios({
+  estudiosAgrupados,
+  onDataChange,
+  initialData,
+}: SeccionEstudiosProps) {
   const [personaSeleccionada, setPersonaSeleccionada] = useState<string | null>(null);
   const [valores, setValores] = useState<{ [key: string]: string }>(initialData || {});
 
@@ -23,7 +27,7 @@ export default function SeccionEstudios({ estudiosAgrupados, onDataChange, initi
 
   if (!estudiosAgrupados || estudiosAgrupados.length === 0) {
     return (
-      <div className="p-6 border rounded-lg bg-blue-50 text-center">
+      <div className="rounded-lg border bg-blue-50 p-6 text-center">
         <p className="text-gray-600">No hay estudios registrados para esta consulta.</p>
       </div>
     );
@@ -31,21 +35,21 @@ export default function SeccionEstudios({ estudiosAgrupados, onDataChange, initi
 
   if (!personaSeleccionada) {
     return (
-      <div className="p-6 border rounded-lg bg-blue-50">
-        <h3 className="text-xl font-semibold text-blue-700 mb-4">
+      <div className="rounded-lg border bg-blue-50 p-6">
+        <h3 className="mb-4 text-xl font-semibold text-blue-700">
           Seleccioná la persona cuyos estudios querés cargar
         </h3>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col justify-center gap-4 sm:flex-row">
           {estudiosAgrupados.map((p) => (
             <button
               key={p.persona}
               onClick={() => setPersonaSeleccionada(p.persona)}
-              className="px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+              className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
-              {p.persona === "PACIENTE"
-                ? "Cargar estudios de la paciente"
-                : "Cargar estudios del acompañante"}
+              {p.persona === 'PACIENTE'
+                ? 'Cargar estudios de la paciente'
+                : 'Cargar estudios del acompañante'}
             </button>
           ))}
         </div>
@@ -60,7 +64,7 @@ export default function SeccionEstudios({ estudiosAgrupados, onDataChange, initi
   };
 
   return (
-    <div className="p-6 border rounded-lg bg-blue-50">
+    <div className="rounded-lg border bg-blue-50 p-6">
       <button
         onClick={() => setPersonaSeleccionada(null)}
         className="mb-4 text-blue-600 hover:underline"
@@ -68,23 +72,23 @@ export default function SeccionEstudios({ estudiosAgrupados, onDataChange, initi
         ← Volver
       </button>
 
-      <h3 className="text-xl font-semibold text-blue-700 mb-3">
-        Estudios de {personaSeleccionada === "PACIENTE" ? "la paciente" : "el acompañante"}
+      <h3 className="mb-3 text-xl font-semibold text-blue-700">
+        Estudios de {personaSeleccionada === 'PACIENTE' ? 'la paciente' : 'el acompañante'}
       </h3>
 
       {personaData?.tipos_estudios.map((tipo) => (
         <div key={tipo.tipo} className="mb-5 border-b pb-3">
-          <h4 className="font-semibold text-blue-600 mb-2">{tipo.tipo}</h4>
-          <ul className="list-disc ml-6 text-gray-700">
+          <h4 className="mb-2 font-semibold text-blue-600">{tipo.tipo}</h4>
+          <ul className="ml-6 list-disc text-gray-700">
             {tipo.estudios.map((est) => (
-              <li key={est.id} className="flex justify-between items-center mb-1">
+              <li key={est.id} className="mb-1 flex items-center justify-between">
                 <span>{est.nombre_estudio}</span>
                 <input
                   type="text"
                   placeholder="Ingresar valor"
-                  defaultValue={valores[est.id] || ""}
+                  defaultValue={valores[est.id] || ''}
                   onChange={(e) => handleValorChange(est.id, e.target.value)}
-                  className="border border-gray-300 rounded px-2 py-1 text-sm w-40 focus:ring-2 focus:ring-blue-300"
+                  className="w-40 rounded border border-gray-300 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-300"
                 />
               </li>
             ))}

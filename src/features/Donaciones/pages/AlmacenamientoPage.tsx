@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import TanquesStatsCard from "../components/TanquesStatsCard";
+import { useEffect, useState } from 'react';
+import TanquesStatsCard from '../components/TanquesStatsCard';
 
 export default function AlmacenamientoPage() {
   const [gametes, setGametes] = useState<any[]>([]);
@@ -27,11 +27,12 @@ export default function AlmacenamientoPage() {
   }, [page]);
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 pt-20 pb-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Almacenamiento de Tanques</h1>
+    <section className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 px-4 pt-20 pb-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="mb-8 text-center text-3xl font-bold text-gray-900">
+          Almacenamiento de Tanques
+        </h1>
         <TanquesStatsCard loading={loading} stats={stats} />
-
       </div>
     </section>
   );

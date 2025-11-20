@@ -10,8 +10,8 @@ export default function MessageBubble({ message, isUser }: MessageBubbleProps) {
   if (isUser) {
     return (
       <div className="flex justify-end">
-        <div className="bg-blue-600 text-white px-4 py-3 rounded-lg max-w-sm">
-          <div className="flex items-center gap-2 mb-1">
+        <div className="max-w-sm rounded-lg bg-blue-600 px-4 py-3 text-white">
+          <div className="mb-1 flex items-center gap-2">
             <User size={14} />
             <span className="text-xs font-medium">Tú</span>
           </div>
@@ -23,8 +23,8 @@ export default function MessageBubble({ message, isUser }: MessageBubbleProps) {
 
   return (
     <div className="flex justify-start">
-      <div className="bg-gray-100 text-gray-800 px-4 py-3 rounded-lg max-w-sm">
-        <div className="flex items-center gap-2 mb-1">
+      <div className="max-w-sm rounded-lg bg-gray-100 px-4 py-3 text-gray-800">
+        <div className="mb-1 flex items-center gap-2">
           <Bot size={14} />
           <span className="text-xs font-medium text-blue-600">Asistente</span>
         </div>

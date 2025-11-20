@@ -12,7 +12,7 @@ import ListadoMedicosPage from './features/Medico/pages/ListadoMedicosPage';
 import RegistroPage from './features/Paciente/pages/RegistroPage';
 import DonacionesHomePage from './features/Donaciones/pages/HomePage';
 import DonacionPage from './features/Donaciones/pages/DonacionPage';
-import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage'
+import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage';
 import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
 import VerOrdenesMedicas from './features/Paciente/pages/VerOrdenesMedicasPage';
 import PrimeraConsultaPage from './features/Medico/pages/PrimeraConsultaPage';
@@ -50,8 +50,8 @@ export default function getAppRoutes() {
       <Route path="/admin/home" element={<HomePageAdmin />} />
       {/* Para probar la page unificada con param tipo */}
       <Route path="/donaciones/nueva/:tipo" element={<DonacionPage />} />
-      <Route path="/pacientes/misTurnos" element={<TurnosPacientePage/>} />
-      <Route path="/pacientes/verOrdenesMedicas" element={<VerOrdenesMedicas/>} />
+      <Route path="/pacientes/misTurnos" element={<TurnosPacientePage />} />
+      <Route path="/pacientes/verOrdenesMedicas" element={<VerOrdenesMedicas />} />
       <Route path="/pacientes/:pacienteId/primeraConsulta" element={<PrimeraConsultaPage />} />
       <Route path="/pacientes/:pacienteId/segundaConsulta" element={<SegundaConsultaPage />} />
       <Route path="/operador/donaciones/nueva/:tipo" element={<DonacionPage />} />
@@ -59,8 +59,8 @@ export default function getAppRoutes() {
       <Route path="/operador" element={<HomeLaboratorio />} />
       <Route path="/operador/donaciones" element={<DonacionesHomePage />} />
       <Route path="/operador/punciones" element={<HomePuncion />} />
-  <Route path="/pacientes/:pacienteId/historia" element={<HistoriaClinicaPage />} />
-  <Route path="/medico/:medicoId/pacientes" element={<MedicoPacientesPage />} />
+      <Route path="/pacientes/:pacienteId/historia" element={<HistoriaClinicaPage />} />
+      <Route path="/medico/:medicoId/pacientes" element={<MedicoPacientesPage />} />
       <Route path="/operador/fertilizaciones" element={<FertilizacionPage />} />
       <Route path="/operador/tanques" element={<AlmacenamientoPage />} />
       <Route path="/medicos/asignar_turnos" element={<AsignarTurnosPage />} />

@@ -15,8 +15,7 @@ const EstudioSemen: React.FC<EstudioSemenProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL =
-    'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_semen';
+  const API_URL = 'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_semen';
 
   // 🔹 Obtener estudios desde Supabase Edge Function
   useEffect(() => {
@@ -29,9 +28,7 @@ const EstudioSemen: React.FC<EstudioSemenProps> = ({
           headers: { 'Content-Type': 'application/json' },
         });
 
-        const data = Array.isArray(response.data.data)
-          ? response.data.data
-          : response.data;
+        const data = Array.isArray(response.data.data) ? response.data.data : response.data;
 
         setEstudios(data || []);
       } catch (err: any) {
@@ -62,10 +59,8 @@ const EstudioSemen: React.FC<EstudioSemenProps> = ({
 
   // 🧱 Render
   return (
-    <div className="max-w-xl mx-auto rounded shadow p-6 border-2 border-black bg-white text-black mt-6">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
-        Estudios de semen
-      </h2>
+    <div className="mx-auto mt-6 max-w-xl rounded border-2 border-black bg-white p-6 text-black shadow">
+      <h2 className="mb-4 text-center text-2xl font-bold text-black">Estudios de semen</h2>
 
       {loading ? (
         <p className="text-center text-gray-600">Cargando estudios...</p>

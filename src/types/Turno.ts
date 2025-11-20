@@ -10,13 +10,13 @@ export type Turno = {
     first_name: string;
     last_name: string;
     edad: number;
-    dni?: string;  
+    dni?: string;
   };
 };
 
 export type TurnoAPI = {
-    id: number;
-    id_medico: number;
-    id_paciente: number | null; // null si está libre
-    fecha_hora: string; // Formato ISO 8601
+  id: number;
+  id_medico: number;
+  id_paciente: number | null; // null si está libre
+  fecha_hora: string; // Formato ISO 8601
 };

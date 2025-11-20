@@ -8,14 +8,11 @@ export default function App() {
   return (
     <div className="overflow-x-auto">
       <BrowserRouter>
-        <Toaster richColors/>
-      <Navbar />
-        <Routes>
-          {getAppRoutes()}
-        </Routes>
-      <Footer />
+        <Toaster richColors />
+        <Navbar />
+        <Routes>{getAppRoutes()}</Routes>
+        <Footer />
       </BrowserRouter>
     </div>
   );
 }
-

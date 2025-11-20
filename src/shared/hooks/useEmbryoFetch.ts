@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 interface Embryo {
   id?: number;
@@ -37,12 +37,12 @@ export function useEmbryoFetch(pacienteId: number | null): UseEmbryoFetchResult 
       .get(`http://localhost:8000/api/embriones/?paciente=${pacienteId}`)
       .then((response) => {
         const data = Array.isArray(response.data) ? response.data : response.data.results || [];
-        console.log("✅ Embriones obtenidos:", data);
+        console.log('✅ Embriones obtenidos:', data);
         setEmbriones(data);
       })
       .catch((err) => {
-        console.error("❌ Error fetching embriones:", err);
-        setError(err?.response?.data?.detail || err?.message || "Error al cargar embriones");
+        console.error('❌ Error fetching embriones:', err);
+        setError(err?.response?.data?.detail || err?.message || 'Error al cargar embriones');
         setEmbriones([]);
       })
       .finally(() => setLoading(false));

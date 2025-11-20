@@ -3,7 +3,7 @@ import axios from 'axios';
 import OvocitosTable from '../../Punciones/components/OvocitosTable';
 import FertilizacionesTable from '../../Fertilizacion/components/Fertilizaciones';
 import PatientDetails from '../../Paciente/components/History/PatientDetails';
-import EmbrionesTable from "../../Paciente/components/EmbrionesTable"; // ✅ Importar
+import EmbrionesTable from '../../Paciente/components/EmbrionesTable'; // ✅ Importar
 
 type Props = {
   tratamientoId: number;
@@ -27,8 +27,10 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
         const headers = token ? { Authorization: `Token ${token}` } : {};
 
         // Usar el nuevo endpoint que devuelve todos los datos relacionados
-        
-        const response = await axios.get(`/api/tratamientos/${tratamientoId}/detalles-completos/`, { headers });
+
+        const response = await axios.get(`/api/tratamientos/${tratamientoId}/detalles-completos/`, {
+          headers,
+        });
         const data = response.data;
 
         // Establecer todos los datos de una vez
@@ -40,14 +42,15 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
         // Si no recibimos el objeto paciente, obtenerlo
         if (!paciente && data.tratamiento?.paciente) {
           try {
-            const pRes = await axios.get(`/api/pacientes/${data.tratamiento.paciente}/`, { headers });
+            const pRes = await axios.get(`/api/pacientes/${data.tratamiento.paciente}/`, {
+              headers,
+            });
             setPacienteLocal(pRes.data);
           } catch (pErr) {
             console.error('Error fetching patient:', pErr);
             setPacienteLocal(null);
           }
         }
-
       } catch (err) {
         console.error('Error fetching treatment data:', err);
         // Agregar más detalles del error
@@ -56,10 +59,10 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
             message: err.message,
             response: (err as any).response?.data,
             status: (err as any).response?.status,
-            config: (err as any).config
+            config: (err as any).config,
           });
         }
-        
+
         // También mostrar el error completo de axios
         if ((err as any).isAxiosError) {
           console.error('Axios error details:', {
@@ -67,7 +70,7 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
             method: (err as any).config?.method,
             headers: (err as any).config?.headers,
             responseStatus: (err as any).response?.status,
-            responseData: (err as any).response?.data
+            responseData: (err as any).response?.data,
           });
         }
       } finally {
@@ -88,21 +91,34 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
   return (
     <div className="space-y-6">
       {showPaciente ? (
-        <div className="bg-white rounded p-4">
-          <h3 className="text-lg font-semibold mb-2">Datos del paciente</h3>
+        <div className="rounded bg-white p-4">
+          <h3 className="mb-2 text-lg font-semibold">Datos del paciente</h3>
           <PatientDetails paciente={paciente || pacienteLocal} loading={false} />
         </div>
       ) : null}
 
-      <div className="bg-white rounded p-4">
-        <h3 className="text-lg font-semibold mb-2">Resumen del tratamiento</h3>
+      <div className="rounded bg-white p-4">
+        <h3 className="mb-2 text-lg font-semibold">Resumen del tratamiento</h3>
         {tratamiento ? (
           <div className="text-gray-700">
-            <div><strong>Estado:</strong> {tratamiento.activo ? 'Activo' : 'Inactivo'}</div>
-            <div><strong>Inicio:</strong> {tratamiento.fecha_inicio}</div>
-            <div><strong>Médico:</strong> {tratamiento.medico_nombre || `ID: ${tratamiento.medico}`}</div>
-            <div><strong>Objetivo:</strong> {tratamiento.objetivo || '-'}</div>
-            <div><strong>Creado:</strong> {tratamiento.fecha_creacion ? new Date(tratamiento.fecha_creacion).toLocaleDateString() : '-'}</div>
+            <div>
+              <strong>Estado:</strong> {tratamiento.activo ? 'Activo' : 'Inactivo'}
+            </div>
+            <div>
+              <strong>Inicio:</strong> {tratamiento.fecha_inicio}
+            </div>
+            <div>
+              <strong>Médico:</strong> {tratamiento.medico_nombre || `ID: ${tratamiento.medico}`}
+            </div>
+            <div>
+              <strong>Objetivo:</strong> {tratamiento.objetivo || '-'}
+            </div>
+            <div>
+              <strong>Creado:</strong>{' '}
+              {tratamiento.fecha_creacion
+                ? new Date(tratamiento.fecha_creacion).toLocaleDateString()
+                : '-'}
+            </div>
           </div>
         ) : (
           <div className="text-gray-500">No hay detalles del tratamiento disponibles.</div>
@@ -110,26 +126,31 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-2">Ovocitos</h3>
+        <h3 className="mb-2 text-lg font-semibold">Ovocitos</h3>
         {ovocitos.length === 0 ? (
-          <div className="text-gray-500">No se encontraron ovocitos relacionados al tratamiento.</div>
+          <div className="text-gray-500">
+            No se encontraron ovocitos relacionados al tratamiento.
+          </div>
         ) : (
-          <div className="bg-white"><OvocitosTable ovocitos={ovocitos} /></div>
+          <div className="bg-white">
+            <OvocitosTable ovocitos={ovocitos} />
+          </div>
         )}
       </div>
 
-
       <div>
-        <h3 className="text-lg font-semibold mb-2">Embriones</h3>
+        <h3 className="mb-2 text-lg font-semibold">Embriones</h3>
         {embriones.length === 0 ? (
-          <div className="text-gray-500">No se encontraron embriones relacionados al tratamiento.</div>
+          <div className="text-gray-500">
+            No se encontraron embriones relacionados al tratamiento.
+          </div>
         ) : (
           <EmbrionesTable embriones={embriones} />
         )}
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-2">Fertilizaciones</h3>
+        <h3 className="mb-2 text-lg font-semibold">Fertilizaciones</h3>
         {fertilizaciones.length === 0 ? (
           <div className="text-gray-500">No hay fertilizaciones relacionadas al tratamiento.</div>
         ) : (

@@ -98,23 +98,19 @@ export async function descriopreservarOvocito(
 ): Promise<boolean> {
   try {
     const headers = getAuthHeaders();
-
-
-    await axios.post(
+    const res = await axios.get(`/api/ovocitos/${ovocitoId}/`, { headers });
+    const ovocito = res.data;
+    const response = await axios.post(
       "/api/historial_ovocitos/",
       {
-        ovocito: ovocitoId,
-        paciente: usuarioId,
+        ovocito:  ovocitoId,
+        paciente: ovocito.paciente,
         estado: "fresco",
         nota: `Preservado por usuario ${usuarioId}`
       },
       { headers }
     );
-
-    
-    // 2️⃣ GET al ovocito para buscar tanque y rack desde la BD
-    const res = await axios.get(`/api/ovocitos/${ovocitoId}/`, { headers });
-    const ovocito = res.data;
+    console.log("Historial de ovocito creado:", response.data);
 
     const id_rack = ovocito.rack_id;
     const id_tanque = ovocito.tanque_id;
@@ -126,13 +122,13 @@ export async function descriopreservarOvocito(
       return false;
     }
 
-    const ovocitoPresente = await buscarOvocito(ovocitoId, nro_grupo);
+    const ovocitoPresente = await buscarOvocito(ovocito.identificador, nro_grupo);
     if (!ovocitoPresente) {
       console.error("El ovocito ya se encuentra utilizado en otra fertilización.");
       toast.error("El ovocito ya se encuentra utilizado en otra fertilización.");
       return false;
     }
-    const usado = await usarOvocitoTanque(ovocitoId, nro_grupo, id_tanque, id_rack);
+    const usado = await usarOvocitoTanque(ovocito.identificador, nro_grupo, id_tanque, id_rack);
     if (!usado) {
       console.error("No se pudo usar el ovocito en tanque y rack.");
       return false;

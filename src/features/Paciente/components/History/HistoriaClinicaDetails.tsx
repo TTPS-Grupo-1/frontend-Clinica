@@ -5,6 +5,9 @@ import type { Props } from '../../../../interfaces/HistoriaClinica';
 import TreatmentsList from '../../../Tratamiento/components/TreatmentsList';
 import { useNavigate } from 'react-router-dom';
 import PatientDetails from './PatientDetails';
+import MonitoreoTable from '../MonitoreoTable';
+
+
 
 interface ExtendedProps extends Props {
   userType?: 'paciente' | 'medico';
@@ -16,10 +19,12 @@ export default function HistoriaClinicaDetails({
   loadingPaciente,
   ovocitos,
   loadingOvocitos,
-  embriones,
+  embriones, 
   loadingEmbriones,
   fertilizaciones,
   loadingFert,
+  monitoreos,
+  loadingMonitoreos,
   userType = 'paciente',
 }: ExtendedProps) {
   const navigate = useNavigate();
@@ -59,6 +64,15 @@ export default function HistoriaClinicaDetails({
             <div className="text-gray-500">Cargando fertilizaciones...</div>
           ) : (
             <FertilizacionesTable fertilizaciones={fertilizaciones} />
+          )}
+        </section>
+
+        <section className="mb-6">
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">Monitoreos</h2>
+          {loadingMonitoreos ? (
+            <div className="text-gray-500">Cargando monitoreos...</div>
+          ) : (
+            <MonitoreoTable monitoreos={monitoreos || []} />
           )}
         </section>
       </>

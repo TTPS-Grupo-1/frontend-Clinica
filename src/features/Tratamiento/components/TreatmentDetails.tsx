@@ -4,6 +4,7 @@ import OvocitosTable from '../../Punciones/components/OvocitosTable';
 import FertilizacionesTable from '../../Fertilizacion/components/Fertilizaciones';
 import PatientDetails from '../../Paciente/components/History/PatientDetails';
 import EmbrionesTable from '../../Paciente/components/EmbrionesTable'; // ✅ Importar
+import MonitoreoTable from '@/features/Paciente/components/MonitoreoTable';
 
 type Props = {
   tratamientoId: number;
@@ -18,6 +19,7 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
   const [fertilizaciones, setFertilizaciones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [pacienteLocal, setPacienteLocal] = useState<any | null>(null);
+  const [monitoreos, setMonitoreos] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchTreatmentData() {
@@ -33,11 +35,18 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
         });
         const data = response.data;
 
+        const id_tratamiento = data.tratamiento.id; 
+        const monitoreos = await axios.get(`/api/monitoreo/monitoreos/atendidos-por-tratamiento/${id_tratamiento}/`, {
+          headers,
+        });
+        data.monitoreos = monitoreos.data.data || [];
+
         // Establecer todos los datos de una vez
         setTratamiento(data.tratamiento);
         setOvocitos(data.ovocitos || []);
         setFertilizaciones(data.fertilizaciones || []);
         setEmbriones(data.embriones || []);
+        setMonitoreos(data.monitoreos || []); 
 
         // Si no recibimos el objeto paciente, obtenerlo
         if (!paciente && data.tratamiento?.paciente) {
@@ -157,6 +166,15 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
           <FertilizacionesTable fertilizaciones={fertilizaciones} />
         )}
       </div>
-    </div>
+      <div>
+        <h3 className="mb-2 text-lg font-semibold">Monitoreos</h3>
+        {monitoreos.length === 0 ? (
+          <div className="text-gray-500">No hay monitoreos relacionados al tratamiento.</div>
+        ) : (
+          <MonitoreoTable monitoreos={monitoreos} />
+        )}
+      </div>
+     </div>   
+    
   );
 }

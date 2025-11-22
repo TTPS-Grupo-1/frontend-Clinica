@@ -1,11 +1,11 @@
-export type Fertilizacion  = {
+export type Fertilizacion = {
   id_fertilizacion: number;
   fecha_fertilizacion: string;
   ovocito: any;
   resultado: string;
   tecnica_icsi?: boolean;
   tecnica_fiv?: boolean;
-}
+};
 
 export type FenotipoData = {
   color_ojos: string;
@@ -14,15 +14,15 @@ export type FenotipoData = {
   altura_cm: number;
   complexion_corporal: string;
   rasgos_etnicos: string;
-}
+};
 
-export type SemenData =  {
+export type SemenData = {
   id: number;
   viable: boolean;
   origen: 'PAREJA' | 'DONANTE';
   paciente_id?: number;
   donante_id?: number;
-}
+};
 
 export type OvocitoData = {
   id: number;
@@ -30,14 +30,14 @@ export type OvocitoData = {
   estado: 'fresco' | 'criopreservado';
   paciente_id: number;
   puncion_id: number;
-}
+};
 
 export type GametoDonado = {
   id: number;
   tipo: 'semen' | 'ovocito';
   fenotipo: FenotipoData;
   viable: boolean;
-}
+};
 
 export type FertilizacionData = {
   paciente_id: number;
@@ -47,4 +47,6 @@ export type FertilizacionData = {
   ovocitos_utilizados: number[];
   resultado: 'exitosa' | 'fallida';
   observaciones?: string;
-}
+};
+
+export type PasoFertilizacion = 'evaluacion' | 'confirmacion' | 'ejecutando' | 'completado';

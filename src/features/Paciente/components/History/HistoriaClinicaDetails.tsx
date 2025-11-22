@@ -1,12 +1,13 @@
 import OvocitosTable from '../../../Punciones/components/OvocitosTable';
-import { useState } from 'react';
 import EmbrionesTable from '../EmbrionesTable'; // ✅ Cambiar import
 import FertilizacionesTable from '../../../Fertilizacion/components/Fertilizaciones';
 import type { Props } from '../../../../interfaces/HistoriaClinica';
-import TreatmentsList from './TreatmentsList';
-import TreatmentDetails from './TreatmentDetails';
-import Modal from './Modal';
+import TreatmentsList from '../../../Tratamiento/components/TreatmentsList';
+import { useNavigate } from 'react-router-dom';
 import PatientDetails from './PatientDetails';
+import MonitoreoTable from '../MonitoreoTable';
+
+
 
 interface ExtendedProps extends Props {
   userType?: 'paciente' | 'medico';
@@ -18,48 +19,27 @@ export default function HistoriaClinicaDetails({
   loadingPaciente,
   ovocitos,
   loadingOvocitos,
-  embriones,
+  embriones, 
   loadingEmbriones,
   fertilizaciones,
   loadingFert,
+  monitoreos,
+  loadingMonitoreos,
   userType = 'paciente',
 }: ExtendedProps) {
-  const [selectedTratamientoId, setSelectedTratamientoId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   // Vista para pacientes
   if (userType === 'paciente') {
     return (
       <>
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-black mb-2">Datos personales</h2>
+          <h2 className="mb-2 text-lg font-semibold text-black">Datos personales</h2>
           <PatientDetails paciente={paciente} loading={loadingPaciente} />
         </section>
 
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-black mb-2">Tratamientos</h2>
-          <TreatmentsList pacienteId={selectedPacienteId} onSelect={(id) => setSelectedTratamientoId(id)} />
-        </section>
-
-        {selectedTratamientoId && (
-          <Modal onClose={() => setSelectedTratamientoId(null)}>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold">Detalles del tratamiento</h3>
-                <button onClick={() => setSelectedTratamientoId(null)} className="text-gray-500 hover:text-gray-700">
-                  Cerrar
-                </button>
-              </div>
-              <TreatmentDetails 
-                tratamientoId={selectedTratamientoId} 
-                pacienteId={selectedPacienteId} 
-                paciente={paciente} 
-              />
-            </div>
-          </Modal>
-        )}
-
-        <section className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Ovocitos</h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">Ovocitos</h2>
           {loadingOvocitos ? (
             <div className="text-gray-500">Cargando ovocitos...</div>
           ) : (
@@ -70,20 +50,29 @@ export default function HistoriaClinicaDetails({
         </section>
 
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Embriones</h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">Embriones</h2>
           {loadingEmbriones ? (
             <div className="text-gray-500">Cargando embriones...</div>
           ) : (
-            <EmbrionesTable embriones={embriones || []} /> 
+            <EmbrionesTable embriones={embriones || []} />
           )}
         </section>
 
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Fertilizaciones</h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">Fertilizaciones</h2>
           {loadingFert ? (
             <div className="text-gray-500">Cargando fertilizaciones...</div>
           ) : (
             <FertilizacionesTable fertilizaciones={fertilizaciones} />
+          )}
+        </section>
+
+        <section className="mb-6">
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">Monitoreos</h2>
+          {loadingMonitoreos ? (
+            <div className="text-gray-500">Cargando monitoreos...</div>
+          ) : (
+            <MonitoreoTable monitoreos={monitoreos || []} />
           )}
         </section>
       </>
@@ -94,38 +83,25 @@ export default function HistoriaClinicaDetails({
   return (
     <>
       <section className="mb-6">
-        <h2 className="text-lg font-semibold text-black mb-2">Datos del paciente</h2>
+        <h2 className="mb-2 text-lg font-semibold text-black">Datos del paciente</h2>
         <PatientDetails paciente={paciente} loading={loadingPaciente} />
       </section>
 
       <section className="mb-6">
-        <h2 className="text-lg font-semibold text-black mb-2">Tratamientos</h2>
-        <TreatmentsList pacienteId={selectedPacienteId} onSelect={(id) => setSelectedTratamientoId(id)} />
+        <h2 className="mb-2 text-lg font-semibold text-black">Tratamientos</h2>
+        <TreatmentsList
+          pacienteId={selectedPacienteId}
+          onSelect={(id) => {
+            navigate(`/tratamiento/${id}`, {
+              state: {
+                tratamientoId: id,
+                pacienteId: selectedPacienteId,
+                paciente,
+              },
+            });
+          }}
+        />
       </section>
-
-      {selectedTratamientoId && (
-        <Modal onClose={() => setSelectedTratamientoId(null)}>
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold">Detalles del tratamiento</h3>
-              <button onClick={() => setSelectedTratamientoId(null)} className="text-gray-500 hover:text-gray-700">
-                Cerrar
-              </button>
-            </div>
-            <TreatmentDetails 
-              tratamientoId={selectedTratamientoId} 
-              pacienteId={selectedPacienteId} 
-              paciente={paciente} 
-            />
-          </div>
-        </Modal>
-      )}
-
-      {!selectedTratamientoId && (
-        <div className="text-center text-gray-500 py-8">
-          Selecciona un tratamiento para ver sus detalles específicos (ovocitos, embriones, fertilizaciones)
-        </div>
-      )}
     </>
   );
 }

@@ -23,15 +23,21 @@ export default function useTratamientosPorPaciente(pacienteId: number | null) {
 
     console.log('useTratamientosPorPaciente - Token:', token ? 'Token exists' : 'No token');
     console.log('useTratamientosPorPaciente - Headers:', headers);
-    console.log('useTratamientosPorPaciente - URL:', `/api/tratamientos/todos-por-paciente/${pacienteId}/`);
+    console.log(
+      'useTratamientosPorPaciente - URL:',
+      `/api/tratamientos/todos-por-paciente/${pacienteId}/`
+    );
 
     try {
       // Usar el nuevo endpoint que devuelve TODOS los tratamientos del paciente
-      const res = await axios.get(`/api/tratamientos/todos-por-paciente/${pacienteId}/`, { headers, withCredentials: true });
-      
+      const res = await axios.get(`/api/tratamientos/todos-por-paciente/${pacienteId}/`, {
+        headers,
+        withCredentials: true,
+      });
+
       // Este endpoint devuelve un array de tratamientos
       const data = Array.isArray(res.data) ? res.data : [];
-      
+
       setTratamientos(data);
     } catch (err: any) {
       // Si es un 404 o error, significa que no hay tratamientos para este paciente

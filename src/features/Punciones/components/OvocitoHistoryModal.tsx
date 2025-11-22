@@ -1,12 +1,12 @@
-import { useHistorialOvocitoFetch } from "../../../shared/hooks/useHistorialOvocitoFetch";
-import { useHistorialEmbrionFetch } from "../../../shared/hooks/useHistorialEmbrionFetch";
-import OvocitoStateDiagram from "./OvocitoStateDiagram";
-import { useState } from "react";
+import { useHistorialOvocitoFetch } from '../../../shared/hooks/useHistorialOvocitoFetch';
+import { useHistorialEmbrionFetch } from '../../../shared/hooks/useHistorialEmbrionFetch';
+import OvocitoStateDiagram from './OvocitoStateDiagram';
+import { useState } from 'react';
 
 interface HistoryModalProps {
   entityId: number | null;
   entityIdentificador?: string;
-  entityType: "ovocito" | "embrion";
+  entityType: 'ovocito' | 'embrion';
   open: boolean;
   onClose: () => void;
 }
@@ -19,12 +19,12 @@ export default function HistoryModal({
   onClose,
 }: HistoryModalProps) {
   const [selectedEstado, setSelectedEstado] = useState<string | null>(null);
-  
-  const ovocitoData = useHistorialOvocitoFetch(entityType === "ovocito" ? entityId : null);
-  const embrionData = useHistorialEmbrionFetch(entityType === "embrion" ? entityId : null);
-  
-  const { historial, loading, error } = entityType === "ovocito" ? ovocitoData : embrionData;
-  const entityName = entityType === "ovocito" ? "Ovocito" : "Embrión";
+
+  const ovocitoData = useHistorialOvocitoFetch(entityType === 'ovocito' ? entityId : null);
+  const embrionData = useHistorialEmbrionFetch(entityType === 'embrion' ? entityId : null);
+
+  const { historial, loading, error } = entityType === 'ovocito' ? ovocitoData : embrionData;
+  const entityName = entityType === 'ovocito' ? 'Ovocito' : 'Embrión';
 
   if (!open) return null;
 
@@ -43,34 +43,34 @@ export default function HistoryModal({
     : historial;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
+    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+      <div className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center justify-between bg-gradient-to-r from-cyan-600 to-cyan-700 px-6 py-4">
           <h2 className="text-xl font-bold text-white">
             Historial de {entityIdentificador || `${entityName} #${entityId}`}
           </h2>
-          <button onClick={onClose} className="text-white hover:text-gray-200 text-2xl font-bold">
+          <button onClick={onClose} className="text-2xl font-bold text-white hover:text-gray-200">
             ×
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        <div className="max-h-[calc(90vh-140px)] overflow-y-auto p-6">
           {loading && (
-            <div className="flex justify-center items-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600"></div>
+            <div className="flex items-center justify-center py-8">
+              <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-cyan-600"></div>
             </div>
           )}
 
           {error && (
-            <div className="text-red-500 bg-red-50 p-4 rounded-lg">
+            <div className="rounded-lg bg-red-50 p-4 text-red-500">
               Error al cargar historial: {String(error)}
             </div>
           )}
 
           {!loading && !error && historial.length === 0 && (
-            <p className="text-gray-500 text-center py-8">
+            <p className="py-8 text-center text-gray-500">
               No hay historial registrado para este {entityName.toLowerCase()}.
             </p>
           )}
@@ -78,20 +78,20 @@ export default function HistoryModal({
           {!loading && !error && historial.length > 0 && (
             <>
               {/* Diagrama de flujo */}
-              <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                  Diagrama de Estados
-                </h3>
-                <OvocitoStateDiagram 
-                  historial={diagramData} 
-                  onNodeClick={(estado) => setSelectedEstado(estado === selectedEstado ? null : estado)}
+              <div className="mb-6 rounded-lg bg-gray-50 p-4">
+                <h3 className="mb-3 text-lg font-semibold text-gray-800">Diagrama de Estados</h3>
+                <OvocitoStateDiagram
+                  historial={diagramData}
+                  onNodeClick={(estado) =>
+                    setSelectedEstado(estado === selectedEstado ? null : estado)
+                  }
                 />
                 {selectedEstado && (
                   <div className="mt-2 text-sm text-gray-600">
                     Filtrando por estado: <strong>{selectedEstado}</strong>
                     <button
                       onClick={() => setSelectedEstado(null)}
-                      className="ml-2 text-cyan-600 hover:text-cyan-700 underline"
+                      className="ml-2 text-cyan-600 underline hover:text-cyan-700"
                     >
                       Ver todos
                     </button>
@@ -101,24 +101,22 @@ export default function HistoryModal({
 
               {/* Lista de historial */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Detalle del Historial
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-800">Detalle del Historial</h3>
                 {filteredHistorial.map((registro: any) => (
                   <div
                     key={registro.id}
-                    className="border-l-4 border-cyan-500 pl-4 py-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors"
+                    className="rounded border-l-4 border-cyan-500 bg-gray-50 py-3 pl-4 transition-colors hover:bg-gray-100"
                   >
-                    <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
+                    <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
                       <div className="flex flex-wrap gap-2">
                         <span className="font-semibold text-gray-900">
                           {registro.tipo_modificacion || registro.estado}
                         </span>
-                        <span className="px-2 py-1 bg-cyan-100 text-cyan-800 text-xs rounded-full">
+                        <span className="rounded-full bg-cyan-100 px-2 py-1 text-xs text-cyan-800">
                           {registro.estado}
                         </span>
                         {registro.calidad && (
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                          <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
                             Calidad: {registro.calidad}
                           </span>
                         )}
@@ -128,7 +126,7 @@ export default function HistoryModal({
                       </span>
                     </div>
                     {(registro.observaciones || registro.nota) && (
-                      <p className="text-sm text-gray-600 mt-2">
+                      <p className="mt-2 text-sm text-gray-600">
                         {registro.observaciones || registro.nota}
                       </p>
                     )}
@@ -140,10 +138,10 @@ export default function HistoryModal({
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 px-6 py-4 flex justify-end border-t">
+        <div className="flex justify-end border-t bg-gray-50 px-6 py-4">
           <button
             onClick={onClose}
-            className="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors"
+            className="rounded-md bg-gray-600 px-6 py-2 text-white transition-colors hover:bg-gray-700"
           >
             Cerrar
           </button>

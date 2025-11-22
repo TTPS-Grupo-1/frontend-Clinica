@@ -1,4 +1,4 @@
-import type { FormPaginationProps } from "../interfaces/Pagination";
+import type { FormPaginationProps } from '../interfaces/Pagination';
 
 export default function FormPagination({
   currentStep,
@@ -11,23 +11,23 @@ export default function FormPagination({
   onCancel,
 }: FormPaginationProps) {
   return (
-    <div className="flex justify-between items-center pt-6 border-t">
+    <div className="flex items-center justify-between border-t pt-6">
       <button
         type="button"
         onClick={currentStep === 1 && onCancel ? onCancel : onPrev}
-        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        className="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700"
       >
-        {currentStep === 1 ? "Cancelar" : "Anterior"}
+        {currentStep === 1 ? 'Cancelar' : 'Anterior'}
       </button>
       <div className="flex gap-2">
         {Array.from({ length: totalSteps }, (_, i) => (
           <button
             key={i}
             type="button"
-            className={`w-8 h-8 rounded-full border ${currentStep === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
+            className={`h-8 w-8 rounded-full border ${currentStep === i + 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
             onClick={() => onStepChange(i + 1)}
           >
-            <p className="text-sm justify-center">{i + 1}</p>
+            <p className="justify-center text-sm">{i + 1}</p>
           </button>
         ))}
       </div>
@@ -35,15 +35,15 @@ export default function FormPagination({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
         >
-          {isSubmitting ? "Registrando..." : "Registrar Donación"}
+          {isSubmitting ? 'Registrando...' : 'Registrar Donación'}
         </button>
       ) : (
         <button
           type="button"
           onClick={onNext}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700"
         >
           Siguiente
         </button>

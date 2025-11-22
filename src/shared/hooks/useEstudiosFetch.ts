@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export interface Estudio {
   id: string | number;
@@ -16,11 +16,11 @@ export function useEstudiosFetch(url: string) {
     setError(null);
     setEstudios([]);
     fetch(url)
-      .then(res => {
-        if (!res.ok) throw new Error("Error al obtener estudios");
+      .then((res) => {
+        if (!res.ok) throw new Error('Error al obtener estudios');
         return res.json();
       })
-      .then(data => {
+      .then((data) => {
         if (isMounted) {
           // Si la API devuelve un array directo
           if (Array.isArray(data)) setEstudios(data);
@@ -29,13 +29,15 @@ export function useEstudiosFetch(url: string) {
           else setEstudios([]);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         if (isMounted) setError(err.message);
       })
       .finally(() => {
         if (isMounted) setLoading(false);
       });
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [url]);
 
   return { estudios, loading, error };

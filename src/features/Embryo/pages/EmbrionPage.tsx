@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { toast, Toaster } from "react-hot-toast";
-import EmbrionForm from "../components/Embrion";
-import type { Embryo } from "../../../types/Embryo";
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { toast, Toaster } from 'react-hot-toast';
+import EmbrionForm from '../components/Embrion';
+import type { Embryo } from '../../../types/Embryo';
 
 export default function EmbrionPage() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function EmbrionPage() {
         try {
           const response = await axios.get(`http://localhost:8000/api/embriones/${id}/`);
           setInitialData(response.data);
-          
+
           // Si el embrión tiene fertilización asociada, cargar sus datos
           if (response.data.fertilizacion) {
             try {
@@ -29,7 +29,7 @@ export default function EmbrionPage() {
                 `http://localhost:8000/api/fertilizacion/${response.data.fertilizacion}/`
               );
               setFertilizacionData(fertResponse.data);
-              
+
               // Si la fertilización tiene ovocito, cargar sus datos para obtener el identificador
               if (fertResponse.data.ovocito) {
                 try {
@@ -38,16 +38,16 @@ export default function EmbrionPage() {
                   );
                   setOvocitoData(ovocitoResponse.data);
                 } catch (ovocitoError) {
-                  console.error("Error al cargar ovocito:", ovocitoError);
+                  console.error('Error al cargar ovocito:', ovocitoError);
                 }
               }
             } catch (fertError) {
-              console.error("Error al cargar fertilización:", fertError);
+              console.error('Error al cargar fertilización:', fertError);
             }
           }
         } catch (error) {
-          console.error("Error al cargar embrión:", error);
-          toast.error("Error al cargar los datos del embrión");
+          console.error('Error al cargar embrión:', error);
+          toast.error('Error al cargar los datos del embrión');
         } finally {
           setLoadingData(false);
         }
@@ -62,33 +62,27 @@ export default function EmbrionPage() {
       let response;
       if (id) {
         // Actualizar embrión existente
-        response = await axios.put(
-          `http://localhost:8000/api/embriones/${id}/`,
-          data
-        );
-        toast.success("Embrión actualizado exitosamente");
+        response = await axios.put(`http://localhost:8000/api/embriones/${id}/`, data);
+        toast.success('Embrión actualizado exitosamente');
       } else {
         // Crear nuevo embrión
-        response = await axios.post(
-          "http://localhost:8000/api/embriones/",
-          data
-        );
-        toast.success("Datos del embrión registrados exitosamente");
+        response = await axios.post('http://localhost:8000/api/embriones/', data);
+        toast.success('Datos del embrión registrados exitosamente');
       }
-      
-      console.log("Embrión guardado:", response);
-      
+
+      console.log('Embrión guardado:', response);
+
       if (response.status === 201 || response.status === 200) {
         setTimeout(() => {
-          navigate("/embriones");
+          navigate('/embriones');
         }, 1500);
       }
     } catch (error: any) {
-      console.error("Error al guardar embrión:", error);
-      const errorMessage = 
-        error.response?.data?.message || 
+      console.error('Error al guardar embrión:', error);
+      const errorMessage =
+        error.response?.data?.message ||
         error.response?.data?.detail ||
-        "Error al guardar los datos del embrión";
+        'Error al guardar los datos del embrión';
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -96,63 +90,74 @@ export default function EmbrionPage() {
   };
 
   const handleCancel = () => {
-    navigate("/embriones");
+    navigate('/embriones');
   };
 
   if (loadingData) {
     return (
-      <main className="pt-28 flex flex-col items-center min-h-screen bg-gray-50">
+      <main className="flex min-h-screen flex-col items-center bg-gray-50 pt-28">
         <div className="mt-12 text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="text-gray-600 mt-4">Cargando datos del embrión...</p>
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">Cargando datos del embrión...</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="pt-28 flex flex-col items-center min-h-screen bg-gray-50">
+    <main className="flex min-h-screen flex-col items-center bg-gray-50 pt-28">
       <Toaster position="top-center" />
-      <div className="w-full max-w-6xl px-6 py-8 space-y-6">
-        
+      <div className="w-full max-w-6xl space-y-6 px-6 py-8">
         {/* Información de la Fertilización - Solo si existe y estamos viendo un embrión */}
         {id && fertilizacionData && (
-          <div className="bg-white shadow-lg rounded-lg p-6 border-l-4 border-blue-500">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div className="rounded-lg border-l-4 border-blue-500 bg-white p-6 shadow-lg">
+            <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-gray-800">
               <span className="text-blue-600">📋</span>
               Información de la Fertilización
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="rounded-lg bg-gray-50 p-4">
                 <p className="text-sm font-semibold text-gray-600">Fecha de Fertilización</p>
-                <p className="text-lg text-gray-900">{fertilizacionData.fecha_fertilizacion || 'N/A'}</p>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm font-semibold text-gray-600">Técnico de Laboratorio</p>
-                <p className="text-lg text-gray-900">{fertilizacionData.tecnico_laboratorio || 'N/A'}</p>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm font-semibold text-gray-600">Técnica Utilizada</p>
                 <p className="text-lg text-gray-900">
-                  {fertilizacionData.tecnica_icsi ? 'ICSI' : fertilizacionData.tecnica_fiv ? 'FIV' : 'N/A'}
+                  {fertilizacionData.fecha_fertilizacion || 'N/A'}
                 </p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="rounded-lg bg-gray-50 p-4">
+                <p className="text-sm font-semibold text-gray-600">Técnico de Laboratorio</p>
+                <p className="text-lg text-gray-900">
+                  {fertilizacionData.tecnico_laboratorio || 'N/A'}
+                </p>
+              </div>
+              <div className="rounded-lg bg-gray-50 p-4">
+                <p className="text-sm font-semibold text-gray-600">Técnica Utilizada</p>
+                <p className="text-lg text-gray-900">
+                  {fertilizacionData.tecnica_icsi
+                    ? 'ICSI'
+                    : fertilizacionData.tecnica_fiv
+                      ? 'FIV'
+                      : 'N/A'}
+                </p>
+              </div>
+              <div className="rounded-lg bg-gray-50 p-4">
                 <p className="text-sm font-semibold text-gray-600">Resultado</p>
-                <p className={`text-lg font-semibold ${
-                  fertilizacionData.resultado === 'exitosa' ? 'text-green-600' : 'text-red-600'
-                }`}>
+                <p
+                  className={`text-lg font-semibold ${
+                    fertilizacionData.resultado === 'exitosa' ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
                   {fertilizacionData.resultado === 'exitosa' ? '✓ Exitosa' : '✗ No Exitosa'}
                 </p>
               </div>
               {fertilizacionData.ovocito && (
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="rounded-lg bg-gray-50 p-4">
                   <p className="text-sm font-semibold text-gray-600">Identificador del Ovocito</p>
-                  <p className="text-lg text-gray-900">{ovocitoData?.identificador || fertilizacionData.ovocito}</p>
+                  <p className="text-lg text-gray-900">
+                    {ovocitoData?.identificador || fertilizacionData.ovocito}
+                  </p>
                 </div>
               )}
               {fertilizacionData.semen_info && (
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="rounded-lg bg-gray-50 p-4">
                   <p className="text-sm font-semibold text-gray-600">Información del Semen</p>
                   <p className="text-lg text-gray-900">{fertilizacionData.semen_info}</p>
                 </div>
@@ -162,18 +167,18 @@ export default function EmbrionPage() {
         )}
 
         {/* Formulario del Embrión */}
-        <EmbrionForm 
+        <EmbrionForm
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isEdit={!!id}
           initialData={initialData}
         />
-        
+
         {loading && (
           <div className="mt-4 text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="text-gray-600 mt-2">
-              {id ? "Actualizando embrión..." : "Registrando datos del embrión..."}
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <p className="mt-2 text-gray-600">
+              {id ? 'Actualizando embrión...' : 'Registrando datos del embrión...'}
             </p>
           </div>
         )}

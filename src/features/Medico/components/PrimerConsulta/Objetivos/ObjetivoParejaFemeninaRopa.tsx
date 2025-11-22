@@ -24,8 +24,8 @@ const ObjetivoParejaFemeninaRopa: React.FC<ObjetivoXProps> = ({ onDataChange }) 
     personales_mujer2: { fuma: '', alcohol: '', drogas: '', observaciones: '' },
     antecedentes_quirurgicos_mujer1: { descripcion: '' },
     antecedentes_quirurgicos_mujer2: { descripcion: '' },
-    examen_fisico_mujer1:'' ,
-    examen_fisico_mujer2:'',
+    examen_fisico_mujer1: '',
+    examen_fisico_mujer2: '',
     estudios_ginecologicos_mujer1: { seleccionados: [] },
     estudios_ginecologicos_mujer2: { seleccionados: [] },
     hormonales_mujer1: { seleccionados: [] },
@@ -49,7 +49,7 @@ const ObjetivoParejaFemeninaRopa: React.FC<ObjetivoXProps> = ({ onDataChange }) 
       altura: '',
       complexion: '',
       etnia: '',
-    }
+    },
   });
 
   // 🔁 Notifica al padre principal (PrimerConsulta)
@@ -258,10 +258,8 @@ const ObjetivoParejaFemeninaRopa: React.FC<ObjetivoXProps> = ({ onDataChange }) 
   const total = cards.length;
 
   return (
-    <div className="flex flex-col items-center w-full">
-      <Card title={cards[pagina - 1].title}>
-        {cards[pagina - 1].content}
-      </Card>
+    <div className="flex w-full flex-col items-center">
+      <Card title={cards[pagina - 1].title}>{cards[pagina - 1].content}</Card>
       <Pagination
         currentPage={pagina}
         totalPages={total}

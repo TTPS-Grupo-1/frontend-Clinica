@@ -24,14 +24,20 @@ const ObjetivoModal: React.FC<ObjetivoModalProps> = ({ isOpen, onClose, onSelect
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.15)' }}>
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg border-2 border-black" style={{ boxShadow: '0 0 0 4px black' }}>
-        <h2 className="text-xl font-bold mb-4 text-center text-black">Selecciona el objetivo</h2>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.15)' }}
+    >
+      <div
+        className="w-full max-w-lg rounded-lg border-2 border-black bg-white p-6 shadow-lg"
+        style={{ boxShadow: '0 0 0 4px black' }}
+      >
+        <h2 className="mb-4 text-center text-xl font-bold text-black">Selecciona el objetivo</h2>
         <ul className="space-y-4">
           {opciones.map((opcion) => (
             <li key={opcion.value}>
               <button
-                className="w-full text-left px-4 py-2 rounded hover:bg-gray-200 border border-black text-black bg-white transition-colors"
+                className="w-full rounded border border-black bg-white px-4 py-2 text-left text-black transition-colors hover:bg-gray-200"
                 onClick={() => {
                   onSelect(opcion.value);
                   onClose();
@@ -43,7 +49,7 @@ const ObjetivoModal: React.FC<ObjetivoModalProps> = ({ isOpen, onClose, onSelect
           ))}
         </ul>
         <button
-          className="mt-6 w-full bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded border border-black transition-colors"
+          className="mt-6 w-full rounded border border-black bg-black px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-800"
           onClick={onClose}
         >
           Cancelar

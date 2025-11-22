@@ -14,7 +14,11 @@ export function useApi(pacienteId: number | null = null) {
   const [error, setError] = useState<string | null>(null);
 
   // Usar el hook existente para embriones
-  const { embriones, loading: embrionesLoading, error: embrionesError } = useEmbryoFetch(pacienteId);
+  const {
+    embriones,
+    loading: embrionesLoading,
+    error: embrionesError,
+  } = useEmbryoFetch(pacienteId);
 
   useEffect(() => {
     if (pacienteId) {
@@ -32,8 +36,10 @@ export function useApi(pacienteId: number | null = null) {
     setError(null);
     try {
       // Usar el endpoint específico que funciona correctamente
-      const res = await axios.get(`/api/tratamientos/por-paciente/${pacienteId}/`, { headers: getAuthHeaders() });
-      
+      const res = await axios.get(`/api/tratamientos/por-paciente/${pacienteId}/`, {
+        headers: getAuthHeaders(),
+      });
+
       // El endpoint devuelve un solo tratamiento, convertirlo a array
       const items = res.data ? [res.data] : [];
       setTratamientos(items);
@@ -53,9 +59,13 @@ export function useApi(pacienteId: number | null = null) {
   };
 
   const submitTransferencia = async (transferencia: Omit<Transferencia, 'id'>) => {
-    const response = await axios.post(`/api/transferencia/transferencias/bulk_create/`, transferencia, {
-      headers: getAuthHeaders()
-    });
+    const response = await axios.post(
+      `/api/transferencia/transferencias/bulk_create/`,
+      transferencia,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
     return response.data;
   };
 
@@ -68,6 +78,6 @@ export function useApi(pacienteId: number | null = null) {
     loading: isLoading,
     error: combinedError,
     submitTransferencia,
-    refetch: loadTratamientos
+    refetch: loadTratamientos,
   };
 }

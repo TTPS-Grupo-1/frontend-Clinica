@@ -10,4 +10,6 @@ export interface Props {
   loadingFert: boolean;
   historial?: any[]; // historial de ovocitos (opcional)
   loadingHistorial?: boolean;
-};
+  monitoreos: any[];
+  loadingMonitoreos: boolean;
+}

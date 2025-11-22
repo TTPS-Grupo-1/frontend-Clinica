@@ -5,8 +5,7 @@ export type Paciente = {
   edad: number;
   fechaTurno: string;
   horaTurno: string;
-}
-
+};
 
 export type PacienteFormData = {
   nombre: string;
@@ -20,4 +19,4 @@ export type PacienteFormData = {
   cobertura: number;
   coberturaNombre: string;
   numeroCobertura: string;
-}
+};

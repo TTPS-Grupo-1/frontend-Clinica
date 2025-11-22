@@ -31,6 +31,8 @@ import HistoriaClinicaPage from './features/Paciente/pages/HistoriaClinicaPage';
 import MedicoPacientesPage from './features/Medico/pages/MedicoPacientesPage';
 import RegistrarSeguimientoPage from './features/Seguimiento/pages/RegistrarSeguimientoPage';
 import TratamientoPage from './features/Tratamiento/pages/TratamientoPage';
+import PrimeraConsultaViewPage from './features/Tratamiento/pages/PrimeraConsultaViewPage';
+import SegundaConsultaViewPage from './features/Tratamiento/pages/SegundaConsultaViewPage';
 import DeudaPaciente from './features/Paciente/pages/DeudaPaciente';
 
 export default function getAppRoutes() {
@@ -56,6 +58,8 @@ export default function getAppRoutes() {
       <Route path="/pacientes/verOrdenesMedicas" element={<VerOrdenesMedicas />} />
       <Route path="/pacientes/:pacienteId/primeraConsulta" element={<PrimeraConsultaPage />} />
       <Route path="/pacientes/:pacienteId/segundaConsulta" element={<SegundaConsultaPage />} />
+      <Route path="/tratamiento/:tratamientoId/primera-consulta" element={<PrimeraConsultaViewPage />} />
+      <Route path="/tratamiento/:tratamientoId/segunda-consulta" element={<SegundaConsultaViewPage />} />
       <Route path="/operador/donaciones/nueva/:tipo" element={<DonacionPage />} />
       <Route path="/pacientes/turnos" element={<TurnosPacientePage />} />
       <Route path="/operador" element={<HomeLaboratorio />} />

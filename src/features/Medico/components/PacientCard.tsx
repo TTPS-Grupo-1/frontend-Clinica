@@ -78,12 +78,15 @@ export default function PacientCard({
                 
                 {/* 3. Botón VER HISTORIA CLÍNICA */}
                 {/* 💡 Combinación de las dos versiones del botón de Ver Historia */}
+            {onVerHistoria && (
                 <button
                     onClick={() => onVerHistoria?.(paciente.id)}
                     className="w-full rounded-md bg-gray-100 px-4 py-2 font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-200"
                 >
-                    Ver Historia Clínica
+                Ver Historia Clínica
                 </button>
+            )}    
+
 
             </div>
         </div>

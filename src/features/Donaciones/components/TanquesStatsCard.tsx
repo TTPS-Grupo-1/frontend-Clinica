@@ -1,4 +1,3 @@
-
 interface StorageStats {
   total_tanks: number;
   sperm_tanks: number;
@@ -16,11 +15,11 @@ interface TanquesStatsCardProps {
 
 function SkeletonStatsCard() {
   return (
-    <div className="mb-8 p-6 bg-gray-100 rounded-xl shadow flex flex-col md:flex-row gap-6 justify-between items-center border border-gray-200 animate-pulse">
+    <div className="mb-8 flex animate-pulse flex-col items-center justify-between gap-6 rounded-xl border border-gray-200 bg-gray-100 p-6 shadow md:flex-row">
       {[...Array(6)].map((_, i) => (
         <div key={i} className="flex flex-col items-center">
-          <span className="h-6 w-24 bg-gray-300 rounded mb-2" />
-          <span className="h-8 w-16 bg-gray-200 rounded" />
+          <span className="mb-2 h-6 w-24 rounded bg-gray-300" />
+          <span className="h-8 w-16 rounded bg-gray-200" />
         </div>
       ))}
     </div>
@@ -30,7 +29,7 @@ function SkeletonStatsCard() {
 export default function TanquesStatsCard({ loading, stats }: TanquesStatsCardProps) {
   if (loading || !stats) return <SkeletonStatsCard />;
   return (
-    <div className="mb-8 p-6 bg-white rounded-xl shadow flex flex-col md:flex-row gap-6 justify-between items-center border border-gray-200">
+    <div className="mb-8 flex flex-col items-center justify-between gap-6 rounded-xl border border-gray-200 bg-white p-6 shadow md:flex-row">
       <div className="flex flex-col items-center">
         <span className="text-lg font-semibold text-gray-700">Tanques totales</span>
         <span className="text-2xl font-bold text-blue-700">{stats.total_tanks}</span>

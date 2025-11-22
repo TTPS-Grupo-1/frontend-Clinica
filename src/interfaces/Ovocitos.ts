@@ -1,4 +1,4 @@
-import type { MadurezOvocito, TipoEstadoOvocito, OvocitoModalRow } from "../types/Ovocito";
+import type { MadurezOvocito, TipoEstadoOvocito, OvocitoModalRow } from '../types/Ovocito';
 
 export interface OvocitosTableProps {
   ovocitos: OvocitoModalRow[];

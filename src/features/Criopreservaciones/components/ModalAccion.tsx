@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface ModalAccionProps {
   icon: React.ReactNode;
@@ -23,41 +23,41 @@ export default function ModalAccion({
   onConfirm,
   onCancel,
   onVolver, // ✅ Nueva prop
-  confirmText = "Confirmar",
-  cancelText = "Cancelar",
+  confirmText = 'Confirmar',
+  cancelText = 'Cancelar',
   disableConfirm = false,
 }: ModalAccionProps) {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
-      <div className="text-center mb-6">
-        <div className="text-6xl mb-4">{icon}</div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">{titulo}</h2>
-        <p className="text-gray-600 mb-4">{descripcion}</p>
+    <div className="mx-auto max-w-md rounded-lg bg-white p-8 shadow-lg">
+      <div className="mb-6 text-center">
+        <div className="mb-4 text-6xl">{icon}</div>
+        <h2 className="mb-2 text-2xl font-bold text-gray-800">{titulo}</h2>
+        <p className="mb-4 text-gray-600">{descripcion}</p>
       </div>
       {children}
-      <div className="flex gap-4 mt-4">
+      <div className="mt-4 flex gap-4">
         <button
           onClick={onConfirm}
           disabled={loading || disableConfirm}
-          className="flex-1 bg-cyan-600 text-white py-3 px-4 rounded-md hover:bg-cyan-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+          className="flex-1 rounded-md bg-cyan-600 px-4 py-3 font-medium text-white transition-colors hover:bg-cyan-700 disabled:cursor-not-allowed disabled:bg-gray-400"
         >
-          {loading ? "Procesando..." : confirmText}
+          {loading ? 'Procesando...' : confirmText}
         </button>
         <button
           onClick={onCancel}
           disabled={loading}
-          className="flex-1 bg-gray-300 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+          className="flex-1 rounded-md bg-gray-300 px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-400 disabled:cursor-not-allowed"
         >
           {cancelText}
         </button>
       </div>
-      
+
       {/* ✅ Botón Volver */}
       {onVolver && (
         <button
           onClick={onVolver}
           disabled={loading}
-          className="w-full mt-4 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+          className="mt-4 w-full rounded-md bg-gray-200 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-300 disabled:cursor-not-allowed"
         >
           ← Volver
         </button>

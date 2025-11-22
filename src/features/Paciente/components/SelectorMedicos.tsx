@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
 interface Medico {
   id: number;
@@ -15,12 +15,12 @@ interface MedicoSelectProps {
 const SelectMedico: FC<MedicoSelectProps> = ({ medicos, selected, onChange, disabled }) => {
   return (
     <div>
-      <label className="block text-sm font-medium mb-2 text-gray-700">Médico</label>
+      <label className="mb-2 block text-sm font-medium text-gray-700">Médico</label>
       <select
         value={selected}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full border border-gray-300 rounded-lg p-2 text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full rounded-lg border border-gray-300 bg-white p-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
       >
         <option value="">Seleccionar...</option>
         {medicos.map((m) => (

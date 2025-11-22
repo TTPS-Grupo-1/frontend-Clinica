@@ -57,7 +57,7 @@ const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) 
       altura: '',
       complexion: '',
       etnia: '',
-    }
+    },
   });
 
   // 🔄 Cada vez que cambia algo, avisamos al padre
@@ -169,9 +169,9 @@ const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) 
       title: 'Estudio de Semen - Hombre',
       content: (
         <EstudioSemen
-        value={formData.estudios_semen}
-        onDataChange={(d) => handleDataChange('estudios_semen', d)}
-      />
+          value={formData.estudios_semen}
+          onDataChange={(d) => handleDataChange('estudios_semen', d)}
+        />
       ),
     },
     {
@@ -254,7 +254,7 @@ const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) 
           value={formData.fenotipo}
           onDataChange={(d) => handleDataChange('fenotipo', d)}
         />
-      )
+      ),
     },
     {
       key: 'fenotipo2',
@@ -264,8 +264,8 @@ const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) 
           value={formData.fenotipo2}
           onDataChange={(d) => handleDataChange('fenotipo2', d)}
         />
-      )
-    }
+      ),
+    },
   ];
 
   // 📄 Paginador
@@ -273,7 +273,7 @@ const ObjetivoParejaHeterosexual: React.FC<ObjetivoXProps> = ({ onDataChange }) 
   const total = cards.length;
 
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex w-full flex-col items-center">
       <Card key={cards[pagina - 1].key} title={cards[pagina - 1].title}>
         {cards[pagina - 1].content}
       </Card>

@@ -23,18 +23,16 @@ const AntecedentesPersonales: React.FC<AntecedentesPersonalesProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px]">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
+    <div className="mx-auto flex min-h-[400px] max-w-2xl flex-col justify-between rounded-xl border border-gray-300 bg-white p-8 text-black shadow-lg">
+      <h2 className="mb-4 text-center text-2xl font-bold text-black">
         {titulo || 'Antecedentes Personales'}
       </h2>
 
       <div className="mb-4">
-        <label className="block font-medium mb-1 text-black">
-          Fuma (pack-días):
-        </label>
+        <label className="mb-1 block font-medium text-black">Fuma (pack-días):</label>
         <input
           type="text"
-          className="w-full border border-black rounded px-2 py-1 bg-white text-black"
+          className="w-full rounded border border-black bg-white px-2 py-1 text-black"
           placeholder="Ej: 10 cigarrillos/día * 5 años / 20 = 2.5"
           value={value.fuma}
           onChange={(e) => handleChange('fuma', e.target.value)}
@@ -42,12 +40,12 @@ const AntecedentesPersonales: React.FC<AntecedentesPersonalesProps> = ({
       </div>
 
       <div className="mb-4">
-        <label className="block font-medium mb-1 text-black">
+        <label className="mb-1 block font-medium text-black">
           Consume alcohol (frecuencia y tipo):
         </label>
         <input
           type="text"
-          className="w-full border border-black rounded px-2 py-1 bg-white text-black"
+          className="w-full rounded border border-black bg-white px-2 py-1 text-black"
           placeholder="Ej: 2 veces por semana, cerveza"
           value={value.alcohol}
           onChange={(e) => handleChange('alcohol', e.target.value)}
@@ -55,12 +53,10 @@ const AntecedentesPersonales: React.FC<AntecedentesPersonalesProps> = ({
       </div>
 
       <div className="mb-4">
-        <label className="block font-medium mb-1 text-black">
-          Drogas recreativas:
-        </label>
+        <label className="mb-1 block font-medium text-black">Drogas recreativas:</label>
         <input
           type="text"
-          className="w-full border border-black rounded px-2 py-1 bg-white text-black"
+          className="w-full rounded border border-black bg-white px-2 py-1 text-black"
           placeholder="Ej: marihuana ocasional"
           value={value.drogas}
           onChange={(e) => handleChange('drogas', e.target.value)}
@@ -68,11 +64,9 @@ const AntecedentesPersonales: React.FC<AntecedentesPersonalesProps> = ({
       </div>
 
       <div className="mb-4">
-        <label className="block font-medium mb-1 text-black">
-          Observaciones sobre hábitos:
-        </label>
+        <label className="mb-1 block font-medium text-black">Observaciones sobre hábitos:</label>
         <textarea
-          className="w-full border border-black rounded px-2 py-1 bg-white text-black"
+          className="w-full rounded border border-black bg-white px-2 py-1 text-black"
           placeholder="Observaciones libres sobre hábitos"
           value={value.observaciones}
           onChange={(e) => handleChange('observaciones', e.target.value)}

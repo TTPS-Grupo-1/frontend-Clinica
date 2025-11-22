@@ -69,7 +69,7 @@ const ObjetivoParejaFemeninaDonacion: React.FC<ObjetivoXProps> = ({ onDataChange
       content: (
         <AntecedentesFamiliares
           value={formData.familiares}
-          onDataChange={(d) => handleSectionChange('familiares', d)} 
+          onDataChange={(d) => handleSectionChange('familiares', d)}
         />
       ),
     },
@@ -165,10 +165,8 @@ const ObjetivoParejaFemeninaDonacion: React.FC<ObjetivoXProps> = ({ onDataChange
   const total = cards.length;
 
   return (
-    <div className="flex flex-col items-center w-full">
-      <Card title={cards[pagina - 1].title}>
-        {cards[pagina - 1].content}
-      </Card>
+    <div className="flex w-full flex-col items-center">
+      <Card title={cards[pagina - 1].title}>{cards[pagina - 1].content}</Card>
       <Pagination
         currentPage={pagina}
         totalPages={total}

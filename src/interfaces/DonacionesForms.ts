@@ -1,5 +1,10 @@
 // Interfaces para los props de los formularios de donaciones
-import type { DonanteDatos, FenotipoDonante, DatosMedicos, ResultadosGeneticos } from "./Donaciones";
+import type {
+  DonanteDatos,
+  FenotipoDonante,
+  DatosMedicos,
+  ResultadosGeneticos,
+} from './Donaciones';
 
 export interface DonantesFormProps {
   datos: Partial<DonanteDatos>;

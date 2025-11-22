@@ -19,7 +19,9 @@ export default function CoberturaModal({ isOpen, onClose, onSelect }: CoberturaM
     const fetchObras = async () => {
       try {
         setLoading(true);
-        const res = await axios.get('https://ueozxvwsckonkqypfasa.supabase.co/functions/v1/getObrasSociales');
+        const res = await axios.get(
+          'https://ueozxvwsckonkqypfasa.supabase.co/functions/v1/getObrasSociales'
+        );
         if (res.status !== 200) throw new Error('Error al obtener obras sociales');
         const data = res.data;
 
@@ -36,10 +38,7 @@ export default function CoberturaModal({ isOpen, onClose, onSelect }: CoberturaM
   }, [isOpen]);
 
   // 🔎 Filtrado por nombre o sigla
-  const filtered = obras.filter(
-    (os) =>
-      os.nombre.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = obras.filter((os) => os.nombre.toLowerCase().includes(search.toLowerCase()));
 
   // 📄 Paginación local
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
@@ -67,23 +66,23 @@ export default function CoberturaModal({ isOpen, onClose, onSelect }: CoberturaM
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 40, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-100 relative flex flex-col"
+            className="relative flex w-full max-w-md flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-2xl"
             role="dialog"
             aria-modal="true"
           >
             {/* ❌ Botón de cierre */}
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl font-bold"
+              className="absolute top-3 right-3 text-2xl font-bold text-gray-400 hover:text-red-500"
               aria-label="Cerrar modal"
             >
               ×
             </button>
 
             {/* 🩺 Encabezado */}
-            <header className="flex items-center justify-center gap-2 mb-4">
-              <ShieldPlus className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-blue-700 text-center">
+            <header className="mb-4 flex items-center justify-center gap-2">
+              <ShieldPlus className="h-6 w-6 text-blue-600" />
+              <h2 className="text-center text-xl font-bold text-blue-700">
                 Seleccionar cobertura médica
               </h2>
             </header>
@@ -95,50 +94,46 @@ export default function CoberturaModal({ isOpen, onClose, onSelect }: CoberturaM
                 placeholder="Buscar por nombre o sigla..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full mb-4 px-4 py-3 border border-gray-300 rounded text-base bg-white text-blue-900 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                className="mb-4 w-full rounded border border-gray-300 bg-white px-4 py-3 text-base text-blue-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
               />
 
               {/* ⏳ Estado de carga */}
               {loading ? (
-                <p className="text-center text-gray-500 py-4">Cargando...</p>
+                <p className="py-4 text-center text-gray-500">Cargando...</p>
               ) : (
                 <>
                   {/* 📋 Lista de obras */}
-                  <ul className="max-h-60 overflow-y-auto divide-y">
+                  <ul className="max-h-60 divide-y overflow-y-auto">
                     {paginated.map((os) => (
                       <li key={os.id}>
                         <button
-                          className="w-full text-left px-3 py-2 hover:bg-blue-100 hover:text-blue-700 rounded text-blue-900 font-medium transition"
+                          className="w-full rounded px-3 py-2 text-left font-medium text-blue-900 transition hover:bg-blue-100 hover:text-blue-700"
                           onClick={() => {
                             onSelect(os);
                             onClose();
                           }}
                         >
                           {os.nombre}
-                          <span className="text-gray-400 text-sm ml-1">
-                            ({os.sigla})
-                          </span>
+                          <span className="ml-1 text-sm text-gray-400">({os.sigla})</span>
                         </button>
                       </li>
                     ))}
 
                     {/* 🚫 Sin resultados */}
                     {!paginated.length && !loading && (
-                      <li className="text-gray-400 px-3 py-2">
-                        No se encontraron resultados
-                      </li>
+                      <li className="px-3 py-2 text-gray-400">No se encontraron resultados</li>
                     )}
                   </ul>
 
                   {/* 📄 Controles de paginación */}
                   {totalPages > 1 && (
-                    <div className="flex justify-between items-center mt-4">
+                    <div className="mt-4 flex items-center justify-between">
                       <button
                         onClick={handlePrev}
                         disabled={page === 1}
-                        className={`px-3 py-1 rounded ${
+                        className={`rounded px-3 py-1 ${
                           page === 1
-                            ? 'text-gray-400 cursor-not-allowed'
+                            ? 'cursor-not-allowed text-gray-400'
                             : 'text-blue-600 hover:underline'
                         }`}
                       >
@@ -150,9 +145,9 @@ export default function CoberturaModal({ isOpen, onClose, onSelect }: CoberturaM
                       <button
                         onClick={handleNext}
                         disabled={page === totalPages}
-                        className={`px-3 py-1 rounded ${
+                        className={`rounded px-3 py-1 ${
                           page === totalPages
-                            ? 'text-gray-400 cursor-not-allowed'
+                            ? 'cursor-not-allowed text-gray-400'
                             : 'text-blue-600 hover:underline'
                         }`}
                       >

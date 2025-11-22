@@ -25,8 +25,8 @@ export function useHistorialOvocitoFetch(ovocitoId: number | null) {
       setError(null);
       try {
         const tryPathUrl = `/api/historial_ovocitos/por-ovocito/${ovocitoId}/`;
-        // eslint-disable-next-line no-console
-     
+         
+
         // First try the query-string URL
         let res = undefined;
         try {
@@ -45,7 +45,7 @@ export function useHistorialOvocitoFetch(ovocitoId: number | null) {
         if (!cancelled) setHistorial(payload);
       } catch (err) {
         // Mejor detalle del error para debug
-        // eslint-disable-next-line no-console
+         
         console.error('useHistorialOvocitoFetch error', err);
         if (!cancelled) {
           const axiosErr = err as any;
@@ -62,7 +62,9 @@ export function useHistorialOvocitoFetch(ovocitoId: number | null) {
     }
 
     fetchData();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [ovocitoId]);
 
   return { historial, loading, error };

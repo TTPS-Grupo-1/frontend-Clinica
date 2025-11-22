@@ -88,6 +88,10 @@ export default function MedicoPacientesPage() {
   const totalPages = Math.max(1, Math.ceil(pacientesMemo.length / pageSize));
   const currentPatients = pacientesMemo.slice((page - 1) * pageSize, page * pageSize);
 
+  function handleRealizarSeguimiento(pacientId: number): void {
+    navigate(`/medico/seguimiento/${pacientId}`);
+  }
+
   return (
     <div className="min-h-screen pt-20 pb-8 bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -136,6 +140,8 @@ export default function MedicoPacientesPage() {
                     }}
                     onVerHistoria={(id) => handleVerHistoria(id)}
                     showAtender={false}
+                    onRealizarSeguimiento={(id: number) => handleRealizarSeguimiento(id)} // 👈 Pasamos la función
+                    showSeguimiento={true} // 👈 Mostramos el botón
                   />
                 ))}
               </div>

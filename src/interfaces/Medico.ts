@@ -22,6 +22,8 @@ export interface PacientCardProps {
 // Permite controlar la visibilidad de acciones específicas en la tarjeta
 export interface PacientCardOptions {
   showAtender?: boolean;
+  showSeguimiento?: boolean;
+  onRealizarSeguimiento?: (id: number) => void;   // 👈 AGREGAR ESTO
 }
 
 export interface DashboardCardProps {

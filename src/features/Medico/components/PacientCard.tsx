@@ -2,7 +2,9 @@ import type { PacientCardProps, PacientCardOptions } from "../../../interfaces/M
 
 type Props = PacientCardProps & Partial<PacientCardOptions>;
 
-export default function PacientCard({ paciente, onAtender, onVerHistoria, showAtender = true }: Props) {
+
+export default function PacientCard({ paciente, onAtender, onVerHistoria, onRealizarSeguimiento, showAtender = true, showSeguimiento = true }: Props) {
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
       {/* Silueta de persona */}
@@ -56,6 +58,14 @@ export default function PacientCard({ paciente, onAtender, onVerHistoria, showAt
         >
           Ver Historia Clínica
         </button>
+        {showSeguimiento ? (
+          <button
+            onClick={() => onRealizarSeguimiento?.(paciente.id)}
+            className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors duration-200 font-medium"
+          >
+            Realizar Seguimiento
+          </button>
+        ) : null}
       </div>
     </div>
   );

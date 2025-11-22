@@ -21,6 +21,23 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
   const [pacienteLocal, setPacienteLocal] = useState<any | null>(null);
   const [monitoreos, setMonitoreos] = useState<any[]>([]);
 
+  // Helper para mostrar el estado en texto amigable
+  function getEstadoTexto(tratamiento: any) {
+    // Si tienes un campo estado_actual, úsalo directamente
+    if (tratamiento?.estado_actual) return tratamiento.estado_actual;
+
+    // Si no, puedes inferirlo por los datos presentes
+    if (!tratamiento) return 'Desconocido';
+    if (tratamiento.motivo_finalizacion) return 'Finalizado';
+    if (tratamiento.transferencia) return 'Seguimiento';
+    if (tratamiento.fertilizacion) return 'Fertilización';//
+    if (tratamiento.puncion) return 'Punción';
+    if (tratamiento.monitoreo) return 'Monitoreo';//
+    if (tratamiento.segunda_consulta) return 'Segunda consulta';
+    if (tratamiento.primera_consulta) return 'Primer consulta';
+    return 'En proceso';
+  }
+
   useEffect(() => {
     async function fetchTreatmentData() {
       setLoading(true);
@@ -34,7 +51,9 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
           headers,
         });
         const data = response.data;
+        
 
+        console.log('Fetched treatment data:', data);
         const id_tratamiento = data.tratamiento.id; 
         const monitoreos = await axios.get(`/api/monitoreo/monitoreos/atendidos-por-tratamiento/${id_tratamiento}/`, {
           headers,
@@ -99,6 +118,14 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
 
   return (
     <div className="space-y-6">
+      {/* Estado del tratamiento */}
+      <div className="rounded bg-blue-50 p-4 mb-2 flex items-center gap-4">
+        <span className="text-lg font-bold text-blue-900">Estado actual:</span>
+        <span className="rounded-full bg-blue-200 px-4 py-2 text-blue-800 font-semibold shadow">
+          {getEstadoTexto(tratamiento)}
+        </span>
+      </div>
+
       {showPaciente ? (
         <div className="rounded bg-white p-4">
           <h3 className="mb-2 text-lg font-semibold">Datos del paciente</h3>

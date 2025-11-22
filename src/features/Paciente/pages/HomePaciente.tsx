@@ -54,6 +54,15 @@ export default function HomePaciente() {
             bgColor="bg-white"
             iconColor="text-purple-500"
           />
+          <DashboardCard
+            title="Mis Deudas"
+            description="Consultá tu deuda pendiente"
+            icon={<FileText className="h-6 w-6" />}
+            onClick={() => navegar('/pacientes/deuda')}
+            bgColor="bg-white"
+            iconColor="text-orange-500"
+          />
+
         </div>
       </div>
     </div>

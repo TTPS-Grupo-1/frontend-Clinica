@@ -33,6 +33,7 @@ import RegistrarSeguimientoPage from './features/Seguimiento/pages/RegistrarSegu
 import TratamientoPage from './features/Tratamiento/pages/TratamientoPage';
 import PrimeraConsultaViewPage from './features/Tratamiento/pages/PrimeraConsultaViewPage';
 import SegundaConsultaViewPage from './features/Tratamiento/pages/SegundaConsultaViewPage';
+import DeudaPaciente from './features/Paciente/pages/DeudaPaciente';
 
 export default function getAppRoutes() {
   return (
@@ -73,6 +74,8 @@ export default function getAppRoutes() {
       <Route path="/operador/criopreservacion" element={<CriopreservacionSemenPage />} />
       <Route path="medico/seguimiento/:pacienteId" element={<RegistrarSeguimientoPage />} />
       <Route path="/tratamiento/:id" element={<TratamientoPage />} />
+      <Route path="/pacientes/deuda" element={<DeudaPaciente />} />
+
     </>
   );
 }

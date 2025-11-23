@@ -7,7 +7,10 @@ import {
   getAuthHeaders,
   fetchPacientesForMedico,
   fetchPacientesByName,
+  fetchTodosLosPacientes,
 } from '../utils/pacienteHelpers';
+import type { RootState } from '@/store';
+import { useSelector } from 'react-redux';
 
 export default function MedicoPacientesPage() {
   const { medicoId: medicoIdParam } = useParams<{ medicoId?: string }>();
@@ -20,6 +23,10 @@ export default function MedicoPacientesPage() {
   const navigate = useNavigate();
   // Ya usamos debouncedPacienteId; no necesitamos refs para timeouts aquí.
   const [searchParams, setSearchParams] = useSearchParams();
+  const [verTodos, setVerTodos] = useState(false);
+
+  const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
+  const es_director = currentUser?.is_director ?? false;
 
   // Effect para mantener debouncedPacienteQuery en sync con pacienteQuery después de 600ms
   useEffect(() => {
@@ -57,17 +64,27 @@ export default function MedicoPacientesPage() {
       }
     };
 
-    if (
-      !effectiveRouteMedicoId &&
-      (!debouncedPacienteQuery || debouncedPacienteQuery.trim() === '')
-    ) {
-      setPacientes([]);
-      return;
-    }
-
+     if (es_director && verTodos) {
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const headers = getAuthHeaders();
+        const pacientesData = await fetchTodosLosPacientes(headers);
+        setPacientes(pacientesData);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+    return;
+  }
     // Si viene por param de ruta, interpretar ese parámetro como MEDICO ID
-    if (medicoIdParam) {
+    if (medicoIdParam && (!es_director || (es_director && !verTodos))) {
+
       const medicoIdNum = Number(medicoIdParam);
+
       (async () => {
         setLoading(true);
         setError(null);
@@ -75,12 +92,12 @@ export default function MedicoPacientesPage() {
           const headers = getAuthHeaders();
           const pacientesData = await fetchPacientesForMedico(medicoIdNum, headers);
 
-          // Si hay una query de búsqueda, filtrar cliente-side por nombre/apellido
-          if (debouncedPacienteQuery && debouncedPacienteQuery.trim() !== '') {
+          // filtro por búsqueda si aplica
+          if (debouncedPacienteQuery && debouncedPacienteQuery.trim() !== "") {
             const q = debouncedPacienteQuery.trim().toLowerCase();
             const filtered = pacientesData.filter((p) => {
-              const full = `${p.first_name ?? ''} ${p.last_name ?? ''}`.toLowerCase();
-              const dni = String(p.dni ?? '').toLowerCase();
+              const full = `${p.first_name ?? ""} ${p.last_name ?? ""}`.toLowerCase();
+              const dni = String(p.dni ?? "").toLowerCase();
               return full.includes(q) || dni.includes(q);
             });
             setPacientes(filtered);
@@ -89,7 +106,7 @@ export default function MedicoPacientesPage() {
           }
         } catch (err: any) {
           console.error(err);
-          setError(err?.message || 'Error cargando pacientes');
+          setError(err?.message || "Error cargando pacientes");
         } finally {
           setLoading(false);
         }
@@ -111,7 +128,7 @@ export default function MedicoPacientesPage() {
     return () => {
       // nothing to cleanup here (debounce handled in separate effect)
     };
-  }, [debouncedPacienteQuery, medicoIdParam]);
+  }, [debouncedPacienteQuery, medicoIdParam, verTodos, es_director]);
 
   const handleVerHistoria = (pacienteId: number) => {
     navigate(`/pacientes/${pacienteId}/historia`);
@@ -150,6 +167,25 @@ export default function MedicoPacientesPage() {
             <h2 id="search-heading" className="sr-only">
               Buscar paciente
             </h2>
+            {es_director && (
+              <div className="mb-4 flex items-center gap-3 bg-blue-50 border border-blue-200 p-3 rounded-lg">
+                <label className="text-sm font-medium text-blue-800">
+                  Ver todos los pacientes
+                </label>
+
+                <input
+                  type="checkbox"
+                  checked={verTodos}
+                  onChange={() => {
+                    setVerTodos(!verTodos);
+                    setPacienteQuery('');
+                    setDebouncedPacienteQuery('');
+                  }}
+
+                  className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+              </div>
+            )}
             <form
               className="flex flex-col sm:flex-row sm:items-center sm:gap-4"
               onSubmit={(e) => {

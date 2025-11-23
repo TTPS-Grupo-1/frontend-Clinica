@@ -7,7 +7,7 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
-
+  const es_director = currentUser?.is_director;
   const handleVerTurnos = () => {
     navigate('/medico/turnos');
     console.log('Navegando a turnos...');
@@ -33,7 +33,8 @@ export default function HomePage() {
           <div className="mb-12 text-center">
             <h1 className="mb-4 text-4xl font-bold text-gray-900">Panel de Control Médico</h1>
             <p className="mx-auto max-w-2xl text-xl text-gray-600">
-              Bienvenido Dr. Gestiona tus pacientes, turnos y procedimientos desde aquí
+              Bienvenido {es_director ? "Director Médico" : "Doctor"}.
+              Gestiona tus pacientes, turnos y procedimientos desde aquí.
             </p>
           </div>
 

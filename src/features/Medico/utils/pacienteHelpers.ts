@@ -218,3 +218,12 @@ export async function marcarTurnoAtendido(id: number): Promise<boolean> {
     return false;
   }
 }
+
+
+export async function fetchTodosLosPacientes(headers: Record<string, string>) {
+  const response = await axios.get("http://localhost:8000/api/pacientes/", {
+    headers,
+  });
+  return response.data;
+}
+

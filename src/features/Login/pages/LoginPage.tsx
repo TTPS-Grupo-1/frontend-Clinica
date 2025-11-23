@@ -33,6 +33,7 @@ export default function LoginPage() {
       if (role === 'MEDICO') navigate('/medico/home');
       else if (role === 'PACIENTE') navigate('/pacientes/home');
       else if (role === 'OPERADOR_LABORATORIO') navigate('/operador');
+      else if (role === 'ADMIN') navigate('/admin/home');
       else navigate('/dashboard');
 
       toast.success(`Bienvenido, ${user.first_name}!`);

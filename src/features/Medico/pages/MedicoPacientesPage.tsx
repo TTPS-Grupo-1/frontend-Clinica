@@ -25,6 +25,8 @@ export default function MedicoPacientesPage() {
   // Ya usamos debouncedPacienteId; no necesitamos refs para timeouts aquí.
   const [searchParams, setSearchParams] = useSearchParams();
   const [verTodos, setVerTodos] = useState(false);
+  const [pacientesMios, setPacientesMios] = useState<number[]>([]);
+
 
   const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
   const es_director = currentUser?.is_director ?? false;
@@ -103,6 +105,7 @@ export default function MedicoPacientesPage() {
       setLoading(true);
       try {
         const data = await fetchPacientesForMedico(medicoIdNum, headers);
+        setPacientesMios(data.map(p => p.id));
 
         // Filtrar por búsqueda
         if (search !== "") {
@@ -334,7 +337,8 @@ export default function MedicoPacientesPage() {
                         onVerHistoria={(id) => handleVerHistoria(id)}
                         showAtender={false}
                         onRealizarSeguimiento={(id: number) => handleRealizarSeguimiento(id)} 
-                        showSeguimiento={true} 
+                        showSeguimiento={pacientesMios.includes(p.id)}
+
                       />
                     </li>
                   ))}

@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import ConfirmModal from '@/features/Paciente/components/ModalConfirmacionComponente';
+import { toast } from 'sonner';
+import type { Embryo } from '@/types/Embryo';
 import { useTransferenciaForm } from '../hooks/useTransferenciaForm';
 import { useApi } from '../hooks/useApi';
 import { usePacientesFetch } from '@/shared/hooks/usePacientesFetch';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store';
 import {
   PacienteSelector,
   TransferenciaSelector,
@@ -20,6 +26,8 @@ export default function TransferenciaPage() {
   const [messageType, setMessageType] = useState<MessageType>('info');
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
   const [includeMultiple, setIncludeMultiple] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  
 
   // Cargar pacientes
   const { pacientes, loading: pacientesLoading, error: pacientesError } = usePacientesFetch();
@@ -31,16 +39,29 @@ export default function TransferenciaPage() {
     loading: dataLoading,
     error: dataError,
     submitTransferencia,
+    refetchEmbriones,
   } = useApi(selectedPacienteId);
+    const { formData, updateField, toggleEmbrion, resetForm } = useTransferenciaForm();
+    const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
+    const operadorId = currentUser?.id ?? null;
+    console.log('formData', embriones);
 
-  const { formData, updateField, toggleEmbrion, resetForm } = useTransferenciaForm();
-  console.log('formData', embriones);
-  const availableEmbriones = (embriones || []).filter((e) => {
-    if (!e) return false;
-    const estado = String(e.estado || '').toLowerCase();
-    if (estado === 'transferido') return false;
-    return true;
-  });
+    // Normalizar embriones para cumplir el tipo esperado por TransferenciaSelector
+    const normalizedEmbriones = (embriones || []).map((e) => ({
+      ...e,
+      calidad:
+        e.calidad !== undefined && e.calidad !== null
+          ? String((e as { calidad?: number | string }).calidad)
+          : 'N/A',
+      estado: (e.estado || '').toString(),
+    }));
+
+    const availableEmbriones = (normalizedEmbriones || []).filter((e) => {
+      if (!e) return false;
+      const estado = String(e.estado || '').toLowerCase();
+      if (estado === 'transferido') return false;
+      return true;
+    });
   const handleEmbrionToggle = (embrionId: number) => {
     if (includeMultiple) {
       // allow the hook to toggle as usual for multi-select
@@ -56,6 +77,23 @@ export default function TransferenciaPage() {
       updateField('embriones', [embrionId]);
     }
   };
+
+  // Preseleccionar el último tratamiento no finalizado cuando cambien los tratamientos
+  useEffect(() => {
+    if (!selectedPacienteId) return;
+    if (!tratamientos || tratamientos.length === 0) return;
+
+    // Buscar el primer tratamiento cuyo estado no sea "finalizado"
+    const notFinalized = tratamientos.find((t) => {
+      const tt = t as Record<string, unknown>;
+      const estado = String(tt?.['estado'] ?? tt?.['status'] ?? '').toLowerCase();
+      return estado !== 'cancelado' && estado !== 'finished' && estado !== 'finalizado';
+    });
+
+    if (notFinalized && notFinalized.id) {
+      updateField('tratamiento', notFinalized.id);
+    }
+  }, [tratamientos, selectedPacienteId, updateField]);
 
   const handlePacienteChange = (pacienteId: number | null) => {
     setSelectedPacienteId(pacienteId);
@@ -94,15 +132,69 @@ export default function TransferenciaPage() {
         embriones: formData.embriones,
         test_positivo: formData.testPositivo,
         observaciones: '',
+        quirofano: formData.quirofano ?? null,
+        fecha: new Date().toISOString(),
+        realizado_por: operadorId,
       };
 
       await submitTransferencia(payload);
-      setMessage('Transferencia registrada correctamente.');
+
+      // Marcar embriones como transferidos en el backend (historial + estado)
+      try {
+        const token = localStorage.getItem('token');
+        const headers = token ? { Authorization: `Token ${token}` } : {};
+
+        await Promise.all(
+          formData.embriones.map(async (embId: number) => {
+            try {
+              // Crear registro en historial
+              await axios.post(
+                `http://localhost:8000/api/historial-embrion/`,
+                {
+                  embrion: embId,
+                  paciente: selectedPacienteId,
+                  estado: 'transferido',
+                  nota: 'Transferido vía interfaz de Transferencia',
+                  usuario: operadorId,
+                },
+                { headers }
+              );
+
+              // Actualizar estado del embrion
+              await axios.patch(
+                `http://localhost:8000/api/embriones/${embId}/`,
+                { estado: 'transferido' },
+                { headers }
+              );
+            } catch (err) {
+              console.error('Error marcando embrión como transferido', embId, err);
+            }
+          })
+        );
+      } catch (err) {
+        console.error('Error al marcar embriones transferidos:', err);
+      }
+
+      // Refrescar embriones para quitar los transferidos y notificar con toast
+      try {
+        await refetchEmbriones();
+      } catch {
+        // si falla el refetch no interrumpe el flujo
+      }
+
+      toast.success('Transferencia registrada correctamente.');
+      setMessage(null);
       setMessageType('success');
       resetForm();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setMessage(err?.response?.data?.message || 'Error registrando la transferencia');
+      let text = 'Error registrando la transferencia';
+      if (axios.isAxiosError(err)) {
+        type Resp = { message?: string } | undefined;
+        text = (err.response?.data as Resp)?.message ?? text;
+      }
+      toast.error(text);
+      setMessage(null);
       setMessageType('error');
     } finally {
       setIsSubmitting(false);
@@ -157,14 +249,21 @@ export default function TransferenciaPage() {
               {embriones.length > 1 && (
                 <div className="flex items-center gap-3">
                   <label className="flex cursor-pointer items-center select-none">
-                    <input
-                      type="checkbox"
-                      checked={includeMultiple}
-                      onChange={(e) => setIncludeMultiple(e.target.checked)}
-                      className="mr-2 h-4 w-4"
-                    />
-                    <span className="text-sm text-gray-700">Incluir más de un embrión</span>
-                  </label>
+                      <input
+                        type="checkbox"
+                        checked={includeMultiple}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (checked) {
+                            setConfirmModalOpen(true);
+                          } else {
+                            setIncludeMultiple(false);
+                          }
+                        }}
+                        className="mr-2 h-4 w-4"
+                      />
+                      <span className="text-sm text-gray-700">Incluir más de un embrión</span>
+                    </label>
                   <span className="text-xs text-gray-400">
                     {includeMultiple ? 'Modo múltiple' : 'Modo único'}
                   </span>
@@ -173,12 +272,24 @@ export default function TransferenciaPage() {
 
               <TransferenciaSelector
                 tratamientos={tratamientos}
-                embriones={availableEmbriones}
+                embriones={availableEmbriones as unknown as Embryo[]}
                 selectedTratamiento={formData.tratamiento}
                 selectedEmbriones={formData.embriones}
                 onTratamientoChange={(tratamiento) => updateField('tratamiento', tratamiento)}
+                readOnlyTratamiento={true}
                 onEmbrionToggle={handleEmbrionToggle}
                 isLoading={isLoading}
+              />
+
+              <ConfirmModal
+                isOpen={confirmModalOpen}
+                onClose={() => setConfirmModalOpen(false)}
+                onConfirm={() => {
+                  setIncludeMultiple(true);
+                  setConfirmModalOpen(false);
+                }}
+                title="Confirmar selección múltiple"
+                message="Estás seguro que querés incluir más de un embrión en la transferencia?"
               />
 
               <TransferenciaForm

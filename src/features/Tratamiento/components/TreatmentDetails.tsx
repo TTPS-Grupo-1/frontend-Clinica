@@ -1,89 +1,99 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { FileText, Calendar, Eye } from 'lucide-react';
+import { formatDateShort } from '@/shared/utils/dateUtils';
 import OvocitosTable from '../../Punciones/components/OvocitosTable';
 import FertilizacionesTable from '../../Fertilizacion/components/Fertilizaciones';
 import PatientDetails from '../../Paciente/components/History/PatientDetails';
-import EmbrionesTable from '../../Paciente/components/EmbrionesTable'; // ✅ Importar
+import EmbrionesTable from '../../Paciente/components/EmbrionesTable';
 import MonitoreoTable from '@/features/Paciente/components/MonitoreoTable';
+import type { Props } from '../../../types/Tratamiento';
+import type { TreatmentData } from '@/interfaces/Tratmiento';
 
-type Props = {
-  tratamientoId: number;
-  pacienteId: number | null;
-  paciente?: any | null;
+
+
+const initialState: TreatmentData = {
+  tratamiento: null,
+  ovocitos: [],
+  embriones: [],
+  fertilizaciones: [],
+  monitoreos: [],
+  antecedentesGinecologicos: [],
+  antecedentesPersonales: [],
+  resultadosEstudios: [],
+  ordenes: [],
+  primeraConsulta: null,
+  segundaConsulta: null,
+  pacienteLocal: null,
+  loading: true,
 };
 
-export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }: Props) {
-  const [tratamiento, setTratamiento] = useState<any | null>(null);
-  const [ovocitos, setOvocitos] = useState<any[]>([]);
-  const [embriones, setEmbriones] = useState<any[]>([]);
-  const [fertilizaciones, setFertilizaciones] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [pacienteLocal, setPacienteLocal] = useState<any | null>(null);
-  const [monitoreos, setMonitoreos] = useState<any[]>([]);
+export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
+  const navigate = useNavigate();
+  
+  // 🔥 NUEVO: Un solo estado unificado en lugar de 14 estados separados
+  const [data, setData] = useState<TreatmentData>(initialState);
+
+  // 🔥 Helper function para actualizar partes del estado
+  const updateData = (updates: Partial<TreatmentData>) => {
+    setData(prevData => ({ ...prevData, ...updates }));
+  };
 
   useEffect(() => {
     async function fetchTreatmentData() {
-      setLoading(true);
+      updateData({ loading: true });
+      
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         const headers = token ? { Authorization: `Token ${token}` } : {};
 
-        // Usar el nuevo endpoint que devuelve todos los datos relacionados
-
         const response = await axios.get(`/api/tratamientos/${tratamientoId}/detalles-completos/`, {
           headers,
         });
-        const data = response.data;
+        const responseData = response.data;
 
-        const id_tratamiento = data.tratamiento.id; 
+        // Obtener monitoreos
+        const id_tratamiento = responseData.tratamiento.id; 
         const monitoreos = await axios.get(`/api/monitoreo/monitoreos/atendidos-por-tratamiento/${id_tratamiento}/`, {
           headers,
         });
-        data.monitoreos = monitoreos.data.data || [];
+        responseData.monitoreos = monitoreos.data.data || [];
 
-        // Establecer todos los datos de una vez
-        setTratamiento(data.tratamiento);
-        setOvocitos(data.ovocitos || []);
-        setFertilizaciones(data.fertilizaciones || []);
-        setEmbriones(data.embriones || []);
-        setMonitoreos(data.monitoreos || []); 
+        // 🔥 NUEVO: Actualizar todo el estado de una vez
+        updateData({
+          tratamiento: responseData.tratamiento,
+          ovocitos: responseData.ovocitos || [],
+          fertilizaciones: responseData.fertilizaciones || [],
+          embriones: responseData.embriones || [],
+          monitoreos: responseData.monitoreos || [],
+          antecedentesGinecologicos: responseData.antecedentes_ginecologicos || [],
+          antecedentesPersonales: responseData.antecedentes_personales || [],
+          resultadosEstudios: responseData.resultados_estudios || [],
+          ordenes: responseData.ordenes || [],
+          primeraConsulta: responseData.primera_consulta || null,
+          segundaConsulta: responseData.segunda_consulta || null,
+          loading: false,
+        });
+
+        console.log('🔍 DEBUG: Datos de primera_consulta:', responseData.primera_consulta);
+        console.log('🔍 DEBUG: Datos de segunda_consulta:', responseData.segunda_consulta);
 
         // Si no recibimos el objeto paciente, obtenerlo
-        if (!paciente && data.tratamiento?.paciente) {
+        if (!paciente && responseData.tratamiento?.paciente) {
           try {
-            const pRes = await axios.get(`/api/pacientes/${data.tratamiento.paciente}/`, {
+            const pRes = await axios.get(`/api/pacientes/${responseData.tratamiento.paciente}/`, {
               headers,
             });
-            setPacienteLocal(pRes.data);
+            updateData({ pacienteLocal: pRes.data });
           } catch (pErr) {
             console.error('Error fetching patient:', pErr);
-            setPacienteLocal(null);
+            updateData({ pacienteLocal: null });
           }
         }
       } catch (err) {
         console.error('Error fetching treatment data:', err);
-        // Agregar más detalles del error
-        if (err instanceof Error) {
-          console.error('Error details:', {
-            message: err.message,
-            response: (err as any).response?.data,
-            status: (err as any).response?.status,
-            config: (err as any).config,
-          });
-        }
-
-        // También mostrar el error completo de axios
-        if ((err as any).isAxiosError) {
-          console.error('Axios error details:', {
-            url: (err as any).config?.url,
-            method: (err as any).config?.method,
-            headers: (err as any).config?.headers,
-            responseStatus: (err as any).response?.status,
-            responseData: (err as any).response?.data,
-          });
-        }
-      } finally {
-        setLoading(false);
+        updateData({ loading: false });
       }
     }
 
@@ -91,6 +101,23 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
       fetchTreatmentData();
     }
   }, [tratamientoId, paciente]);
+
+  // 🔥 Destructuring del estado unificado para fácil acceso
+  const {
+    tratamiento,
+    ovocitos,
+    embriones,
+    fertilizaciones,
+    monitoreos,
+    antecedentesGinecologicos,
+    antecedentesPersonales,
+    resultadosEstudios,
+    ordenes,
+    primeraConsulta,
+    segundaConsulta,
+    pacienteLocal,
+    loading
+  } = data;
 
   if (loading) return <div className="text-gray-500">Cargando detalles del tratamiento...</div>;
 
@@ -105,6 +132,87 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
           <PatientDetails paciente={paciente || pacienteLocal} loading={false} />
         </div>
       ) : null}
+
+      {/* Navegación a vistas de consultas */}
+      {(primeraConsulta || segundaConsulta) ? (
+        <div className={`grid gap-4 ${
+          primeraConsulta && segundaConsulta 
+            ? 'grid-cols-1 md:grid-cols-2' 
+            : 'grid-cols-1 max-w-md mx-auto'
+        }`}>
+          {/* Primera Consulta - solo si tiene datos */}
+          {primeraConsulta && (
+            <div 
+              onClick={() => navigate(`/tratamiento/${tratamientoId}/primera-consulta`, {
+                state: { 
+                  tratamientoData: {
+                    ...tratamiento,
+                    primera_consulta: primeraConsulta
+                  },
+                  paciente: paciente || pacienteLocal,
+                  antecedentes_ginecologicos: antecedentesGinecologicos,
+                  antecedentes_personales: antecedentesPersonales,
+                  resultados_estudios: resultadosEstudios,
+                  ordenes: ordenes
+                }
+              })}
+              className="bg-blue-50 border border-blue-200 rounded-lg p-6 hover:bg-blue-100 cursor-pointer transition-colors"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="bg-blue-600 rounded-lg p-2">
+                  <FileText className="h-5 w-5 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-blue-800">Primera Consulta</h3>
+              </div>
+              <p className="text-blue-700 text-sm mb-3">
+                Ver datos generales, antecedentes, estudios y fenotipo del paciente
+              </p>
+              <div className="flex items-center text-blue-600 text-sm font-medium">
+                <Eye className="h-4 w-4 mr-1" />
+                Ver detalles completos
+              </div>
+            </div>
+          )}
+
+          {/* Segunda Consulta - solo si tiene datos */}
+          {segundaConsulta && (
+            <div 
+              onClick={() => navigate(`/tratamiento/${tratamientoId}/segunda-consulta`, {
+                state: { 
+                  tratamientoData: {
+                    ...tratamiento,
+                    segunda_consulta: segundaConsulta
+                  },
+                  paciente: paciente || pacienteLocal
+                }
+              })}
+              className="bg-green-50 border border-green-200 rounded-lg p-6 hover:bg-green-100 cursor-pointer transition-colors"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="bg-green-600 rounded-lg p-2">
+                  <Calendar className="h-5 w-5 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-green-800">Segunda Consulta</h3>
+              </div>
+              <p className="text-green-700 text-sm mb-3">
+                Ver resultados de estudios, protocolo, consentimiento y monitoreo
+              </p>
+              <div className="flex items-center text-green-600 text-sm font-medium">
+                <Eye className="h-4 w-4 mr-1" />
+                Ver detalles completos
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center bg-gray-50">
+          <FileText className="mx-auto mb-3 h-12 w-12 text-gray-400" />
+          <h3 className="text-lg font-medium text-gray-600 mb-2">No hay consultas registradas</h3>
+          <p className="text-gray-500 text-sm">
+            Este tratamiento aún no tiene consultas médicas asociadas.
+          </p>
+        </div>
+      )}
 
       <div className="rounded bg-white p-4">
         <h3 className="mb-2 text-lg font-semibold">Resumen del tratamiento</h3>
@@ -125,7 +233,7 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
             <div>
               <strong>Creado:</strong>{' '}
               {tratamiento.fecha_creacion
-                ? new Date(tratamiento.fecha_creacion).toLocaleDateString()
+                ? formatDateShort(tratamiento.fecha_creacion)
                 : '-'}
             </div>
           </div>
@@ -166,6 +274,7 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
           <FertilizacionesTable fertilizaciones={fertilizaciones} />
         )}
       </div>
+      
       <div>
         <h3 className="mb-2 text-lg font-semibold">Monitoreos</h3>
         {monitoreos.length === 0 ? (
@@ -174,7 +283,6 @@ export default function TreatmentDetails({ tratamientoId, pacienteId, paciente }
           <MonitoreoTable monitoreos={monitoreos} />
         )}
       </div>
-     </div>   
-    
+    </div>
   );
 }

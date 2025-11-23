@@ -4,4 +4,5 @@ export type TransferenciaFormData = {
   tratamiento: number | null;
   embriones: number[];
   testPositivo: boolean;
+  quirofano?: string | null;
 };

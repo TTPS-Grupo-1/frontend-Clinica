@@ -8,6 +8,7 @@ import {
   fetchPacientesForMedico,
   fetchPacientesByName,
   fetchTodosLosPacientes,
+  fetchPacientesByNameDirector,
 } from '../utils/pacienteHelpers';
 import type { RootState } from '@/store';
 import { useSelector } from 'react-redux';
@@ -45,33 +46,76 @@ export default function MedicoPacientesPage() {
   }, []);
 
   useEffect(() => {
-    // Debounced: usar debouncedPacienteQuery (no se dispara por cada letra)
-    // Si la ruta ya trae medicoIdParam, usarlo inmediatamente.
-    const effectiveRouteMedicoId = medicoIdParam ? Number(medicoIdParam) : null;
+  const headers = getAuthHeaders();
+  const search = debouncedPacienteQuery.trim();
+  const medicoIdNum = medicoIdParam ? Number(medicoIdParam) : null;
 
-    const doLoadByName = async (query: string) => {
+  // === CASO DIRECTOR: VER TODOS ===
+  if (es_director && verTodos) {
+
+  // Si escribió búsqueda → filtra client-side igual que un médico
+  if (search !== "") {
+    console.log("Filtrando TODOS los pacientes por:", search);
+
+    (async () => {
       setLoading(true);
-      setError(null);
       try {
-        const headers = getAuthHeaders();
-        const pacientesData = await fetchPacientesByName(query, headers);
-        setPacientes(pacientesData);
+        const all = await fetchTodosLosPacientes(headers);
+
+        const q = search.toLowerCase();
+        const filtered = all.filter((p) => {
+          const full = `${p.first_name} ${p.last_name}`.toLowerCase();
+          const dni = String(p.dni).toLowerCase();
+          return full.includes(q) || dni.includes(q);
+        });
+
+        setPacientes(filtered);
       } catch (err: any) {
-        console.error(err);
-        setError(err?.message || 'Error cargando pacientes');
+        setError(err.message);
       } finally {
         setLoading(false);
       }
-    };
+    })();
 
-     if (es_director && verTodos) {
+    return;
+  }
+
+  // Si NO escribió búsqueda → traer todos
+  (async () => {
+    setLoading(true);
+    try {
+      const all = await fetchTodosLosPacientes(headers);
+      setPacientes(all);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  })();
+
+  return;
+}
+
+
+  // === CASO MÉDICO O DIRECTOR (verTodos=false): traer SUS pacientes ===
+  if (medicoIdNum) {
     (async () => {
       setLoading(true);
-      setError(null);
       try {
-        const headers = getAuthHeaders();
-        const pacientesData = await fetchTodosLosPacientes(headers);
-        setPacientes(pacientesData);
+        const data = await fetchPacientesForMedico(medicoIdNum, headers);
+
+        // Filtrar por búsqueda
+        if (search !== "") {
+          const q = search.toLowerCase();
+          const filtered = data.filter((p) => {
+            const full = `${p.first_name} ${p.last_name}`.toLowerCase();
+            const dni = String(p.dni).toLowerCase();
+            return full.includes(q) || dni.includes(q);
+          });
+          setPacientes(filtered);
+        } else {
+          setPacientes(data);
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -80,55 +124,25 @@ export default function MedicoPacientesPage() {
     })();
     return;
   }
-    // Si viene por param de ruta, interpretar ese parámetro como MEDICO ID
-    if (medicoIdParam && (!es_director || (es_director && !verTodos))) {
 
-      const medicoIdNum = Number(medicoIdParam);
+  // === Búsqueda general (sin médico asignado) ===
+  if (search !== "") {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchPacientesByName(search, headers);
+        setPacientes(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }
 
-      (async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const headers = getAuthHeaders();
-          const pacientesData = await fetchPacientesForMedico(medicoIdNum, headers);
+}, [debouncedPacienteQuery, medicoIdParam, verTodos, es_director]);
 
-          // filtro por búsqueda si aplica
-          if (debouncedPacienteQuery && debouncedPacienteQuery.trim() !== "") {
-            const q = debouncedPacienteQuery.trim().toLowerCase();
-            const filtered = pacientesData.filter((p) => {
-              const full = `${p.first_name ?? ""} ${p.last_name ?? ""}`.toLowerCase();
-              const dni = String(p.dni ?? "").toLowerCase();
-              return full.includes(q) || dni.includes(q);
-            });
-            setPacientes(filtered);
-          } else {
-            setPacientes(pacientesData);
-          }
-        } catch (err: any) {
-          console.error(err);
-          setError(err?.message || "Error cargando pacientes");
-        } finally {
-          setLoading(false);
-        }
-      })();
 
-      return;
-    }
-
-    // Si viene del input debounced (búsqueda por nombre), ejecutar la búsqueda
-    doLoadByName(debouncedPacienteQuery);
-
-    // actualizar query param (guardamos la búsqueda en la URL aunque estemos en /medico/:id/pacientes)
-    if (debouncedPacienteQuery && debouncedPacienteQuery.trim() !== '') {
-      setSearchParams({ q: debouncedPacienteQuery });
-    } else {
-      setSearchParams({});
-    }
-
-    return () => {
-      // nothing to cleanup here (debounce handled in separate effect)
-    };
-  }, [debouncedPacienteQuery, medicoIdParam, verTodos, es_director]);
 
   const handleVerHistoria = (pacienteId: number) => {
     navigate(`/pacientes/${pacienteId}/historia`);
@@ -180,6 +194,7 @@ export default function MedicoPacientesPage() {
                     setVerTodos(!verTodos);
                     setPacienteQuery('');
                     setDebouncedPacienteQuery('');
+
                   }}
 
                   className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"

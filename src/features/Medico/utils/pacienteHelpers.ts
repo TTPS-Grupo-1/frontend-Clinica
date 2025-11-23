@@ -227,3 +227,57 @@ export async function fetchTodosLosPacientes(headers: Record<string, string>) {
   return response.data;
 }
 
+
+export async function fetchPacientesByNameDirector(
+  query: string,
+  headers: Record<string, string> = {}
+): Promise<PacienteMinimal[]> {
+
+  const search = query.trim();
+  if (!search) return [];
+
+  try {
+    const res = await axios.get(`/api/pacientes/?search=${encodeURIComponent(search)}`, { headers });
+
+    const data: any[] =
+      Array.isArray(res.data) ? res.data :
+      res.data?.results ?? 
+      res.data?.data ?? 
+      [];
+
+    // Filtrar solo pacientes que tengan tratamientos (lo mantenemos porque vos lo pediste)
+    const pacientesFiltrados: PacienteMinimal[] = [];
+
+    for (const p of data) {
+      const id = p?.id ?? p?.pk;
+      if (!id) continue;
+
+      try {
+        const tRes = await axios.get(`/api/tratamientos/por-paciente/${id}/`, { headers });
+
+        const tieneTratamiento =
+          Array.isArray(tRes.data)
+            ? tRes.data.length > 0
+            : Object.keys(tRes.data ?? {}).length > 0;
+
+        if (tieneTratamiento) {
+          pacientesFiltrados.push({
+            id,
+            first_name: p.first_name,
+            last_name: p.last_name,
+            dni: p.dni
+          });
+        }
+      } catch {
+        // ignorar pacientes sin tratamientos válidos
+      }
+    }
+
+    return pacientesFiltrados;
+
+  } catch {
+    return [];
+  }
+}
+
+

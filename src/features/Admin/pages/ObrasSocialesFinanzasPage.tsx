@@ -7,8 +7,35 @@ export default function ObrasSocialesFinanzasPage() {
   const [error, setError] = useState("");
 
   const handleCobrar = async (obraId: number) => {
-    alert(`Cobro pendiente para obra social con ID: ${obraId}`);
-  };
+  try {
+    if (!window.confirm("¿Confirmar cobro de esta obra social?")) return;
+
+    const response = await fetch("http://127.0.0.1:8000/api/finanzas/cobrar-obra-social/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id_obra_social: obraId }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert("Error procesando el cobro: " + JSON.stringify(data));
+      return;
+    }
+
+    alert("Cobro realizado correctamente ✔");
+
+    // 🔄 Recargar la página después del cobro
+    window.location.reload();
+
+  } catch (error) {
+    console.error("Error cobrando obra social:", error);
+    alert("Error inesperado procesando el cobro.");
+  }
+};
+
 
   useEffect(() => {
     const fetchObras = async () => {

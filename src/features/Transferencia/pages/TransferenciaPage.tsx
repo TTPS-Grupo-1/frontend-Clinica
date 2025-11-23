@@ -6,6 +6,8 @@ import type { Embryo } from '@/types/Embryo';
 import { useTransferenciaForm } from '../hooks/useTransferenciaForm';
 import { useApi } from '../hooks/useApi';
 import { usePacientesFetch } from '@/shared/hooks/usePacientesFetch';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store';
 import {
   PacienteSelector,
   TransferenciaSelector,
@@ -40,6 +42,8 @@ export default function TransferenciaPage() {
     refetchEmbriones,
   } = useApi(selectedPacienteId);
     const { formData, updateField, toggleEmbrion, resetForm } = useTransferenciaForm();
+    const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
+    const operadorId = currentUser?.id ?? null;
     console.log('formData', embriones);
 
     // Normalizar embriones para cumplir el tipo esperado por TransferenciaSelector
@@ -128,6 +132,9 @@ export default function TransferenciaPage() {
         embriones: formData.embriones,
         test_positivo: formData.testPositivo,
         observaciones: '',
+        quirofano: formData.quirofano ?? null,
+        fecha: new Date().toISOString(),
+        realizado_por: operadorId,
       };
 
       await submitTransferencia(payload);
@@ -148,6 +155,7 @@ export default function TransferenciaPage() {
                   paciente: selectedPacienteId,
                   estado: 'transferido',
                   nota: 'Transferido vía interfaz de Transferencia',
+                  usuario: operadorId,
                 },
                 { headers }
               );

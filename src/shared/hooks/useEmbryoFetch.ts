@@ -16,6 +16,7 @@ interface UseEmbryoFetchResult {
   embriones: Embryo[];
   loading: boolean;
   error: string | null;
+  refetch: () => void;
 }
 
 export function useEmbryoFetch(pacienteId: number | null): UseEmbryoFetchResult {
@@ -23,7 +24,7 @@ export function useEmbryoFetch(pacienteId: number | null): UseEmbryoFetchResult 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchEmbriones = () => {
     if (!pacienteId) {
       setEmbriones([]);
       setLoading(false);
@@ -46,7 +47,11 @@ export function useEmbryoFetch(pacienteId: number | null): UseEmbryoFetchResult 
         setEmbriones([]);
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchEmbriones();
   }, [pacienteId]);
 
-  return { embriones, loading, error };
+  return { embriones, loading, error, refetch: fetchEmbriones };
 }

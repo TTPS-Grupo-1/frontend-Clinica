@@ -37,6 +37,7 @@ import DeudaPaciente from './features/Paciente/pages/DeudaPaciente';
 import DeudaPacientesPage from './features/Admin/pages/DeudaPacientesPage';
 import ObrasSocialesFinanzasPage from './features/Admin/pages/ObrasSocialesFinanzasPage';
 
+
 export default function getAppRoutes() {
   return (
     <>
@@ -79,6 +80,8 @@ export default function getAppRoutes() {
       <Route path="/pacientes/deuda" element={<DeudaPaciente />} />
       <Route path="/pacientes/deudaPacientes" element={<DeudaPacientesPage />} />
       <Route path="/obras-sociales/deuda" element={<ObrasSocialesFinanzasPage />} />
+
+   
 
     </>
   );

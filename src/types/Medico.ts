@@ -7,6 +7,7 @@ export type Medico = {
   telefono: number;
   password?: string; // Opcional porque no se devuelve en listados
   firma_medico?: string; // URL o base64 de la firma
+  is_director: boolean;
 };
 
 export type MedicoTurno = {

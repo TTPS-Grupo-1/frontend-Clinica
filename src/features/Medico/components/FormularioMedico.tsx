@@ -24,6 +24,7 @@ export default function FormularioMedico({
   const [showPassword, setShowPassword] = useState(false);
   const [firma, setFirma] = useState<File | null>(null);
   const [tieneFirmaExistente, setTieneFirmaExistente] = useState(false); // 👈 Nuevo estado
+  const [director, setDirector] = useState(false);
 
   useEffect(() => {
     if (typeof medico !== 'undefined') {
@@ -32,6 +33,7 @@ export default function FormularioMedico({
       setDni(medico.dni !== undefined ? String(medico.dni) : '');
       setEmail(medico.email ?? '');
       setTelefono(medico.telefono !== undefined ? String(medico.telefono) : '');
+      setDirector(medico.is_director ?? false);
 
       // 👇 Verificar si tiene firma existente
       if (medico.firma_medico) {
@@ -65,6 +67,7 @@ export default function FormularioMedico({
     formData.append('email', email);
     formData.append('telefono', telefono);
     formData.append('rol', 'MEDICO');
+    formData.append('is_director', director ? 'true' : 'false');
 
     // 👇 SOLO agregar DNI y password en ALTA (no en edición)
     if (!isEdit) {
@@ -159,6 +162,21 @@ export default function FormularioMedico({
               className="w-full rounded border border-gray-400 bg-white px-4 py-2.5 text-base text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               autoComplete="off"
             />
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center gap-3">
+            <input
+              id="directorCheckbox"
+              name="is_director"
+              type="checkbox"
+              checked={director}
+              onChange ={(e) => setDirector(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <label htmlFor="directorCheckbox" className="text-base font-medium text-gray-700">
+              Director médico
+            </label>
           </div>
         </div>
 

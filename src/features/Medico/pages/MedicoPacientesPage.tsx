@@ -9,6 +9,7 @@ import {
   fetchPacientesByName,
   fetchTodosLosPacientes,
   fetchPacientesByNameDirector,
+  pacienteTieneTransferencia,
 } from '../utils/pacienteHelpers';
 import type { RootState } from '@/store';
 import { useSelector } from 'react-redux';
@@ -26,10 +27,25 @@ export default function MedicoPacientesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [verTodos, setVerTodos] = useState(false);
   const [pacientesMios, setPacientesMios] = useState<number[]>([]);
+  const [pacientesConTransferencia, setPacientesConTransferencia] = useState<number[]>([]);
+
 
 
   const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
   const es_director = currentUser?.is_director ?? false;
+  async function marcarPacientesConTransferencia(lista: PacienteMinimal[], headers: any) {
+    const ids: number[] = [];
+
+    await Promise.all(
+      lista.map(async (p) => {
+        const tiene = await pacienteTieneTransferencia(p.id, headers);
+        if (tiene) ids.push(p.id);
+      })
+    );
+
+    setPacientesConTransferencia(ids);
+  }
+
 
   // Effect para mantener debouncedPacienteQuery en sync con pacienteQuery después de 600ms
   useEffect(() => {
@@ -72,6 +88,8 @@ export default function MedicoPacientesPage() {
         });
 
         setPacientes(filtered);
+        await marcarPacientesConTransferencia(filtered, headers);
+
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -88,6 +106,8 @@ export default function MedicoPacientesPage() {
     try {
       const all = await fetchTodosLosPacientes(headers);
       setPacientes(all);
+      await marcarPacientesConTransferencia(all, headers);
+
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -116,8 +136,10 @@ export default function MedicoPacientesPage() {
             return full.includes(q) || dni.includes(q);
           });
           setPacientes(filtered);
+          await marcarPacientesConTransferencia(filtered, headers);
         } else {
           setPacientes(data);
+          await marcarPacientesConTransferencia(data, headers);
         }
       } catch (err: any) {
         setError(err.message);
@@ -135,6 +157,7 @@ export default function MedicoPacientesPage() {
       try {
         const data = await fetchPacientesByName(search, headers);
         setPacientes(data);
+        await marcarPacientesConTransferencia(data, headers);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -337,7 +360,7 @@ export default function MedicoPacientesPage() {
                         onVerHistoria={(id) => handleVerHistoria(id)}
                         showAtender={false}
                         onRealizarSeguimiento={(id: number) => handleRealizarSeguimiento(id)} 
-                        showSeguimiento={pacientesMios.includes(p.id)}
+                        showSeguimiento={pacientesMios.includes(p.id) && pacientesConTransferencia.includes(p.id)}
 
                       />
                     </li>

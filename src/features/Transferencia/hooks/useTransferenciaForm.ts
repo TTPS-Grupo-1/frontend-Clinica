@@ -6,6 +6,7 @@ export function useTransferenciaForm() {
     tratamiento: null,
     embriones: [],
     testPositivo: false,
+    quirofano: null,
   });
 
   const updateField = (field: keyof TransferenciaFormData, value: any) => {
@@ -29,6 +30,7 @@ export function useTransferenciaForm() {
       tratamiento: null,
       embriones: [],
       testPositivo: false,
+      quirofano: null,
     });
   };
 

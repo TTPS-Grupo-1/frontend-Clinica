@@ -25,7 +25,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
             <ul className="mt-1 ml-4 flex flex-col gap-2">
               <li>
                 <Link
-                  to="/operador/donaciones/semen"
+                  to="/operador/donaciones/nueva/semen"
                   onClick={onCloseMobile}
                   className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
                 >
@@ -34,7 +34,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               </li>
               <li>
                 <Link
-                  to="/operador/donaciones/ovocitos"
+                  to="/operador/donaciones/nueva/ovocitos"
                   onClick={onCloseMobile}
                   className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
                 >
@@ -157,7 +157,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               </li>
               <li>
                 <Link
-                  to="/operador/donaciones/semen"
+                  to="/operador/donaciones/nueva/semen"
                   className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
                 >
                   Semen
@@ -165,7 +165,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               </li>
               <li>
                 <Link
-                  to="/operador/donaciones/ovocitos"
+                  to="/operador/donaciones/nueva/ovocitos"
                   className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
                 >
                   Ovocitos
@@ -261,7 +261,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               </li>
               <li>
                 <Link
-                  to="/operador/transferencias"
+                  to="/transferencias"
                   className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
                 >
                   Transferencias

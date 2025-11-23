@@ -9,6 +9,7 @@ interface TransferenciaSelectorProps {
   onTratamientoChange: (tratamientoId: number | null) => void;
   onEmbrionToggle: (embrionId: number) => void;
   isLoading: boolean;
+  readOnlyTratamiento?: boolean;
 }
 
 export default function TransferenciaSelector({
@@ -19,25 +20,35 @@ export default function TransferenciaSelector({
   onTratamientoChange,
   onEmbrionToggle,
   isLoading,
+  readOnlyTratamiento = false,
 }: TransferenciaSelectorProps) {
   return (
     <div className="space-y-6">
       {/* Selector de Tratamiento */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-800">Tratamiento</label>
-        <select
-          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800 disabled:opacity-50"
-          value={selectedTratamiento ?? ''}
-          onChange={(e) => onTratamientoChange(e.target.value ? Number(e.target.value) : null)}
-          disabled={isLoading}
-        >
-          <option value="">Seleccionar tratamiento...</option>
-          {tratamientos.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.nombre || `Tratamiento #${t.id}`}
-            </option>
-          ))}
-        </select>
+        {readOnlyTratamiento ? (
+          <div className="w-full rounded-lg border border-gray-200 bg-gray-50 p-3 text-gray-800">
+            {(() => {
+              const sel = tratamientos.find((t) => t.id === selectedTratamiento);
+              return sel ? sel.nombre || `Tratamiento #${sel.id}` : 'Sin tratamiento seleccionado';
+            })()}
+          </div>
+        ) : (
+          <select
+            className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800 disabled:opacity-50"
+            value={selectedTratamiento ?? ''}
+            onChange={(e) => onTratamientoChange(e.target.value ? Number(e.target.value) : null)}
+            disabled={isLoading}
+          >
+            <option value="">Seleccionar tratamiento...</option>
+            {tratamientos.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nombre || `Tratamiento #${t.id}`}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Selector de Embriones */}

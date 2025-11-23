@@ -18,6 +18,7 @@ export function useApi(pacienteId: number | null = null) {
     embriones,
     loading: embrionesLoading,
     error: embrionesError,
+    refetch: refetchEmbriones,
   } = useEmbryoFetch(pacienteId);
 
   useEffect(() => {
@@ -79,5 +80,6 @@ export function useApi(pacienteId: number | null = null) {
     error: combinedError,
     submitTransferencia,
     refetch: loadTratamientos,
+    refetchEmbriones,
   };
 }

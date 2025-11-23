@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ChevronRight, User, MessageCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { User, MessageCircle } from 'lucide-react';
+import OperadorSection from './OperadorSection';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { persistor } from '../store';
@@ -13,10 +14,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-  // Only one dropdown open at a time: 'embriones', 'donaciones', 'profile', or null
-  const [openDropdown, setOpenDropdown] = useState<null | 'embriones' | 'donaciones' | 'profile'>(
-    null
-  );
+  // dropdown state handled inside subcomponents
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => (state.auth as any)?.isAuthenticated);
   const user = useSelector((state: RootState) => (state.auth as any)?.user);
@@ -26,7 +24,7 @@ export default function Navbar() {
   if (_storedRoleRaw) {
     try {
       _storedRole = JSON.parse(_storedRoleRaw);
-    } catch (e) {
+    } catch {
       _storedRole = _storedRoleRaw;
     }
   }
@@ -147,79 +145,7 @@ export default function Navbar() {
 
         {/* Enlaces en escritorio (dropdown + acciones de usuario) */}
         <section className="afacad-bold hidden items-center gap-5 text-base text-[#CDA053] md:flex">
-          {role === 'OPERADOR_LABORATORIO' && (
-            <div className="group relative z-50">
-              <button
-                aria-haspopup="true"
-                aria-expanded={openDropdown === 'donaciones'}
-                onClick={() => setOpenDropdown(openDropdown === 'donaciones' ? null : 'donaciones')}
-                onMouseEnter={() => setOpenDropdown('donaciones')}
-                onMouseLeave={() => setOpenDropdown(null)}
-                className="flex items-center gap-2 font-medium text-white transition-colors duration-200 hover:text-yellow-500"
-              >
-                <ChevronRight className="ml-1 h-4 w-4 text-white" />
-                Operador
-              </button>
-              {/* Dropdown panel */}
-              <div
-                onMouseEnter={() => setOpenDropdown('donaciones')}
-                onMouseLeave={() => setOpenDropdown(null)}
-                className={`ring-opacity-5 absolute right-0 mt-1 w-64 rounded-md bg-white shadow-lg ring-1 ring-black transition-all duration-200 ${
-                  openDropdown === 'donaciones'
-                    ? 'visible scale-100 transform opacity-100'
-                    : 'invisible scale-95 transform opacity-0'
-                }`}
-              >
-                <ul className="py-1">
-                  <li>
-                    <Link
-                      to="/operador"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100"
-                    >
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/operador/donaciones"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100"
-                    >
-                      Donaciones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/operador/punciones"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100"
-                    >
-                      Punciones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/embriones"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100"
-                    >
-                      Listado de embriones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/operador/fertilizaciones"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100"
-                    >
-                      Fertilizaciones
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          )}
+          {role === 'OPERADOR_LABORATORIO' && <OperadorSection />}
 
           {/* Chatbot Button */}
           {isAuthenticated && (
@@ -275,53 +201,7 @@ export default function Navbar() {
         >
           <ul className="flex flex-col gap-4 text-sm text-white">
             {role === 'OPERADOR_LABORATORIO' && (
-              <>
-                <li>
-                  <Link
-                    to="/operador"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block hover:text-yellow-400"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/operador/donaciones"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block hover:text-yellow-400"
-                  >
-                    Donaciones
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/operador/punciones"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block hover:text-yellow-400"
-                  >
-                    Punciones
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/embriones"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block hover:text-yellow-400"
-                  >
-                    Listado de embriones
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/operador/fertilizaciones"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block hover:text-yellow-400"
-                  >
-                    Fertilizaciones
-                  </Link>
-                </li>
-              </>
+              <OperadorSection isMobile onCloseMobile={() => setIsMobileMenuOpen(false)} />
             )}
             <li className="border-t border-white/20 pt-2"></li>
           </ul>

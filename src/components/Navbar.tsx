@@ -88,7 +88,10 @@ export default function Navbar() {
               navigate('/operador');
             } else if (role === 'MEDICO') {
               navigate('/medico/home');
-            } else {
+            } else if(role === 'ADMIN') {
+              navigate('/admin/home');
+            }
+            else {
               navigate('/');
             }
           }}

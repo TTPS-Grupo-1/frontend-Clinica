@@ -41,21 +41,22 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
   };
 
   // Helper para mostrar el estado en texto amigable
-  function getEstadoTexto(tratamiento: any) {
-    // Si tienes un campo estado_actual, úsalo directamente
-    if (tratamiento?.estado_actual) return tratamiento.estado_actual;
-
+  function getEstadoTexto(tratamiento: any, monitoreos: any[], fertilizaciones: any[]): string {
+    
+    console.log('🔍 DEBUG: Tratamiento para estado texto:', tratamiento);
     // Si no, puedes inferirlo por los datos presentes
     if (!tratamiento) return 'Desconocido';
-    if (tratamiento.motivo_finalizacion) return 'Finalizado';
-    if (tratamiento.transferencia) return 'Seguimiento';
-    if (tratamiento.fertilizacion) return 'Fertilización';//
+    if (!tratamiento.activo) return 'Finalizado';
+    if (seguimiento) return 'En seguimiento'; //
+    if (tratamiento.transferencia) return 'Transferencia'; //
+    if (fertilizaciones.length > 0) return 'Fertilización';
     if (tratamiento.puncion) return 'Punción';
-    if (tratamiento.monitoreo) return 'Monitoreo';//
+    if (monitoreos.length > 0) return 'Monitoreos';
     if (tratamiento.segunda_consulta) return 'Segunda consulta';
-    if (tratamiento.primera_consulta) return 'Primer consulta';
+    if (tratamiento.primera_consulta) return 'Primera consulta';
     return 'En proceso';
   }
+
 
   useEffect(() => {
     async function fetchTreatmentData() {
@@ -76,6 +77,12 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
           headers,
         });
         responseData.monitoreos = monitoreos.data.data || [];
+      
+        //obtener transferencias asociadas al tratamiento
+        const transferencias = await axios.get(`/api/transferencias/transferencias-por-tratamiento/${id_tratamiento}/`, {
+          headers,
+        });
+        responseData.transferencias = transferencias.data.data || [];
 
         // 🔥 NUEVO: Actualizar todo el estado de una vez
         updateData({
@@ -141,13 +148,14 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
   // Si nos pasaron el objeto paciente, mostrar resumen reutilizable
   const showPaciente = !!(paciente || pacienteLocal);
 
-  return (
+
+  return ( 
     <div className="space-y-6">
       {/* Estado del tratamiento */}
       <div className="rounded bg-blue-50 p-4 mb-2 flex items-center gap-4">
-        <span className="text-lg font-bold text-blue-900">Estado actual:</span>
+        <span className="text-lg font-bold text-blue-900">Última atención del tratamiento:</span>
         <span className="rounded-full bg-blue-200 px-4 py-2 text-blue-800 font-semibold shadow">
-          {getEstadoTexto(tratamiento)}
+          {getEstadoTexto(tratamiento,monitoreos , fertilizaciones)}
         </span>
       </div>
 

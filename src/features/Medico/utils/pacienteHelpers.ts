@@ -282,17 +282,35 @@ export async function fetchPacientesByNameDirector(
 
 export async function pacienteTieneTransferencia(pacienteId: number, headers: any) {
   try {
-    const res = await axios.get(`/api/tratamientos/por-paciente/${pacienteId}/`, { headers });
-    
-    // Si la API devuelve lista o un solo objeto:
-    const t = Array.isArray(res.data) ? res.data[0] : res.data;
+    // 1) Obtener tratamiento activo del paciente
+    const res = await axios.get(
+      `/api/tratamientos/por-paciente/${pacienteId}/`,
+      { headers }
+    );
 
-    if (!t) return false;
+    const tratamiento = Array.isArray(res.data) ? res.data[0] : res.data;
 
-    return t.activo === true && t.transferencia !== null;
-  } catch {
+    if (!tratamiento || !tratamiento.id) return false;
+
+    const tratamientoId = tratamiento.id;
+
+    // 2) Consultar transferencias de ese tratamiento
+    const tRes = await await axios.get(
+  `/api/transferencia/transferencias/transferencias-por-tratamiento/${tratamientoId}/`,
+  { headers }
+    );
+
+        
+
+    const exists = tRes.data?.count > 0;
+
+    return exists;
+
+  } catch (error) {
+    console.error("Error consultando transferencia:", error);
     return false;
   }
 }
+
 
 

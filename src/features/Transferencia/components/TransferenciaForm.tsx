@@ -51,6 +51,19 @@ export default function TransferenciaForm({
         </div>
       </div>
 
+      {/* Quirofano */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-gray-800">Quirófano / Sala</label>
+        <input
+          type="text"
+          value={formData.quirofano || ''}
+          onChange={(e) => onFormChange('quirofano', e.target.value)}
+          disabled={isLoading}
+          placeholder="Ej: Quirófano 3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800"
+        />
+      </div>
+
       {/* Mensaje */}
       {message && <div className={`rounded-lg border p-3 ${getMessageStyles()}`}>{message}</div>}
 

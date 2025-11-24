@@ -7,7 +7,12 @@ import {
   getAuthHeaders,
   fetchPacientesForMedico,
   fetchPacientesByName,
+  fetchTodosLosPacientes,
+  fetchPacientesByNameDirector,
+  pacienteTieneTransferencia,
 } from '../utils/pacienteHelpers';
+import type { RootState } from '@/store';
+import { useSelector } from 'react-redux';
 
 export default function MedicoPacientesPage() {
   const { medicoId: medicoIdParam } = useParams<{ medicoId?: string }>();
@@ -20,6 +25,27 @@ export default function MedicoPacientesPage() {
   const navigate = useNavigate();
   // Ya usamos debouncedPacienteId; no necesitamos refs para timeouts aquí.
   const [searchParams, setSearchParams] = useSearchParams();
+  const [verTodos, setVerTodos] = useState(false);
+  const [pacientesMios, setPacientesMios] = useState<number[]>([]);
+  const [pacientesConTransferencia, setPacientesConTransferencia] = useState<number[]>([]);
+
+
+
+  const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
+  const es_director = currentUser?.is_director ?? false;
+  async function marcarPacientesConTransferencia(lista: PacienteMinimal[], headers: any) {
+    const ids: number[] = [];
+
+    await Promise.all(
+      lista.map(async (p) => {
+        const tiene = await pacienteTieneTransferencia(p.id, headers);
+        if (tiene) ids.push(p.id);
+      })
+    );
+
+    setPacientesConTransferencia(ids);
+  }
+
 
   // Effect para mantener debouncedPacienteQuery en sync con pacienteQuery después de 600ms
   useEffect(() => {
@@ -38,80 +64,111 @@ export default function MedicoPacientesPage() {
   }, []);
 
   useEffect(() => {
-    // Debounced: usar debouncedPacienteQuery (no se dispara por cada letra)
-    // Si la ruta ya trae medicoIdParam, usarlo inmediatamente.
-    const effectiveRouteMedicoId = medicoIdParam ? Number(medicoIdParam) : null;
+  const headers = getAuthHeaders();
+  const search = debouncedPacienteQuery.trim();
+  const medicoIdNum = medicoIdParam ? Number(medicoIdParam) : null;
 
-    const doLoadByName = async (query: string) => {
+  // === CASO DIRECTOR: VER TODOS ===
+  if (es_director && verTodos) {
+
+  // Si escribió búsqueda → filtra client-side igual que un médico
+  if (search !== "") {
+    console.log("Filtrando TODOS los pacientes por:", search);
+
+    (async () => {
       setLoading(true);
-      setError(null);
       try {
-        const headers = getAuthHeaders();
-        const pacientesData = await fetchPacientesByName(query, headers);
-        setPacientes(pacientesData);
+        const all = await fetchTodosLosPacientes(headers);
+
+        const q = search.toLowerCase();
+        const filtered = all.filter((p) => {
+          const full = `${p.first_name} ${p.last_name}`.toLowerCase();
+          const dni = String(p.dni).toLowerCase();
+          return full.includes(q) || dni.includes(q);
+        });
+
+        setPacientes(filtered);
+        await marcarPacientesConTransferencia(filtered, headers);
+
       } catch (err: any) {
-        console.error(err);
-        setError(err?.message || 'Error cargando pacientes');
+        setError(err.message);
       } finally {
         setLoading(false);
       }
-    };
+    })();
 
-    if (
-      !effectiveRouteMedicoId &&
-      (!debouncedPacienteQuery || debouncedPacienteQuery.trim() === '')
-    ) {
-      setPacientes([]);
-      return;
+    return;
+  }
+
+  // Si NO escribió búsqueda → traer todos
+  (async () => {
+    setLoading(true);
+    try {
+      const all = await fetchTodosLosPacientes(headers);
+      setPacientes(all);
+      await marcarPacientesConTransferencia(all, headers);
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  })();
 
-    // Si viene por param de ruta, interpretar ese parámetro como MEDICO ID
-    if (medicoIdParam) {
-      const medicoIdNum = Number(medicoIdParam);
-      (async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const headers = getAuthHeaders();
-          const pacientesData = await fetchPacientesForMedico(medicoIdNum, headers);
+  return;
+}
 
-          // Si hay una query de búsqueda, filtrar cliente-side por nombre/apellido
-          if (debouncedPacienteQuery && debouncedPacienteQuery.trim() !== '') {
-            const q = debouncedPacienteQuery.trim().toLowerCase();
-            const filtered = pacientesData.filter((p) => {
-              const full = `${p.first_name ?? ''} ${p.last_name ?? ''}`.toLowerCase();
-              const dni = String(p.dni ?? '').toLowerCase();
-              return full.includes(q) || dni.includes(q);
-            });
-            setPacientes(filtered);
-          } else {
-            setPacientes(pacientesData);
-          }
-        } catch (err: any) {
-          console.error(err);
-          setError(err?.message || 'Error cargando pacientes');
-        } finally {
-          setLoading(false);
+
+  // === CASO MÉDICO O DIRECTOR (verTodos=false): traer SUS pacientes ===
+  if (medicoIdNum) {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchPacientesForMedico(medicoIdNum, headers);
+        setPacientesMios(data.map(p => p.id));
+
+        // Filtrar por búsqueda
+        if (search !== "") {
+          const q = search.toLowerCase();
+          const filtered = data.filter((p) => {
+            const full = `${p.first_name} ${p.last_name}`.toLowerCase();
+            const dni = String(p.dni).toLowerCase();
+            return full.includes(q) || dni.includes(q);
+          });
+          setPacientes(filtered);
+          await marcarPacientesConTransferencia(filtered, headers);
+        } else {
+          setPacientes(data);
+          await marcarPacientesConTransferencia(data, headers);
         }
-      })();
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+    return;
+  }
 
-      return;
-    }
+  // === Búsqueda general (sin médico asignado) ===
+  if (search !== "") {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchPacientesByName(search, headers);
+        setPacientes(data);
+        await marcarPacientesConTransferencia(data, headers);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }
 
-    // Si viene del input debounced (búsqueda por nombre), ejecutar la búsqueda
-    doLoadByName(debouncedPacienteQuery);
+}, [debouncedPacienteQuery, medicoIdParam, verTodos, es_director]);
 
-    // actualizar query param (guardamos la búsqueda en la URL aunque estemos en /medico/:id/pacientes)
-    if (debouncedPacienteQuery && debouncedPacienteQuery.trim() !== '') {
-      setSearchParams({ q: debouncedPacienteQuery });
-    } else {
-      setSearchParams({});
-    }
 
-    return () => {
-      // nothing to cleanup here (debounce handled in separate effect)
-    };
-  }, [debouncedPacienteQuery, medicoIdParam]);
 
   const handleVerHistoria = (pacienteId: number) => {
     navigate(`/pacientes/${pacienteId}/historia`);
@@ -150,6 +207,26 @@ export default function MedicoPacientesPage() {
             <h2 id="search-heading" className="sr-only">
               Buscar paciente
             </h2>
+            {es_director && (
+              <div className="mb-4 flex items-center gap-3 bg-blue-50 border border-blue-200 p-3 rounded-lg">
+                <label className="text-sm font-medium text-blue-800">
+                  Ver todos los pacientes
+                </label>
+
+                <input
+                  type="checkbox"
+                  checked={verTodos}
+                  onChange={() => {
+                    setVerTodos(!verTodos);
+                    setPacienteQuery('');
+                    setDebouncedPacienteQuery('');
+
+                  }}
+
+                  className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+              </div>
+            )}
             <form
               className="flex flex-col sm:flex-row sm:items-center sm:gap-4"
               onSubmit={(e) => {
@@ -283,7 +360,8 @@ export default function MedicoPacientesPage() {
                         onVerHistoria={(id) => handleVerHistoria(id)}
                         showAtender={false}
                         onRealizarSeguimiento={(id: number) => handleRealizarSeguimiento(id)} 
-                        showSeguimiento={true} 
+                        showSeguimiento={pacientesMios.includes(p.id) && pacientesConTransferencia.includes(p.id)}
+
                       />
                     </li>
                   ))}

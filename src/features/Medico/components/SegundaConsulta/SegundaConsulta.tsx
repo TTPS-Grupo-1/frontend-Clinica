@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import CancelarTratamiento from '../.../../../../../shared/CancelarTratamiento';
+
 import {
   FlaskConical,
   Syringe,
@@ -223,12 +223,6 @@ const SegundaConsulta: React.FC = () => {
             Confirmar Segunda Consulta
           </button>
         )}
-      </div>
-      <div className="mt-10 border-t pt-6">
-        <CancelarTratamiento
-          idTratamiento={Number(localStorage.getItem('tratamiento_id'))}
-          onCancelado={() => toast.success('Tratamiento cancelado correctamente')}
-        />
       </div>
     </div>
   );

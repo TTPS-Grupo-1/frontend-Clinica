@@ -10,7 +10,11 @@ import EmbrionesTable from '../../Paciente/components/EmbrionesTable';
 import MonitoreoTable from '@/features/Paciente/components/MonitoreoTable';
 import type { Props } from '../../../types/Tratamiento';
 import type { TreatmentData } from '@/interfaces/Tratmiento';
+import CancelarTratamiento from '@/shared/CancelarTratamiento';
 import { id } from 'date-fns/locale';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store';
+import { toast } from 'sonner';
 
 
 
@@ -34,6 +38,9 @@ const initialState: TreatmentData = {
 };
 
 export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
+  const user = useSelector((state: RootState) => state.auth.user);
+
+
   const navigate = useNavigate();
   
   // 🔥 NUEVO: Un solo estado unificado en lugar de 14 estados separados
@@ -166,7 +173,10 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
     seguimiento,
     puncion
   } = data;
-
+  const puedeVer =
+  user?.rol === 'MEDICO' &&
+  tratamiento?.activo === true &&
+  tratamiento?.medico === user?.id;
   if (loading) return <div className="text-gray-500">Cargando detalles del tratamiento...</div>;
 
   // Si nos pasaron el objeto paciente, mostrar resumen reutilizable
@@ -181,7 +191,13 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
         <span className="rounded-full bg-blue-200 px-4 py-2 text-blue-800 font-semibold shadow">
           {getEstadoTexto(tratamiento,monitoreos , fertilizaciones, transferencias, seguimiento, puncion)}
         </span>
+        {puedeVer && (
+    <CancelarTratamiento idTratamiento={tratamientoId} onCancelado={() => toast.success("Tratamiento cancelado")} />
+      )}
       </div>
+      {/* cancelar tratamiento si está activo y el usuario es médico */}
+      
+   
 
       {showPaciente ? (
         <div className="rounded bg-white p-4">

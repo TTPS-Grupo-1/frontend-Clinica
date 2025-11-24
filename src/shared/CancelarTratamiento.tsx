@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, XCircle } from 'lucide-react';
+import { AlertTriangle, X, XCircle } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,11 +12,10 @@ export default function CancelarTratamiento({
   idTratamiento,
   onCancelado,
 }: CancelarTratamientoProps) {
-  const [confirmando, setConfirmando] = useState(false);
+  const [open, setOpen] = useState(false);
   const [motivo, setMotivo] = useState('');
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [exito, setExito] = useState(false);
   const navigate = useNavigate();
 
   const handleCancelar = async () => {
@@ -27,7 +26,6 @@ export default function CancelarTratamiento({
 
     setCargando(true);
     setError(null);
-    setExito(false);
 
     try {
       const token = localStorage.getItem('token');
@@ -39,20 +37,20 @@ export default function CancelarTratamiento({
           headers: {
             Authorization: `Token ${token}`,
           },
-          withCredentials: true,
         }
       );
 
       if (resp.status === 200) {
-        setExito(true);
-        setConfirmando(false);
         onCancelado?.();
+        setOpen(false);
         navigate('/medico/home');
       }
     } catch (e: any) {
       console.error('❌ Error al cancelar:', e);
       setError(
-        e.response?.data?.detail || e.message || 'Error desconocido al cancelar el tratamiento.'
+        e.response?.data?.detail ||
+          e.message ||
+          'Error desconocido al cancelar el tratamiento.'
       );
     } finally {
       setCargando(false);
@@ -60,63 +58,69 @@ export default function CancelarTratamiento({
   };
 
   return (
-    <div className="max-w-md rounded-xl border bg-white p-4 shadow-md">
-      <h3 className="mb-3 flex items-center gap-2 text-xl font-semibold text-red-700">
-        <XCircle className="h-6 w-6" /> Cancelar tratamiento
-      </h3>
+    <>
+      {/* 🔥 Botón minimalista de X roja */}
+      <button
+        onClick={() => setOpen(true)}
+        className="text-red-600 hover:text-red-800 transition"
+        title="Cancelar tratamiento"
+      >
+        <X className="w-6 h-6" />
+      </button>
 
-      {!confirmando ? (
-        <>
-          <p className="mb-4 text-gray-700">
-            Esta acción desactivará el tratamiento. ¿Deseas continuar?
-          </p>
-          <button
-            onClick={() => setConfirmando(true)}
-            className="rounded-lg bg-red-600 px-5 py-2 text-white hover:bg-red-700"
-          >
-            Cancelar tratamiento
-          </button>
-        </>
-      ) : (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4">
-          <p className="flex items-center gap-2 font-medium text-red-700">
-            <AlertTriangle className="h-5 w-5" />
-            Confirmar cancelación del tratamiento #{idTratamiento}
-          </p>
+      {/* 🔥 Modal */}
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="max-w-md w-full rounded-xl bg-white p-5 shadow-xl">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="flex items-center gap-2 text-xl font-semibold text-red-700">
+                <XCircle className="h-6 w-6" /> Cancelar tratamiento
+              </h3>
 
-          <textarea
-            value={motivo}
-            onChange={(e) => setMotivo(e.target.value)}
-            placeholder="Escriba el motivo de la cancelación..."
-            className="mt-3 w-full rounded-md border p-2 text-gray-800 focus:ring-2 focus:ring-red-400"
-            rows={3}
-          />
+              <button
+                onClick={() => setOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-          <div className="mt-4 flex gap-3">
-            <button
-              onClick={handleCancelar}
-              disabled={cargando}
-              className="rounded bg-red-700 px-4 py-2 text-white hover:bg-red-800 disabled:opacity-50"
-            >
-              {cargando ? 'Cancelando...' : 'Sí, cancelar'}
-            </button>
-            <button
-              onClick={() => setConfirmando(false)}
-              className="rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
-            >
-              No, volver
-            </button>
+            <p className="flex items-center gap-2 font-medium text-red-700 mb-3">
+              <AlertTriangle className="h-5 w-5" />
+              Confirmar cancelación del tratamiento #{idTratamiento}
+            </p>
+
+            <textarea
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value)}
+              placeholder="Escriba el motivo de la cancelación..."
+              className="mt-2 w-full rounded-md border p-2 text-gray-800 focus:ring-2 focus:ring-red-400"
+              rows={3}
+            />
+
+            {error && (
+              <div className="mt-2 text-sm text-red-600">{error}</div>
+            )}
+
+            <div className="mt-4 flex gap-3 justify-end">
+              <button
+                onClick={() => setOpen(false)}
+                className="rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+              >
+                Volver
+              </button>
+
+              <button
+                onClick={handleCancelar}
+                disabled={cargando}
+                className="rounded bg-red-700 px-4 py-2 text-white hover:bg-red-800 disabled:opacity-50"
+              >
+                {cargando ? 'Cancelando...' : 'Cancelar'}
+              </button>
+            </div>
           </div>
         </div>
       )}
-
-      {error && <div className="mt-3 border-t pt-2 text-sm text-red-600">{error}</div>}
-
-      {exito && (
-        <div className="mt-3 border-t pt-2 text-sm text-green-700">
-          ✅ Tratamiento cancelado correctamente.
-        </div>
-      )}
-    </div>
+    </>
   );
 }

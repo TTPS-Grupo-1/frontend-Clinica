@@ -295,7 +295,7 @@ export async function pacienteTieneTransferencia(pacienteId: number, headers: an
     const tratamientoId = tratamiento.id;
 
     // 2) Consultar transferencias de ese tratamiento
-    const tRes = await await axios.get(
+    const tRes = await axios.get(
   `/api/transferencia/transferencias/transferencias-por-tratamiento/${tratamientoId}/`,
   { headers }
     );

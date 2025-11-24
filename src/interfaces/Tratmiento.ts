@@ -122,4 +122,7 @@ export interface TreatmentData {
   segundaConsulta: TreatmentSegundaConsulta | null;
   pacienteLocal: Paciente | null;
   loading: boolean;
+  transferencias: any[]; // ✅ Agregar transferencias aquí
+  seguimiento: boolean; // ✅ Indica si el tratamiento está en seguimiento
+  puncion: boolean; // Indica si hay punción registrada
 }

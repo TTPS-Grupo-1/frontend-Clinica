@@ -10,6 +10,7 @@ import EmbrionesTable from '../../Paciente/components/EmbrionesTable';
 import MonitoreoTable from '@/features/Paciente/components/MonitoreoTable';
 import type { Props } from '../../../types/Tratamiento';
 import type { TreatmentData } from '@/interfaces/Tratmiento';
+import { id } from 'date-fns/locale';
 
 
 
@@ -27,6 +28,9 @@ const initialState: TreatmentData = {
   segundaConsulta: null,
   pacienteLocal: null,
   loading: true,
+  transferencias: [],
+  seguimiento: false,
+  puncion: false,
 };
 
 export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
@@ -41,16 +45,16 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
   };
 
   // Helper para mostrar el estado en texto amigable
-  function getEstadoTexto(tratamiento: any, monitoreos: any[], fertilizaciones: any[]): string {
+  function getEstadoTexto(tratamiento: any, monitoreos: any[], fertilizaciones: any[], transferencias: any[], seguimiento: boolean, puncion: boolean): string {
     
     console.log('🔍 DEBUG: Tratamiento para estado texto:', tratamiento);
     // Si no, puedes inferirlo por los datos presentes
     if (!tratamiento) return 'Desconocido';
     if (!tratamiento.activo) return 'Finalizado';
-    if (seguimiento) return 'En seguimiento'; //
-    if (tratamiento.transferencia) return 'Transferencia'; //
+    if (seguimiento) return 'Finalizado'; //
+    if (transferencias.length > 0) return 'Transferencia'; //
     if (fertilizaciones.length > 0) return 'Fertilización';
-    if (tratamiento.puncion) return 'Punción';
+    if (puncion) return 'Punción';
     if (monitoreos.length > 0) return 'Monitoreos';
     if (tratamiento.segunda_consulta) return 'Segunda consulta';
     if (tratamiento.primera_consulta) return 'Primera consulta';
@@ -70,6 +74,8 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
           headers,
         });
         const responseData = response.data;
+        console.log('🔍 DEBUG: Datos completos del tratamiento recibidos:', responseData);
+        const id_paciente = responseData.tratamiento.paciente;
 
         // Obtener monitoreos
         const id_tratamiento = responseData.tratamiento.id; 
@@ -79,10 +85,22 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
         responseData.monitoreos = monitoreos.data.data || [];
       
         //obtener transferencias asociadas al tratamiento
-        const transferencias = await axios.get(`/api/transferencias/transferencias-por-tratamiento/${id_tratamiento}/`, {
+        const transferencias = await axios.get(`/api/transferencia/transferencias/transferencias-por-tratamiento/${id_tratamiento}/`, {
           headers,
         });
-        responseData.transferencias = transferencias.data.data || [];
+        const transferenciasData = transferencias.data.data || [];
+
+        //obtener si tiene seguimiento
+        const seguimientoRes = await axios.get(`/api/seguimiento/${id_tratamiento}/tiene-seguimiento/`, {
+          headers,
+        });
+        const seguimiento = seguimientoRes.data.tiene_seguimiento || false;
+
+        //obtener las punciones de un id de paciente
+        const punciones = await axios.get(`/api/punciones/existe-puncion/${id_paciente}/`, {  
+          headers,
+        });
+        const existePuncion = punciones.data.existe_puncion || false;
 
         // 🔥 NUEVO: Actualizar todo el estado de una vez
         updateData({
@@ -98,6 +116,9 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
           primeraConsulta: responseData.primera_consulta || null,
           segundaConsulta: responseData.segunda_consulta || null,
           loading: false,
+          transferencias: transferenciasData, // ✅ Agrega transferencias
+          seguimiento: seguimiento, // Agrega seguimiento
+          puncion: existePuncion // Agrega existePuncion
         });
 
         console.log('🔍 DEBUG: Datos de primera_consulta:', responseData.primera_consulta);
@@ -140,7 +161,10 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
     primeraConsulta,
     segundaConsulta,
     pacienteLocal,
-    loading
+    loading,
+    transferencias,
+    seguimiento,
+    puncion
   } = data;
 
   if (loading) return <div className="text-gray-500">Cargando detalles del tratamiento...</div>;
@@ -155,7 +179,7 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
       <div className="rounded bg-blue-50 p-4 mb-2 flex items-center gap-4">
         <span className="text-lg font-bold text-blue-900">Última atención del tratamiento:</span>
         <span className="rounded-full bg-blue-200 px-4 py-2 text-blue-800 font-semibold shadow">
-          {getEstadoTexto(tratamiento,monitoreos , fertilizaciones)}
+          {getEstadoTexto(tratamiento,monitoreos , fertilizaciones, transferencias, seguimiento, puncion)}
         </span>
       </div>
 

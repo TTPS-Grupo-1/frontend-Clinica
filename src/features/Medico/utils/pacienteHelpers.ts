@@ -283,7 +283,7 @@ export async function fetchPacientesByNameDirector(
 export async function pacienteTieneTransferencia(pacienteId: number, headers: any) {
   try {
     const res = await axios.get(`/api/tratamientos/por-paciente/${pacienteId}/`, { headers });
-
+    
     // Si la API devuelve lista o un solo objeto:
     const t = Array.isArray(res.data) ? res.data[0] : res.data;
 

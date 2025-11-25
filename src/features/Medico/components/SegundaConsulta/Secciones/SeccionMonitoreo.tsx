@@ -63,7 +63,7 @@ export default function SeccionMonitoreo({
     setError(null);
 
     try {
-      const res = await fetch(`http://localhost:8000/api/turnos/medico/${idMedico}/`);
+      const res = await fetch(`http://localhost:8000/api/local/turnos/medico/${idMedico}/`);
       if (!res.ok) throw new Error('Error al obtener turnos del médico');
       const json = (await res.json()) as { data: TurnoAPI[] };
       const todos = json.data || [];

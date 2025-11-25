@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
+import { usePacientesFiltrados } from '../../../shared/hooks/usePacientesFiltrados';
+import PacienteSelector from '../../Transferencia/components/PacienteSelector';
 import FertilizacionModal from '../components/FertilizacionModal';
 import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import { usePacientesFetch } from '../../../shared/hooks/usePacientesFetch';
@@ -11,15 +13,17 @@ import FertilizacionesTableSkeleton from '../components/FertilizacionesTableSkel
 import { Suspense } from 'react';
 
 export default function FertilizacionPage() {
-  const { pacientes } = usePacientesFetch();
+  const { pacientes, loading: loadingPacientes } = usePacientesFetch();
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
+  const { filteredPacientes, loading: filterLoading } = usePacientesFiltrados(pacientes, 'Monitoreos finalizados');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { fertilizaciones, loading } = useFertilizacionesFetch(selectedPacienteId);
 
   // Obtener usuario actual desde el store persistido (localStorage)
   const currentUser = useSelector((state: RootState) => state.auth.user);
 
-  const selectedPaciente = pacientes.find((p) => p.id === selectedPacienteId) ?? null;
+  const effectivePacientes = filteredPacientes !== null ? filteredPacientes : pacientes;
+  const selectedPaciente = (effectivePacientes || []).find((p) => p.id === selectedPacienteId) ?? null;
   const selectedPacienteNombre = selectedPaciente
     ? `${selectedPaciente.last_name}, ${selectedPaciente.first_name}`
     : null;
@@ -57,21 +61,12 @@ export default function FertilizacionPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex flex-col items-center justify-center gap-2 sm:flex-row"
           >
-            <label className="block text-sm font-medium text-gray-700">Seleccionar paciente</label>
-            <select
-              value={selectedPacienteId ?? ''}
-              onChange={(e) =>
-                setSelectedPacienteId(e.target.value ? Number(e.target.value) : null)
-              }
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-black shadow-sm focus:ring-2 focus:ring-blue-300 sm:w-80"
-            >
-              <option value="">-- Selecciona un paciente --</option>
-              {pacientes.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.last_name}, {p.first_name}
-                </option>
-              ))}
-            </select>
+            <PacienteSelector
+              pacientes={effectivePacientes || []}
+              selectedPaciente={selectedPacienteId}
+              onPacienteChange={(id) => setSelectedPacienteId(id)}
+              isLoading={loadingPacientes || filterLoading}
+            />
           </motion.div>
         </div>
         <Suspense fallback={<FertilizacionesTableSkeleton />}>

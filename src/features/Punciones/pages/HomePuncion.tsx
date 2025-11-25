@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { usePacientesFiltrados } from '../../../shared/hooks/usePacientesFiltrados';
 import { motion } from 'framer-motion';
 import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import { usePacientesFetch } from '../../../shared/hooks/usePacientesFetch';
@@ -12,6 +13,7 @@ const ITEMS_PER_PAGE = 6;
 
 export default function HomePuncion() {
   const { pacientes, loading: loadingPacientes } = usePacientesFetch();
+  const { filteredPacientes, loading: filterLoading } = usePacientesFiltrados(pacientes, 'Monitoreos finalizados');
   const [currentPage, setCurrentPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,6 +34,8 @@ export default function HomePuncion() {
     .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const selectedPaciente = pacientes.find((p) => p.id === formData.selectedPacienteId);
+
+  // Filtering handled by `usePacientesFiltrados` hook
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-pink-50 to-rose-100 pt-20 pb-8`}>
@@ -59,24 +63,51 @@ export default function HomePuncion() {
               Seleccionar paciente
             </label>
             <div className="flex flex-col items-center gap-2 sm:flex-row">
-              {loadingPacientes ? (
+              {loadingPacientes || filterLoading ? (
                 <div className="h-10 w-full animate-pulse rounded bg-pink-100" />
               ) : (
-                <select
-                  id="paciente-select"
-                  value={formData.selectedPacienteId ?? ''}
-                  onChange={(e) =>
-                    setFormData((fd) => ({ ...fd, selectedPacienteId: Number(e.target.value) }))
-                  }
-                  className="w-full rounded border border-pink-300 bg-white px-3 py-2 text-pink-900 shadow-sm focus:ring-2 focus:ring-pink-300 sm:w-80"
-                >
-                  <option value="">-- Selecciona un paciente --</option>
-                  {pacientes.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.last_name}, {p.first_name}
-                    </option>
-                  ))}
-                </select>
+                // If filteredPacientes has been set (not null), use it.
+                // If it's empty, show a friendly message instead of the select.
+                filteredPacientes !== null ? (
+                  filteredPacientes.length === 0 ? (
+                    <div className="w-full rounded border border-pink-300 bg-white px-3 py-2 text-pink-700 sm:w-80 text-center">
+                      No hay pacientes que cumplen los requisitos para realizar una punción.
+                    </div>
+                  ) : (
+                    <select
+                      id="paciente-select"
+                      value={formData.selectedPacienteId ?? ''}
+                      onChange={(e) =>
+                        setFormData((fd) => ({ ...fd, selectedPacienteId: Number(e.target.value) }))
+                      }
+                      className="w-full rounded border border-pink-300 bg-white px-3 py-2 text-pink-900 shadow-sm focus:ring-2 focus:ring-pink-300 sm:w-80"
+                    >
+                      <option value="">-- Selecciona un paciente --</option>
+                      {filteredPacientes.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.last_name}, {p.first_name}
+                        </option>
+                      ))}
+                    </select>
+                  )
+                ) : (
+                  // filteredPacientes is still null: show full list
+                  <select
+                    id="paciente-select"
+                    value={formData.selectedPacienteId ?? ''}
+                    onChange={(e) =>
+                      setFormData((fd) => ({ ...fd, selectedPacienteId: Number(e.target.value) }))
+                    }
+                    className="w-full rounded border border-pink-300 bg-white px-3 py-2 text-pink-900 shadow-sm focus:ring-2 focus:ring-pink-300 sm:w-80"
+                  >
+                    <option value="">-- Selecciona un paciente --</option>
+                    {(pacientes || []).map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.last_name}, {p.first_name}
+                      </option>
+                    ))}
+                  </select>
+                )
               )}
             </div>
           </motion.section>

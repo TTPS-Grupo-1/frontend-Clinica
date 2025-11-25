@@ -6,6 +6,7 @@ import type { Embryo } from '@/types/Embryo';
 import { useTransferenciaForm } from '../hooks/useTransferenciaForm';
 import { useApi } from '../hooks/useApi';
 import { usePacientesFetch } from '@/shared/hooks/usePacientesFetch';
+import { usePacientesFiltrados } from '@/shared/hooks/usePacientesFiltrados';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import {
@@ -31,6 +32,7 @@ export default function TransferenciaPage() {
 
   // Cargar pacientes
   const { pacientes, loading: pacientesLoading, error: pacientesError } = usePacientesFetch();
+  const { filteredPacientes } = usePacientesFiltrados(pacientes, 'Monitoreos finalizados');
 
   // Cargar tratamientos y embriones del paciente seleccionado
   const {
@@ -226,7 +228,7 @@ export default function TransferenciaPage() {
 
         <div className="space-y-8">
           <PacienteSelector
-            pacientes={pacientes}
+            pacientes={filteredPacientes !== null ? filteredPacientes : pacientes}
             selectedPaciente={selectedPacienteId}
             onPacienteChange={handlePacienteChange}
             isLoading={pacientesLoading}

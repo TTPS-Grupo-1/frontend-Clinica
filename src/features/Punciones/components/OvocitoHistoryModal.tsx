@@ -1,66 +1,150 @@
-import React from 'react';
-import OvocitoStateDiagram from './OvocitoStateDiagram';
 import { useHistorialOvocitoFetch } from '../../../shared/hooks/useHistorialOvocitoFetch';
+import { useHistorialEmbrionFetch } from '../../../shared/hooks/useHistorialEmbrionFetch';
+import OvocitoStateDiagram from './OvocitoStateDiagram';
+import { useState } from 'react';
 
-type Props = {
-  ovocitoId: number | null;
-  ovocitoIdentificador?: string;
+interface HistoryModalProps {
+  entityId: number | null;
+  entityIdentificador?: string;
+  entityType: 'ovocito' | 'embrion';
   open: boolean;
   onClose: () => void;
-};
+}
 
-export default function OvocitoHistoryModal({ ovocitoId, ovocitoIdentificador, open, onClose }: Props) {
-  // Intentar cargar historial real (si hay token en localStorage se enviará en headers)
-  const { historial: historialReal, loading, error } = useHistorialOvocitoFetch(ovocitoId);
-  // Si no hay historial real, usar datos hardcodeados de ejemplo para pruebas
-  const fallbackHistorial = (ovocitoId !== null && ovocitoId !== undefined) ? [
-    { id: -1, ovocito: ovocitoId, ovocito_identificador: ovocitoIdentificador ?? `OV-${ovocitoId}`, estado: 'recuperado', fecha: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), nota: 'Registro de ejemplo: recuperado', usuario_rep: 'Seed' },
-    { id: -2, ovocito: ovocitoId, ovocito_identificador: ovocitoIdentificador ?? `OV-${ovocitoId}`, estado: 'clasificado', fecha: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), nota: 'Registro de ejemplo: clasificado', usuario_rep: 'Seed' },
-    { id: -3, ovocito: ovocitoId, ovocito_identificador: ovocitoIdentificador ?? `OV-${ovocitoId}`, estado: 'fertilizado', fecha: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(), nota: 'Registro de ejemplo: fertilizado', usuario_rep: 'Seed' },
-  ] : [];
+export default function HistoryModal({
+  entityId,
+  entityIdentificador,
+  entityType,
+  open,
+  onClose,
+}: HistoryModalProps) {
+  const [selectedEstado, setSelectedEstado] = useState<string | null>(null);
 
-  // Priorizar el historial real si llegó, si no usar fallback
-  const historial = (historialReal && historialReal.length > 0) ? historialReal : fallbackHistorial;
+  const ovocitoData = useHistorialOvocitoFetch(entityType === 'ovocito' ? entityId : null);
+  const embrionData = useHistorialEmbrionFetch(entityType === 'embrion' ? entityId : null);
+
+  const { historial, loading, error } = entityType === 'ovocito' ? ovocitoData : embrionData;
+  const entityName = entityType === 'ovocito' ? 'Ovocito' : 'Embrión';
 
   if (!open) return null;
 
+  // Transformar datos para el diagrama
+  const diagramData = historial.map((h: any) => ({
+    id: h.id,
+    estado: h.estado,
+    fecha: h.fecha_modificacion || h.fecha,
+    nota: h.observaciones || h.nota,
+    usuario_rep: h.usuario_nombre || h.usuario_rep,
+  }));
+
+  // Filtrar por estado seleccionado
+  const filteredHistorial = selectedEstado
+    ? historial.filter((h: any) => h.estado === selectedEstado)
+    : historial;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center ">
-      <div className="bg-white/95 rounded-lg w-full max-w-4xl mx-4 p-4 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Historial de {ovocitoIdentificador ?? ovocitoId}</h3>
-          <button className="text-gray-600 hover:text-gray-900" onClick={onClose}>Cerrar</button>
+    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+      <div className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-xl">
+        {/* Header */}
+        <div className="flex items-center justify-between bg-gradient-to-r from-cyan-600 to-cyan-700 px-6 py-4">
+          <h2 className="text-xl font-bold text-white">
+            Historial de {entityIdentificador || `${entityName} #${entityId}`}
+          </h2>
+          <button onClick={onClose} className="text-2xl font-bold text-white hover:text-gray-200">
+            ×
+          </button>
         </div>
 
-        <div>
-          {loading ? (
-            <div className="text-gray-500">Cargando historial...</div>
-          ) : error ? (
-            <div className="text-red-500">Error al cargar historial: {String(error?.message || error)}</div>
-          ) : (
-            <>
-              <OvocitoStateDiagram historial={historial} onNodeClick={(/* estado */) => { /* opcional: filtrar timeline por estado */ }} />
+        {/* Content */}
+        <div className="max-h-[calc(90vh-140px)] overflow-y-auto p-6">
+          {loading && (
+            <div className="flex items-center justify-center py-8">
+              <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-cyan-600"></div>
+            </div>
+          )}
 
-              <div className="mt-4 max-h-44 overflow-y-auto bg-gray-50 p-2 rounded">
-                <h4 className="font-medium mb-2">Eventos (más recientes primero)</h4>
-                {historial.length === 0 ? (
-                  <div className="text-gray-500">No hay eventos registrados.</div>
-                ) : (
-                  <ul className="text-sm">
-                    {historial.slice().sort((a,b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).map(ev => (
-                      <li key={ev.id} className="py-1 border-b last:border-b-0">
-                        <div className="flex justify-between">
-                          <div><strong>{ev.estado}</strong> — {new Date(ev.fecha).toLocaleString()}</div>
-                          <div className="text-gray-500">{(ev as any).usuario_rep || '-'}</div>
-                        </div>
-                        {ev.nota ? <div className="text-gray-600">{ev.nota}</div> : null}
-                      </li>
-                    ))}
-                  </ul>
+          {error && (
+            <div className="rounded-lg bg-red-50 p-4 text-red-500">
+              Error al cargar historial: {String(error)}
+            </div>
+          )}
+
+          {!loading && !error && historial.length === 0 && (
+            <p className="py-8 text-center text-gray-500">
+              No hay historial registrado para este {entityName.toLowerCase()}.
+            </p>
+          )}
+
+          {!loading && !error && historial.length > 0 && (
+            <>
+              {/* Diagrama de flujo */}
+              <div className="mb-6 rounded-lg bg-gray-50 p-4">
+                <h3 className="mb-3 text-lg font-semibold text-gray-800">Diagrama de Estados</h3>
+                <OvocitoStateDiagram
+                  historial={diagramData}
+                  onNodeClick={(estado) =>
+                    setSelectedEstado(estado === selectedEstado ? null : estado)
+                  }
+                />
+                {selectedEstado && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    Filtrando por estado: <strong>{selectedEstado}</strong>
+                    <button
+                      onClick={() => setSelectedEstado(null)}
+                      className="ml-2 text-cyan-600 underline hover:text-cyan-700"
+                    >
+                      Ver todos
+                    </button>
+                  </div>
                 )}
+              </div>
+
+              {/* Lista de historial */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">Detalle del Historial</h3>
+                {filteredHistorial.map((registro: any) => (
+                  <div
+                    key={registro.id}
+                    className="rounded border-l-4 border-cyan-500 bg-gray-50 py-3 pl-4 transition-colors hover:bg-gray-100"
+                  >
+                    <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
+                      <div className="flex flex-wrap gap-2">
+                        <span className="font-semibold text-gray-900">
+                          {registro.tipo_modificacion || registro.estado}
+                        </span>
+                        <span className="rounded-full bg-cyan-100 px-2 py-1 text-xs text-cyan-800">
+                          {registro.estado}
+                        </span>
+                        {registro.calidad && (
+                          <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                            Calidad: {registro.calidad}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-sm text-gray-500">
+                        {new Date(registro.fecha_modificacion || registro.fecha).toLocaleString()}
+                      </span>
+                    </div>
+                    {(registro.observaciones || registro.nota) && (
+                      <p className="mt-2 text-sm text-gray-600">
+                        {registro.observaciones || registro.nota}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
             </>
           )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end border-t bg-gray-50 px-6 py-4">
+          <button
+            onClick={onClose}
+            className="rounded-md bg-gray-600 px-6 py-2 text-white transition-colors hover:bg-gray-700"
+          >
+            Cerrar
+          </button>
         </div>
       </div>
     </div>

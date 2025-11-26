@@ -72,8 +72,8 @@ const AntecedentesClinicos: React.FC<AntecedenteClinicosProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px]">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
+    <div className="mx-auto flex min-h-[400px] max-w-2xl flex-col justify-between rounded-xl border border-gray-300 bg-white p-8 text-black shadow-lg">
+      <h2 className="mb-4 text-center text-2xl font-bold text-black">
         {titulo || 'Antecedentes Clínicos'}
       </h2>
 
@@ -83,20 +83,16 @@ const AntecedentesClinicos: React.FC<AntecedenteClinicosProps> = ({
         value={inputBusqueda}
         onChange={(e) => setInputBusqueda(e.target.value)}
         placeholder="Buscar antecedentes (mínimo 3 letras)..."
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded text-blue-900 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+        className="mb-4 w-full rounded border border-gray-300 px-4 py-2 text-blue-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
       />
 
       {/* 🧠 Estado de carga o resultados */}
       {loading ? (
-        <p className="text-center text-gray-500 py-6">Cargando...</p>
+        <p className="py-6 text-center text-gray-500">Cargando...</p>
       ) : busqueda.length < 3 ? (
-        <p className="text-center text-gray-400 py-6">
-          Escribí al menos 3 caracteres para buscar
-        </p>
+        <p className="py-6 text-center text-gray-400">Escribí al menos 3 caracteres para buscar</p>
       ) : resultados.length === 0 ? (
-        <p className="text-center text-gray-400 py-6">
-          No se encontraron resultados
-        </p>
+        <p className="py-6 text-center text-gray-400">No se encontraron resultados</p>
       ) : (
         <div className="space-y-2">
           {resultados.map((item, index) => (
@@ -105,7 +101,7 @@ const AntecedentesClinicos: React.FC<AntecedenteClinicosProps> = ({
                 type="checkbox"
                 checked={value.includes(item)} // usa directamente value
                 onChange={() => handleToggle(item)}
-                className="w-4 h-4 accent-blue-600"
+                className="h-4 w-4 accent-blue-600"
               />
               <span className="text-gray-800">{item}</span>
             </label>
@@ -116,11 +112,7 @@ const AntecedentesClinicos: React.FC<AntecedenteClinicosProps> = ({
       {/* 📄 Paginador */}
       {totalPaginas > 1 && resultados.length > 0 && (
         <div className="mt-4">
-          <Paginador
-            paginaActual={pagina}
-            totalPaginas={totalPaginas}
-            onPageChange={setPagina}
-          />
+          <Paginador paginaActual={pagina} totalPaginas={totalPaginas} onPageChange={setPagina} />
         </div>
       )}
     </div>

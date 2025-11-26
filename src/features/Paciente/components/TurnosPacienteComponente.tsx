@@ -1,36 +1,52 @@
-import type { TurnoCardProps } from "../../../interfaces/Paciente";
-import { CircleX, Stethoscope } from "lucide-react";
-export default function TurnoCard({ turno, onCancelar }: TurnoCardProps) {
+import type { TurnoCardProps } from '../../../interfaces/Paciente';
+import { CircleX, Stethoscope, Repeat2 } from 'lucide-react';
+
+export default function TurnoCard({ turno, onCancelar, onReasignar }: TurnoCardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-200 border border-gray-100 flex flex-col justify-between min-h-[260px]">
+    <div className="flex min-h-[260px] flex-col justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-lg transition-shadow duration-200 hover:shadow-xl">
       {/* Información del turno */}
-      <div className="flex flex-col items-center mb-4">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3 shadow">
-          <Stethoscope className="w-10 h-10 text-blue-600" />
+      <div className="mb-4 flex flex-col items-center">
+        <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 shadow">
+          <Stethoscope className="h-10 w-10 text-blue-600" />
         </div>
-        <h3 className="text-lg font-bold text-blue-700 text-center mb-1">
-          {turno.medico}
-        </h3>
-        {turno.especialidad && (
-          <p className="text-sm text-blue-500">{turno.especialidad}</p>
-        )}
+
+        <h3 className="mb-1 text-center text-lg font-bold text-blue-700">{turno.medico}</h3>
+
+        {turno.especialidad && <p className="text-sm text-blue-500">{turno.especialidad}</p>}
       </div>
+
       <div className="mb-4 text-center">
         <p className="text-sm text-gray-700">
-          <span className="font-medium">Fecha:</span> <span className="text-blue-700 font-semibold">{turno.fecha}</span>
+          <span className="font-medium">Fecha:</span>{' '}
+          <span className="font-semibold text-blue-700">{turno.fecha}</span>
         </p>
+
         <p className="text-sm text-gray-700">
-          <span className="font-medium">Hora:</span> <span className="text-blue-700 font-semibold">{turno.hora}</span>
+          <span className="font-medium">Hora:</span>{' '}
+          <span className="font-semibold text-blue-700">{turno.hora}</span>
         </p>
       </div>
-      {/* Botón cancelar */}
-      <div className="flex flex-col gap-2 mt-auto">
+
+      {/* Botones uno al lado del otro */}
+      <div className="mt-auto flex flex-row justify-center gap-3">
+        {/* BOTÓN DE REASIGNAR */}
+        {turno.es_monitoreo && (
+          <button
+            onClick={() => onReasignar(turno.id)}
+            className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-blue-500 to-blue-700 px-4 py-2 font-semibold text-white shadow transition-all hover:scale-105 hover:from-blue-600 hover:to-blue-800"
+          >
+            Reasignar
+            <Repeat2 size={16} />
+          </button>
+        )}
+
+        {/* BOTÓN CANCELAR */}
         <button
           onClick={() => onCancelar(turno.id)}
-          className="mx-auto flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-700 text-white border-none py-2 px-6 rounded-md font-semibold hover:scale-105 hover:from-red-600 hover:to-red-800 transition-all shadow"
+          className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-red-500 to-red-700 px-4 py-2 font-semibold text-white shadow transition-all hover:scale-105 hover:from-red-600 hover:to-red-800"
         >
-          Cancelar Turno
-          <CircleX size={18} />
+          Cancelar
+          <CircleX size={16} />
         </button>
       </div>
     </div>

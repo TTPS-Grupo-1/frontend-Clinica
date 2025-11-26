@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
 interface OpcionCardProps {
   title: string;
@@ -11,11 +11,11 @@ const OpcionCard: FC<OpcionCardProps> = ({ title, description, icon, onClick }) 
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer bg-white shadow-md rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:shadow-lg transition"
+      className="flex cursor-pointer flex-col items-center justify-center rounded-2xl bg-white p-6 text-center shadow-md transition hover:shadow-lg"
     >
-      {icon && <div className="text-blue-500 text-4xl mb-3">{icon}</div>}
+      {icon && <div className="mb-3 text-4xl text-blue-500">{icon}</div>}
       <h3 className="text-lg font-semibold">{title}</h3>
-      {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
+      {description && <p className="mt-1 text-sm text-gray-500">{description}</p>}
     </div>
   );
 };

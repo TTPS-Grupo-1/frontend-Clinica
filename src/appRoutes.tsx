@@ -12,7 +12,7 @@ import ListadoMedicosPage from './features/Medico/pages/ListadoMedicosPage';
 import RegistroPage from './features/Paciente/pages/RegistroPage';
 import DonacionesHomePage from './features/Donaciones/pages/HomePage';
 import DonacionPage from './features/Donaciones/pages/DonacionPage';
-import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage'
+import TurnosPacientePage from './features/Paciente/pages/TurnosPacientePage';
 import HomePageAdmin from './features/Admin/pages/HomePageAdmin';
 import VerOrdenesMedicas from './features/Paciente/pages/VerOrdenesMedicasPage';
 import PrimeraConsultaPage from './features/Medico/pages/PrimeraConsultaPage';
@@ -29,6 +29,14 @@ import TransferenciaPage from './features/Transferencia/pages/TransferenciaPage'
 import CriopreservacionSemenPage from './features/Criopreservaciones/pages/CriopreservarSemenPage';
 import HistoriaClinicaPage from './features/Paciente/pages/HistoriaClinicaPage';
 import MedicoPacientesPage from './features/Medico/pages/MedicoPacientesPage';
+import RegistrarSeguimientoPage from './features/Seguimiento/pages/RegistrarSeguimientoPage';
+import TratamientoPage from './features/Tratamiento/pages/TratamientoPage';
+import PrimeraConsultaViewPage from './features/Tratamiento/pages/PrimeraConsultaViewPage';
+import SegundaConsultaViewPage from './features/Tratamiento/pages/SegundaConsultaViewPage';
+import DeudaPaciente from './features/Paciente/pages/DeudaPaciente';
+import DeudaPacientesPage from './features/Admin/pages/DeudaPacientesPage';
+import ObrasSocialesFinanzasPage from './features/Admin/pages/ObrasSocialesFinanzasPage';
+
 
 export default function getAppRoutes() {
   return (
@@ -49,22 +57,32 @@ export default function getAppRoutes() {
       <Route path="/admin/home" element={<HomePageAdmin />} />
       {/* Para probar la page unificada con param tipo */}
       <Route path="/donaciones/nueva/:tipo" element={<DonacionPage />} />
-      <Route path="/pacientes/misTurnos" element={<TurnosPacientePage/>} />
-      <Route path="/pacientes/verOrdenesMedicas" element={<VerOrdenesMedicas/>} />
+      <Route path="/pacientes/misTurnos" element={<TurnosPacientePage />} />
+      <Route path="/pacientes/verOrdenesMedicas" element={<VerOrdenesMedicas />} />
       <Route path="/pacientes/:pacienteId/primeraConsulta" element={<PrimeraConsultaPage />} />
       <Route path="/pacientes/:pacienteId/segundaConsulta" element={<SegundaConsultaPage />} />
+      <Route path="/tratamiento/:tratamientoId/primera-consulta" element={<PrimeraConsultaViewPage />} />
+      <Route path="/tratamiento/:tratamientoId/segunda-consulta" element={<SegundaConsultaViewPage />} />
       <Route path="/operador/donaciones/nueva/:tipo" element={<DonacionPage />} />
       <Route path="/pacientes/turnos" element={<TurnosPacientePage />} />
       <Route path="/operador" element={<HomeLaboratorio />} />
       <Route path="/operador/donaciones" element={<DonacionesHomePage />} />
       <Route path="/operador/punciones" element={<HomePuncion />} />
-  <Route path="/pacientes/:pacienteId/historia" element={<HistoriaClinicaPage />} />
-  <Route path="/medico/:medicoId/pacientes" element={<MedicoPacientesPage />} />
+      <Route path="/pacientes/:pacienteId/historia" element={<HistoriaClinicaPage />} />
+      <Route path="/medico/:medicoId/pacientes" element={<MedicoPacientesPage />} />
       <Route path="/operador/fertilizaciones" element={<FertilizacionPage />} />
       <Route path="/operador/tanques" element={<AlmacenamientoPage />} />
       <Route path="/medicos/asignar_turnos" element={<AsignarTurnosPage />} />
       <Route path="/transferencias" element={<TransferenciaPage />} />
       <Route path="/operador/criopreservacion" element={<CriopreservacionSemenPage />} />
+      <Route path="medico/seguimiento/:pacienteId" element={<RegistrarSeguimientoPage />} />
+      <Route path="/tratamiento/:id" element={<TratamientoPage />} />
+      <Route path="/pacientes/deuda" element={<DeudaPaciente />} />
+      <Route path="/pacientes/deudaPacientes" element={<DeudaPacientesPage />} />
+      <Route path="/obras-sociales/deuda" element={<ObrasSocialesFinanzasPage />} />
+
+   
+
     </>
   );
 }

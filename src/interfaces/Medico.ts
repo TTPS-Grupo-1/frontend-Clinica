@@ -1,14 +1,14 @@
-import type { Medico } from "../types/Medico";
-import type { Paciente } from "../types/Paciente";
-import type { ReactNode } from "react";
+import type { Medico } from '../types/Medico';
+import type { Paciente } from '../types/Paciente';
+import type { ReactNode } from 'react';
 export interface MedicoListProps {
   medicos: Medico[];
   onEliminar?: (medico: Medico) => void;
 }
 
 export interface FormMedicoProps {
-  onRegistrar: (medico: Omit<Medico, "id">) => void;
-  initialValues?: Omit<Medico, "id">;
+  onRegistrar: (medico: Omit<Medico, 'id'>) => void;
+  initialValues?: Omit<Medico, 'id'>;
   titulo?: string;
   botonTexto?: string;
 }
@@ -16,12 +16,14 @@ export interface FormMedicoProps {
 export interface PacientCardProps {
   paciente: Paciente;
   onAtender: (id: number) => void;
-  onVerHistoria: (id: number) => void;
+  onVerHistoria?: (id: number) => void;
 }
 
 // Permite controlar la visibilidad de acciones específicas en la tarjeta
 export interface PacientCardOptions {
   showAtender?: boolean;
+  showSeguimiento?: boolean;
+  onRealizarSeguimiento?: (id: number) => void;   // 👈 AGREGAR ESTO
 }
 
 export interface DashboardCardProps {
@@ -56,15 +58,16 @@ export interface AntecedenteItemClinicoProps {
   onChange: (value: string) => void;
 }
 
-
 export interface AntecedentesGinecologicosProps {
   doble?: boolean; // Si es método ROPA, pedir datos de ambas mujeres
-  onDataChange?: (data: { datos1: Record<string, string>; datos2?: Record<string, string> }) => void;
+  onDataChange?: (data: {
+    datos1: Record<string, string>;
+    datos2?: Record<string, string>;
+  }) => void;
   value?: { datos1: Record<string, string>; datos2?: Record<string, string> }; // ✅ nuevo campo para persistencia
   titulo1?: string;
   titulo2?: string;
 }
-
 
 export interface FenotipoDonacionProps {
   visible: boolean;
@@ -81,12 +84,10 @@ export interface ObjetivoXProps {
   onDataChange: (key: string, data: any) => void;
 }
 
-
 export interface Estudio {
   id: number;
   nombre: string;
 }
-
 
 export interface AntecedentesXProps {
   onSeleccionChange?: (seleccionados: string[]) => void;
@@ -99,7 +100,6 @@ export interface AntecedentesQuirurgicosProps {
   value?: { descripcion: string }; // ✅ así debe ir
 }
 
-
 export interface AntecedentesFamiliaresProps {
   onDataChange?: (data: string) => void;
   value?: string;
@@ -110,7 +110,6 @@ export interface AntecedenteClinicosProps {
   onDataChange?: (seleccionados: string[]) => void;
   value?: string[];
 }
-
 
 export interface AntecedentesGenitalesProps {
   onDataChange?: (data: { descripcion: string }) => void;
@@ -131,7 +130,6 @@ export interface EstudiosPrequirurgicosProps {
   titulo?: string;
 }
 
-
 export interface EstudioSemenProps {
   onDataChange?: (data: { estudiosSeleccionados: string[] }) => void;
   value?: { estudiosSeleccionados: string[] };
@@ -143,7 +141,6 @@ export interface EstudiosHormonalesProps {
   value?: { seleccionados: string[] };
   visible?: boolean;
 }
-
 
 export interface ExamenFisicoProps {
   visible?: boolean;

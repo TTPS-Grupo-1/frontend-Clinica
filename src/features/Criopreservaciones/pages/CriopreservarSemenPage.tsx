@@ -1,21 +1,22 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import DashboardCard from "../../Medico/components/DashboardCard";
-import ModalAccion from "../components/ModalAccion";
-import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import DashboardCard from '../../Medico/components/DashboardCard';
+import RoleHomeButton from '../../../shared/components/RoleHomeButton';
+import ModalAccion from '../components/ModalAccion';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function CriopreservarSemenPage() {
   const navigate = useNavigate();
-  
+
   const [showConfirmacion, setShowConfirmacion] = useState(false);
   const [showCongelar, setShowCongelar] = useState(false);
   const [showDescongelar, setShowDescongelar] = useState(false);
   const [showBuscar, setShowBuscar] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [dniPaciente, setDniPaciente] = useState("");
-  const [dniDescongelar, setDniDescongelar] = useState("");
-  const [dniBuscar, setDniBuscar] = useState("");
+  const [dniPaciente, setDniPaciente] = useState('');
+  const [dniDescongelar, setDniDescongelar] = useState('');
+  const [dniBuscar, setDniBuscar] = useState('');
   const [resultadoBusqueda, setResultadoBusqueda] = useState<string | null>(null);
 
   const handleVolver = () => {
@@ -23,9 +24,9 @@ export default function CriopreservarSemenPage() {
     setShowCongelar(false);
     setShowDescongelar(false);
     setShowBuscar(false);
-    setDniPaciente("");
-    setDniDescongelar("");
-    setDniBuscar("");
+    setDniPaciente('');
+    setDniDescongelar('');
+    setDniBuscar('');
     setResultadoBusqueda(null);
   };
 
@@ -38,19 +39,19 @@ export default function CriopreservarSemenPage() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://bmcgxbtbcmlzoetyqajn.supabase.co/functions/v1/crear-tanque",
+        'https://bmcgxbtbcmlzoetyqajn.supabase.co/functions/v1/crear-tanque',
         { group_id: 1 },
         {
           headers: {
-            "token": "token-grupo-4",
-            "Content-Type": "application/json",
+            token: 'token-grupo-4',
+            'Content-Type': 'application/json',
           },
         }
       );
       if (response.data.success) {
-        toast.success(response.data.message || "Tanque creado exitosamente");
+        toast.success(response.data.message || 'Tanque creado exitosamente');
       } else {
-        toast.error(response.data.message || "Error al crear el tanque");
+        toast.error(response.data.message || 'Error al crear el tanque');
       }
       setShowConfirmacion(false);
     } catch (error: any) {
@@ -58,7 +59,7 @@ export default function CriopreservarSemenPage() {
         error.response?.data?.message ||
         error.response?.data?.error ||
         error.message ||
-        "Error al crear el tanque";
+        'Error al crear el tanque';
       toast.error(errorMessage);
       setShowConfirmacion(false);
     } finally {
@@ -68,39 +69,39 @@ export default function CriopreservarSemenPage() {
 
   const handleConfirmarCongelar = async () => {
     if (!dniPaciente.trim()) {
-      toast.error("Por favor ingrese el DNI del paciente");
+      toast.error('Por favor ingrese el DNI del paciente');
       return;
     }
     const dniNumero = parseInt(dniPaciente, 10);
     if (isNaN(dniNumero) || dniNumero <= 0) {
-      toast.error("El DNI debe ser un número válido");
+      toast.error('El DNI debe ser un número válido');
       return;
     }
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://bmcgxbtbcmlzoetyqajn.supabase.co/functions/v1/congelar-semen",
+        'https://bmcgxbtbcmlzoetyqajn.supabase.co/functions/v1/congelar-semen',
         { dni: dniPaciente, group_id: 1 },
         {
           headers: {
-            "token": "token-grupo-4",
-            "Content-Type": "application/json",
+            token: 'token-grupo-4',
+            'Content-Type': 'application/json',
           },
         }
       );
       if (response.data.success) {
-        toast.success(response.data.message || "Semen congelado exitosamente");
+        toast.success(response.data.message || 'Semen congelado exitosamente');
       } else {
-        toast.error(response.data.message || "Error al congelar semen");
+        toast.error(response.data.message || 'Error al congelar semen');
       }
       setShowCongelar(false);
-      setDniPaciente("");
+      setDniPaciente('');
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ||
         error.response?.data?.error ||
         error.message ||
-        "Error al congelar semen";
+        'Error al congelar semen';
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -109,39 +110,39 @@ export default function CriopreservarSemenPage() {
 
   const handleConfirmarDescongelar = async () => {
     if (!dniDescongelar.trim()) {
-      toast.error("Por favor ingrese el DNI del semen a descongelar");
+      toast.error('Por favor ingrese el DNI del semen a descongelar');
       return;
     }
     const dniNumero = parseInt(dniDescongelar, 10);
     if (isNaN(dniNumero) || dniNumero <= 0) {
-      toast.error("El DNI debe ser un número válido");
+      toast.error('El DNI debe ser un número válido');
       return;
     }
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://bmcgxbtbcmlzoetyqajn.supabase.co/functions/v1/descongelar-semen",
+        'https://bmcgxbtbcmlzoetyqajn.supabase.co/functions/v1/descongelar-semen',
         { dni: dniDescongelar, group_id: 1 },
         {
           headers: {
-            "token": "token-grupo-4",
-            "Content-Type": "application/json",
+            token: 'token-grupo-4',
+            'Content-Type': 'application/json',
           },
         }
       );
       if (response.data.success) {
-        toast.success(response.data.message || "Semen descongelado exitosamente");
+        toast.success(response.data.message || 'Semen descongelado exitosamente');
       } else {
-        toast.error(response.data.message || "Error al descongelar semen");
+        toast.error(response.data.message || 'Error al descongelar semen');
       }
       setShowDescongelar(false);
-      setDniDescongelar("");
+      setDniDescongelar('');
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ||
         error.response?.data?.error ||
         error.message ||
-        "Error al descongelar semen";
+        'Error al descongelar semen';
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -150,38 +151,38 @@ export default function CriopreservarSemenPage() {
 
   const handleConfirmarBuscar = async () => {
     if (!dniBuscar.trim()) {
-      toast.error("Por favor ingrese el DNI del paciente");
+      toast.error('Por favor ingrese el DNI del paciente');
       return;
     }
     const dniNumero = parseInt(dniBuscar, 10);
     if (isNaN(dniNumero) || dniNumero <= 0) {
-      toast.error("El DNI debe ser un número válido");
+      toast.error('El DNI debe ser un número válido');
       return;
     }
     setLoading(true);
     setResultadoBusqueda(null);
     try {
       const response = await axios.post(
-        "https://bmcgxbtbcmlzoetyqajn.supabase.co/functions/v1/dni-tiene-muestra",
+        'https://bmcgxbtbcmlzoetyqajn.supabase.co/functions/v1/dni-tiene-muestra',
         { dni: dniBuscar, group_id: 1 },
         {
           headers: {
-            "token": "token-grupo-4",
-            "Content-Type": "application/json",
+            token: 'token-grupo-4',
+            'Content-Type': 'application/json',
           },
         }
       );
       if (response.data.success) {
-        setResultadoBusqueda(response.data.message || "El paciente tiene muestra registrada.");
+        setResultadoBusqueda(response.data.message || 'El paciente tiene muestra registrada.');
       } else {
-        setResultadoBusqueda(response.data.message || "El paciente NO tiene muestra registrada.");
+        setResultadoBusqueda(response.data.message || 'El paciente NO tiene muestra registrada.');
       }
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ||
         error.response?.data?.error ||
         error.message ||
-        "Error al buscar muestra";
+        'Error al buscar muestra';
       setResultadoBusqueda(errorMessage);
     } finally {
       setLoading(false);
@@ -192,30 +193,31 @@ export default function CriopreservarSemenPage() {
 
   const handleCancelarCongelar = () => {
     setShowCongelar(false);
-    setDniPaciente("");
+    setDniPaciente('');
   };
 
   const handleCancelarDescongelar = () => {
     setShowDescongelar(false);
-    setDniDescongelar("");
+    setDniDescongelar('');
   };
 
   const handleCancelarBuscar = () => {
     setShowBuscar(false);
-    setDniBuscar("");
+    setDniBuscar('');
     setResultadoBusqueda(null);
   };
 
   return (
-    <main className="pt-28 flex flex-col items-center min-h-screen bg-gray-50">
+    <main className="flex min-h-screen flex-col items-center bg-gray-50 pt-28">
       <Toaster position="top-center" />
       <div className="w-full max-w-7xl px-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-          Gestión de Criopreservación de Semen
-        </h1>
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-800">Gestión de Criopreservación de Semen</h1>
+          <RoleHomeButton className="!static" />
+        </div>
 
         {!showConfirmacion && !showCongelar && !showDescongelar && !showBuscar ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             <DashboardCard
               title="Crear Tanque"
               description="Registrar un nuevo tanque de criopreservación (10 racks x 10 posiciones)"
@@ -253,8 +255,8 @@ export default function CriopreservarSemenPage() {
             confirmText="Confirmar"
             cancelText="Cancelar"
           >
-            <div className="bg-blue-50 p-4 rounded-md text-sm text-left mb-2">
-              <p className="font-semibold text-gray-800 mb-2">Características:</p>
+            <div className="mb-2 rounded-md bg-blue-50 p-4 text-left text-sm">
+              <p className="mb-2 font-semibold text-gray-800">Características:</p>
               <ul className="space-y-1 text-gray-600">
                 <li>• 10 racks por tanque</li>
                 <li>• 10 posiciones por rack</li>
@@ -276,19 +278,19 @@ export default function CriopreservarSemenPage() {
             disableConfirm={loading || !dniPaciente.trim()}
           >
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 DNI del Paciente
               </label>
               <input
                 type="text"
                 value={dniPaciente}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, "");
+                  const value = e.target.value.replace(/\D/g, '');
                   setDniPaciente(value);
                 }}
                 placeholder="Ej: 12345678"
                 maxLength={8}
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors text-gray-900 font-medium"
+                className="w-full rounded-md border border-gray-300 px-4 py-3 font-medium text-gray-900 transition-colors focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500"
                 disabled={loading}
               />
             </div>
@@ -307,19 +309,17 @@ export default function CriopreservarSemenPage() {
             disableConfirm={loading || !dniDescongelar.trim()}
           >
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                DNI del Semen
-              </label>
+              <label className="mb-2 block text-sm font-medium text-gray-700">DNI del Semen</label>
               <input
                 type="text"
                 value={dniDescongelar}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, "");
+                  const value = e.target.value.replace(/\D/g, '');
                   setDniDescongelar(value);
                 }}
                 placeholder="Ej: 12345678"
                 maxLength={8}
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors text-gray-900 font-medium"
+                className="w-full rounded-md border border-gray-300 px-4 py-3 font-medium text-gray-900 transition-colors focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500"
                 disabled={loading}
               />
             </div>
@@ -338,23 +338,23 @@ export default function CriopreservarSemenPage() {
             disableConfirm={loading || !dniBuscar.trim()}
           >
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 DNI del Paciente
               </label>
               <input
                 type="text"
                 value={dniBuscar}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, "");
+                  const value = e.target.value.replace(/\D/g, '');
                   setDniBuscar(value);
                 }}
                 placeholder="Ej: 12345678"
                 maxLength={8}
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors text-gray-900 font-medium"
+                className="w-full rounded-md border border-gray-300 px-4 py-3 font-medium text-gray-900 transition-colors focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500"
                 disabled={loading}
               />
               {resultadoBusqueda && (
-                <div className="mt-4 p-3 bg-cyan-50 border border-cyan-200 rounded-md text-center text-sm font-medium text-cyan-800">
+                <div className="mt-4 rounded-md border border-cyan-200 bg-cyan-50 p-3 text-center text-sm font-medium text-cyan-800">
                   {resultadoBusqueda}
                 </div>
               )}

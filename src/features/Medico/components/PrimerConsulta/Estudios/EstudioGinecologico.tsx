@@ -11,8 +11,7 @@ const EstudioGinecologico: React.FC<EstudioGinecologicoProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL =
-    'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_ginecologico';
+  const API_URL = 'https://srlgceodssgoifgosyoh.supabase.co/functions/v1/estudio_ginecologico';
 
   // 🔹 Obtener estudios desde Supabase Edge Function (solo una vez)
   useEffect(() => {
@@ -25,9 +24,7 @@ const EstudioGinecologico: React.FC<EstudioGinecologicoProps> = ({
           headers: { 'Content-Type': 'application/json' },
         });
 
-        const data = Array.isArray(response.data.data)
-          ? response.data.data
-          : response.data;
+        const data = Array.isArray(response.data.data) ? response.data.data : response.data;
 
         setCampos(data || []);
       } catch (err: any) {
@@ -53,10 +50,8 @@ const EstudioGinecologico: React.FC<EstudioGinecologicoProps> = ({
 
   // 🧱 Render
   return (
-    <div className="max-w-xl mx-auto mt-6 rounded shadow p-6 border-2 border-black bg-white text-black">
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        Realizar Estudios Ginecológicos
-      </h2>
+    <div className="mx-auto mt-6 max-w-xl rounded border-2 border-black bg-white p-6 text-black shadow">
+      <h2 className="mb-4 text-center text-2xl font-bold">Realizar Estudios Ginecológicos</h2>
 
       {loading ? (
         <p className="text-center text-gray-600">Cargando estudios...</p>

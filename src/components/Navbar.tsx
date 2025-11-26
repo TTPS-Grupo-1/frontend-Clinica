@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, User, MessageCircle } from "lucide-react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User, MessageCircle } from 'lucide-react';
+import OperadorSection from './OperadorSection';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { persistor } from '../store';
@@ -9,13 +10,11 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import Chatbot from './Chatbot';
 
-
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-  // Only one dropdown open at a time: 'embriones', 'donaciones', 'profile', or null
-  const [openDropdown, setOpenDropdown] = useState<null | 'embriones' | 'donaciones' | 'profile'>(null);
+  // dropdown state handled inside subcomponents
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => (state.auth as any)?.isAuthenticated);
   const user = useSelector((state: RootState) => (state.auth as any)?.user);
@@ -25,71 +24,78 @@ export default function Navbar() {
   if (_storedRoleRaw) {
     try {
       _storedRole = JSON.parse(_storedRoleRaw);
-    } catch (e) {
+    } catch {
       _storedRole = _storedRoleRaw;
     }
   }
   const role = user?.role || user?.rol || _storedRole;
   const dispatch = useDispatch();
 
- const handleLogout = async () => {
-  setIsProfileOpen(false);
-  const token = localStorage.getItem('token');
+  const handleLogout = async () => {
+    setIsProfileOpen(false);
+    const token = localStorage.getItem('token');
 
-  try {
-    await axios.post('/api/logout/', {}, {
-      headers: { Authorization: token ? `Token ${token}` : '' }
-    });
-  } catch (err) {
-    console.error('Logout request failed', err);
-    // opcional: mostrar toast de advertencia
-  } finally {
-    // Limpiar el estado de Redux en memoria
-    dispatch(logout()); // Limpia usuario y autenticación en Redux
-
-    // Purgar el storage persistido (elimina la copia guardada en localStorage)
     try {
-      await persistor.purge();
-    } catch (e) {
-      console.warn('Error purging persistor', e);
-    }
+      await axios.post(
+        '/api/logout/',
+        {},
+        {
+          headers: { Authorization: token ? `Token ${token}` : '' },
+        }
+      );
+    } catch (err) {
+      console.error('Logout request failed', err);
+      // opcional: mostrar toast de advertencia
+    } finally {
+      // Limpiar el estado de Redux en memoria
+      dispatch(logout()); // Limpia usuario y autenticación en Redux
 
-    // Borrar claves usadas en localStorage por seguridad
-    try {
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      // clave usada por redux-persist suele ser `persist:<key>`
-      localStorage.removeItem('persist:auth');
-    } catch (e) {
-      console.warn('Error clearing localStorage on logout', e);
-    }
+      // Purgar el storage persistido (elimina la copia guardada en localStorage)
+      try {
+        await persistor.purge();
+      } catch (e) {
+        console.warn('Error purging persistor', e);
+      }
 
-    toast.success('Sesión cerrada');
-    navigate('/'); // Redirige al home normal
-  }
-};
+      // Borrar claves usadas en localStorage por seguridad
+      try {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        // clave usada por redux-persist suele ser `persist:<key>`
+        localStorage.removeItem('persist:auth');
+      } catch (e) {
+        console.warn('Error clearing localStorage on logout', e);
+      }
+
+      toast.success('Sesión cerrada');
+      navigate('/'); // Redirige al home normal
+    }
+  };
 
   return (
     <nav
-      className="fixed top-0 w-full z-50 bg-[#24222B]/35 backdrop-blur-sm transition-transform duration-300"
-      style={{ minHeight: "60px" }}
+      className="fixed top-0 z-50 w-full bg-[#24222B]/35 backdrop-blur-sm transition-transform duration-300"
+      style={{ minHeight: '60px' }}
     >
-      <section className="flex items-center justify-between w-full px-4 py-3">
+      <section className="flex w-full items-center justify-between px-4 py-3">
         {/* Logo: inline medical icon (clickable) */}
         <button
           aria-label="Ir al inicio"
           onClick={() => {
             if (role === 'PACIENTE') {
               navigate('/pacientes/home');
-              } else if (role === 'OPERADOR' || role === 'OPERADOR_LABORATORIO') {
+            } else if (role === 'OPERADOR' || role === 'OPERADOR_LABORATORIO') {
               navigate('/operador');
             } else if (role === 'MEDICO') {
               navigate('/medico/home');
-            } else {
+            } else if(role === 'ADMIN') {
+              navigate('/admin/home');
+            }
+            else {
               navigate('/');
             }
           }}
-          className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0"
+          className="flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -112,11 +118,11 @@ export default function Navbar() {
 
         {/* Botón hamburguesa (móvil) */}
         <button
-          className="md:hidden ml-auto text-[#CDA053] focus:outline-none"
+          className="ml-auto text-[#CDA053] focus:outline-none md:hidden"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           <svg
-            className="w-6 h-6"
+            className="h-6 w-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -141,84 +147,14 @@ export default function Navbar() {
         </button>
 
         {/* Enlaces en escritorio (dropdown + acciones de usuario) */}
-        <section className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
-          {role === 'OPERADOR_LABORATORIO' && (
-            <div className="relative z-50 group">
-              <button
-                aria-haspopup="true"
-                aria-expanded={openDropdown === 'donaciones'}
-                onClick={() => setOpenDropdown(openDropdown === 'donaciones' ? null : 'donaciones')}
-                onMouseEnter={() => setOpenDropdown('donaciones')}
-                onMouseLeave={() => setOpenDropdown(null)}
-                className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
-              >
-                <ChevronRight className="ml-1 h-4 w-4 text-white" />
-                Operador
-              </button>
-              {/* Dropdown panel */}
-              <div
-                onMouseEnter={() => setOpenDropdown('donaciones')}
-                onMouseLeave={() => setOpenDropdown(null)}
-                className={`absolute right-0 mt-1 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
-                  openDropdown === 'donaciones' ? 'opacity-100 visible transform scale-100' : 'opacity-0 invisible transform scale-95'
-                }`}
-              >
-                <ul className="py-1">
-                  <li>
-                    <Link
-                      to="/operador"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                    >
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/operador/donaciones"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                    >
-                      Donaciones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/operador/punciones"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                    >
-                      Punciones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/embriones"
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                    >
-                      Listado de embriones
-                    </Link>
-                  </li>
-                  <li>
-                      <Link
-                        to="/operador/fertilizaciones"
-                        onClick={() => setOpenDropdown(null)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                      >
-                        Fertilizaciones
-                      </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          )}
+        <section className="afacad-bold hidden items-center gap-5 text-base text-[#CDA053] md:flex">
+          {role === 'OPERADOR_LABORATORIO' && <OperadorSection />}
 
           {/* Chatbot Button */}
           {isAuthenticated && (
             <button
               onClick={() => setIsChatbotOpen(!isChatbotOpen)}
-              className="text-white font-medium hover:text-yellow-500 transition-colors duration-200 mr-4"
+              className="mr-4 font-medium text-white transition-colors duration-200 hover:text-yellow-500"
               title="Chatbot de asistencia"
             >
               <MessageCircle className="h-6 w-6" />
@@ -227,27 +163,27 @@ export default function Navbar() {
 
           {/* User Menu */}
           {isAuthenticated && (
-            <div className="relative z-50 group">
+            <div className="group relative z-50">
               <button
                 aria-haspopup="true"
                 aria-expanded={isProfileOpen}
                 onClick={() => setIsProfileOpen((s) => !s)}
                 onBlur={() => setTimeout(() => setIsProfileOpen(false), 150)}
-                className="flex items-center gap-2 text-white font-medium hover:text-yellow-500 transition-colors duration-200"
+                className="flex items-center gap-2 font-medium text-white transition-colors duration-200 hover:text-yellow-500"
               >
                 <User className="h-6 w-6" />
               </button>
               {/* Dropdown perfil */}
               <div
-                className={`absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
-                  isProfileOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'
+                className={`ring-opacity-5 absolute right-0 mt-2 w-40 rounded-md bg-white shadow-lg ring-1 ring-black transition-all duration-200 ${
+                  isProfileOpen ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'
                 }`}
               >
                 <ul className="py-1">
                   <li>
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100"
                     >
                       Cerrar sesión
                     </button>
@@ -259,74 +195,24 @@ export default function Navbar() {
         </section>
 
         {/* Menú móvil */}
-          <article
-            className={`md:hidden w-full bg-[#24222B]/90 transition-all duration-300 ease-in-out ${
-              isMobileMenuOpen
-                ? "max-h-[300px] opacity-100 py-4 px-6"
-                : "max-h-0 opacity-0 overflow-hidden"
-            }`}
-          >
-            <ul className="flex flex-col gap-4 text-white text-sm">
-              {role === 'OPERADOR_LABORATORIO' && (
-                <>
-                  <li>
-                    <Link
-                      to="/operador"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block hover:text-yellow-400"
-                    >
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/operador/donaciones"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block hover:text-yellow-400"
-                    >
-                      Donaciones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/operador/punciones"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block hover:text-yellow-400"
-                    >
-                      Punciones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/embriones"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block hover:text-yellow-400"
-                    >
-                      Listado de embriones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/operador/fertilizaciones"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block hover:text-yellow-400"
-                    >
-                      Fertilizaciones
-                    </Link>
-                  </li>
-                </>
-              )}
-              <li className="pt-2 border-t border-white/20">
-              </li>
-            </ul>
-          </article>
+        <article
+          className={`w-full bg-[#24222B]/90 transition-all duration-300 ease-in-out md:hidden ${
+            isMobileMenuOpen
+              ? 'max-h-[300px] px-6 py-4 opacity-100'
+              : 'max-h-0 overflow-hidden opacity-0'
+          }`}
+        >
+          <ul className="flex flex-col gap-4 text-sm text-white">
+            {role === 'OPERADOR_LABORATORIO' && (
+              <OperadorSection isMobile onCloseMobile={() => setIsMobileMenuOpen(false)} />
+            )}
+            <li className="border-t border-white/20 pt-2"></li>
+          </ul>
+        </article>
       </section>
 
       {/* Chatbot Component */}
-      <Chatbot 
-        isOpen={isChatbotOpen} 
-        onClose={() => setIsChatbotOpen(false)} 
-      />
+      <Chatbot isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
     </nav>
   );
 }

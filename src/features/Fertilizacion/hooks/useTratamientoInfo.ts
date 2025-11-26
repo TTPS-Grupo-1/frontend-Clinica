@@ -8,10 +8,12 @@ export const useTratamientoInfo = (selectedPacienteId: string | null, isOpen: bo
 
   const fetchTratamientoInfo = async () => {
     if (!selectedPacienteId) return;
-    
+
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8000/api/fertilizacion/tratamiento-info/${selectedPacienteId}/`);
+      const response = await axios.get(
+        `http://localhost:8000/api/fertilizacion/tratamiento-info/${selectedPacienteId}/`
+      );
       setTratamientoInfo(response.data);
     } catch (error) {
       console.error('Error obteniendo info del tratamiento:', error);
@@ -31,6 +33,6 @@ export const useTratamientoInfo = (selectedPacienteId: string | null, isOpen: bo
   return {
     tratamientoInfo,
     loading,
-    refetch: fetchTratamientoInfo
+    refetch: fetchTratamientoInfo,
   };
 };

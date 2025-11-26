@@ -13,19 +13,17 @@ const AntecedentesQuirurgicos: React.FC<AntecedentesQuirurgicosProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8 border border-gray-300 bg-white text-black flex flex-col justify-between min-h-[400px] mt-6">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
-        Antecedentes Quirúrgicos
-      </h2>
+    <div className="mx-auto mt-6 flex min-h-[400px] max-w-2xl flex-col justify-between rounded-xl border border-gray-300 bg-white p-8 text-black shadow-lg">
+      <h2 className="mb-4 text-center text-2xl font-bold text-black">Antecedentes Quirúrgicos</h2>
 
-      <label className="block mb-2 font-medium text-black">
+      <label className="mb-2 block font-medium text-black">
         Describa intervenciones quirúrgicas previas:
       </label>
       <textarea
         value={value.descripcion}
         onChange={handleChange}
         placeholder="Ejemplo: Cesárea en 2018, apendicectomía en 2015..."
-        className="w-full h-32 border border-black rounded p-2 text-black focus:outline-none focus:ring-2 focus:ring-black"
+        className="h-32 w-full rounded border border-black p-2 text-black focus:ring-2 focus:ring-black focus:outline-none"
       />
     </div>
   );

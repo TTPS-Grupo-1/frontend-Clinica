@@ -24,17 +24,47 @@ export function useHistorialOvocitoFetch(ovocitoId: number | null) {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(`/api/historial_ovocitos/?ovocito=${ovocitoId}`, { headers: getAuthHeaders() });
-        if (!cancelled) setHistorial(res.data);
+        const tryPathUrl = `/api/historial_ovocitos/por-ovocito/${ovocitoId}/`;
+         
+
+        // First try the query-string URL
+        let res = undefined;
+        try {
+          res = await axios.get(tryPathUrl, { headers: getAuthHeaders() });
+        } catch (e: any) {
+          res = [] as any;
+          /*if (status === 404) {
+            console.debug('useHistorialOvocitoFetch: falling back to', tryPathUrl);
+            res = await axios.get(tryPathUrl, { headers: getAuthHeaders() });
+          } else {
+            throw e;
+          }*/
+        }
+
+        const payload = Array.isArray(res.data) ? res.data : (res.data.results ?? res.data);
+        if (!cancelled) setHistorial(payload);
       } catch (err) {
-        if (!cancelled) setError(err);
+        // Mejor detalle del error para debug
+         
+        console.error('useHistorialOvocitoFetch error', err);
+        if (!cancelled) {
+          const axiosErr = err as any;
+          setError({
+            message: axiosErr?.message,
+            status: axiosErr?.response?.status,
+            data: axiosErr?.response?.data,
+            url: axiosErr?.request?.responseURL || null,
+          });
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
 
     fetchData();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [ovocitoId]);
 
   return { historial, loading, error };

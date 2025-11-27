@@ -167,9 +167,19 @@ export default function ListadoTurnos() {
   }, [MEDICO_ID]);
 
   const turnosConPaciente = turnos.filter((t) => t.id_paciente !== null);
-  const totalPages = Math.ceil(turnosConPaciente.length / itemsPerPage);
+
+  // ✅ Filtrar solo los turnos del día actual
+  const hoy = new Date();
+  const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+
+  const turnosHoy = turnosConPaciente.filter((t) => {
+    const [fecha] = t.fecha_hora.split('T');
+    return fecha === hoyStr;
+  });
+
+  const totalPages = Math.ceil(turnosHoy.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentTurnos = turnosConPaciente.slice(startIndex, startIndex + itemsPerPage);
+  const currentTurnos = turnosHoy.slice(startIndex, startIndex + itemsPerPage);
 
   const handleAtender = async (id_paciente: number, turnoIdExterno: number, turnoId: number) => {
     try {
@@ -237,11 +247,11 @@ export default function ListadoTurnos() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="mb-2 text-center text-3xl font-bold tracking-tight text-blue-900">
-          Listado de Turnos
+          Listado de Turnos del Día
         </h1>
         <p className="text-center text-lg text-indigo-600">
-          Gestiona los turnos de tus pacientes —{' '}
-          <span className="font-semibold text-blue-700">{turnosConPaciente.length} turnos</span>
+          Gestiona los turnos de hoy —{' '}
+          <span className="font-semibold text-blue-700">{turnosHoy.length} turnos</span>
         </p>
       </div>
 
@@ -272,7 +282,6 @@ export default function ListadoTurnos() {
                   })(),
                 }}
                 onAtender={() => handleAtender(turno.id_paciente!, turno.id_externo!, turno.id)}
-              
               />
             ))}
           </div>
@@ -283,7 +292,7 @@ export default function ListadoTurnos() {
             totalPages={totalPages}
             onPageChange={setCurrentPage}
             itemsPerPage={itemsPerPage}
-            totalItems={turnosConPaciente.length}
+            totalItems={turnosHoy.length}
           />
         </>
       )}

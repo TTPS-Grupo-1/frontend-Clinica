@@ -84,7 +84,7 @@ export async function ejecutarFertilizacion(
       const embrionPayload = {
         identificador: identificadorEmbrion,
         fertilizacion: fertilizacionId,
-        estado: 'Fresco',
+        estado: 'fresco',
       };
 
       const embrionResponse = await axios.post(

@@ -29,7 +29,7 @@ export default function EmbryoPage() {
       tecnica: nuevoEmbryo.tecnica || '',
       tecnico_laboratorio: nuevoEmbryo.tecnico_laboratorio || '',
       calidad: Number(nuevoEmbryo.calidad),
-      estado: nuevoEmbryo.estado || 'fresco',
+      estado: nuevoEmbryo.estado || 'Fresco',
       fecha_alta: new Date().toISOString().slice(0, 10),
       fecha_baja: nuevoEmbryo.fecha_baja || null,
       info_semen: nuevoEmbryo.info_semen || '',
@@ -54,7 +54,7 @@ export default function EmbryoPage() {
             transition={{ duration: 0.45 }}
             className="mb-4 text-center text-xl font-bold text-rose-300 sm:text-2xl"
           >
-            Registrar Embriones
+            Gestión de Embriones
           </motion.h1>
 
           <motion.div

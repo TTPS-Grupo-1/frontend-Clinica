@@ -34,23 +34,25 @@ export default function EmbrionForm({
 
   // ✅ Determinar opciones de estado permitidas
   const getOpcionesEstado = () => {
+    const estadoActual = initialData?.estado?.toLowerCase();
+
+    // ✅ Si ya fue criopreservado y el estado actual es fresco, solo transferido o descartado
+    if (fueCriopreservado && estadoActual === 'fresco') {
+      return ['descartado','fresco'];
+    }
+
     // Si actualmente es criopreservado, solo puede pasar a fresco
-    if (initialData?.estado === 'criopreservado') {
+    if (estadoActual === 'criopreservado') {
       return ['criopreservado', 'fresco'];
     }
 
-    // Si fue criopreservado antes y ahora es fresco, solo transferido o descartado
-    if (fueCriopreservado && formData.estado === 'fresco') {
-      return ['fresco', 'transferido', 'descartado'];
+    // Si es modo edición y el estado actual es fresco (y nunca fue criopreservado)
+    if (isEdit && estadoActual === 'fresco') {
+      return ['fresco', 'criopreservado', 'descartado'];
     }
 
-    // Si es fresco y nunca fue criopreservado, todas las opciones
-    if (formData.estado === 'fresco' && !fueCriopreservado) {
-      return ['fresco', 'criopreservado', 'transferido', 'descartado'];
-    }
-
-    // Por defecto, todas las opciones
-    return ['fresco', 'criopreservado', 'transferido', 'descartado'];
+    // Por defecto, todas las opciones (solo para crear nuevo)
+    return ['fresco', 'criopreservado', 'descartado'];
   };
 
   const opcionesEstado = getOpcionesEstado();
@@ -232,9 +234,22 @@ export default function EmbrionForm({
 
         {/* Estado */}
         <div>
-          <label htmlFor="estado" className="mb-2 block text-sm font-semibold text-gray-700">
+          <label className="mb-2 block text-sm font-semibold text-gray-700">
             Estado <span className="text-red-500">*</span>
           </label>
+          
+          {/* ✅ Mostrar el estado actual */}
+          {isEdit && initialData?.estado && (
+            <div className="mb-3 rounded-lg bg-blue-50 p-3 border border-blue-200">
+              <p className="text-sm font-semibold text-blue-800">
+                Estado actual: <span className="capitalize">{initialData.estado}</span>
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                Puedes mantener este estado o cambiarlo usando el selector de abajo
+              </p>
+            </div>
+          )}
+
           <select
             id="estado"
             name="estado"
@@ -245,7 +260,7 @@ export default function EmbrionForm({
               errors.estado ? 'border-red-500' : 'border-gray-300'
             }`}
           >
-            {/* ✅ Renderizar solo las opciones permitidas */}
+            {/* ✅ Renderizar opciones permitidas */}
             {opcionesEstado.includes('fresco') && <option value="fresco">Fresco</option>}
             {opcionesEstado.includes('criopreservado') && <option value="criopreservado">Criopreservado</option>}
             {opcionesEstado.includes('transferido') && <option value="transferido">Transferido</option>}

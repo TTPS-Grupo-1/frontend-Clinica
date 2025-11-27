@@ -132,7 +132,7 @@ const GenerarAgenda = () => {
               <select
                 value={diaSemana}
                 onChange={(e) => setDiaSemana(e.target.value)}
-                className="w-full rounded-lg border p-2"
+                className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="">Seleccionar día...</option>
                 {DIAS_SEMANA.map((d) => (
@@ -150,7 +150,7 @@ const GenerarAgenda = () => {
                 type="time"
                 value={horaInicio}
                 onChange={(e) => setHoraInicio(e.target.value)}
-                className="w-full rounded-lg border p-2"
+                className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
 
@@ -161,7 +161,7 @@ const GenerarAgenda = () => {
                 type="time"
                 value={horaFin}
                 onChange={(e) => setHoraFin(e.target.value)}
-                className="w-full rounded-lg border p-2"
+                className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
 

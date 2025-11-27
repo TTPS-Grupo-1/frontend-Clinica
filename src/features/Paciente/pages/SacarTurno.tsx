@@ -230,8 +230,24 @@ export default function SacarTurno() {
       ];
     }
   } else {
+    // ✅ Filtrar turnos disponibles y posteriores a la hora actual si es hoy
+    const hoy = new Date();
+    const esHoy = fechaSeleccionada === `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+
     horariosSlots = turnosData
-      .filter((t) => t.id_paciente === null)
+      .filter((t) => {
+        if (t.id_paciente !== null) return false; // Solo turnos libres
+
+        // ✅ Si es hoy, filtrar solo horarios posteriores a la hora actual
+        if (esHoy) {
+          const [hora, minuto] = t.fecha_hora.split('T')[1].substring(0, 5).split(':').map(Number);
+          const turnoDate = new Date();
+          turnoDate.setHours(hora, minuto, 0, 0);
+          return turnoDate > hoy;
+        }
+
+        return true; // Si no es hoy, mostrar todos los turnos libres
+      })
       .map((t) => ({
         id: t.id,
         hora: t.fecha_hora.split('T')[1].substring(0, 5),
@@ -387,42 +403,35 @@ export default function SacarTurno() {
         )}
 
         <Calendario
-          selected={fechaSeleccionada ? new Date(fechaSeleccionada) : undefined}
+          selected={fechaSeleccionada ? new Date(fechaSeleccionada + 'T00:00:00') : undefined}
           onSelect={(d) => {
             if (!d) return;
-            // normalizamos y guardamos YYYY-MM-DD
+            // Normaliza la fecha a solo año-mes-día
             const y = d.getFullYear();
             const m = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
             setFechaSeleccionada(`${y}-${m}-${day}`);
           }}
           disabled={(date) => {
-            // solo aplicamos el bloqueo cuando estamos en modo reasignar y tenemos fecha original válida
-            if (!modoReasignar || !fechaReasignar) return false;
+            // ✅ Bloquear fechas anteriores a hoy
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const fechaCheck = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            if (fechaCheck < hoy) return true;
 
-            // construimos baseDate de forma robusta (ya hiciste esto arriba, but be safe)
-            const [yy, mm, dd] = fechaReasignar.split('-').map(Number);
-            const base = new Date(yy, (mm || 1) - 1, dd);
+            // Modo reasignar: solo permitir ±1 día de la fecha original
+            if (modoReasignar && fechaReasignar) {
+              const [yy, mm, dd] = fechaReasignar.split('-').map(Number);
+              const base = new Date(yy, (mm || 1) - 1, dd);
+              if (isNaN(base.getTime())) return false;
+              const inicioBase = new Date(base.getFullYear(), base.getMonth(), base.getDate()).getTime();
+              const inicioTry = fechaCheck.getTime();
+              const unDiaMs = 24 * 60 * 60 * 1000;
+              const diff = Math.abs(inicioTry - inicioBase);
+              return diff > unDiaMs;
+            }
 
-            if (isNaN(base.getTime())) return false; // no bloquear si base inválida por algún motivo
-
-            // normalizamos ambas fechas al inicio del día (hora 0)
-            const inicioBase = new Date(
-              base.getFullYear(),
-              base.getMonth(),
-              base.getDate()
-            ).getTime();
-            const inicioTry = new Date(
-              date.getFullYear(),
-              date.getMonth(),
-              date.getDate()
-            ).getTime();
-
-            const unDiaMs = 24 * 60 * 60 * 1000;
-            const diff = Math.abs(inicioTry - inicioBase);
-
-            // permitimos solo si diff <= 1 día
-            return diff > unDiaMs;
+            return false;
           }}
         />
 

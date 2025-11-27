@@ -261,8 +261,15 @@ export default function ListadoTurnos() {
                   first_name: turno.paciente_data?.first_name || `Paciente ${turno.id_paciente}`,
                   last_name: turno.paciente_data?.last_name || '',
                   edad: turno.paciente_data?.edad || 0,
-                  fechaTurno: new Date(turno.fecha_hora).toLocaleDateString(),
-                  horaTurno: new Date(turno.fecha_hora).toLocaleTimeString(),
+                  fechaTurno: (() => {
+                    const [fecha] = turno.fecha_hora.split('T');
+                    const [año, mes, dia] = fecha.split('-');
+                    return `${dia}/${mes}/${año}`;
+                  })(),
+                  horaTurno: (() => {
+                    const [, hora] = turno.fecha_hora.split('T');
+                    return hora.substring(0, 5); // HH:MM
+                  })(),
                 }}
                 onAtender={() => handleAtender(turno.id_paciente!, turno.id_externo!, turno.id)}
               

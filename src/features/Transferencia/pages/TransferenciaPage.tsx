@@ -260,6 +260,8 @@ export default function TransferenciaPage() {
                             setConfirmModalOpen(true);
                           } else {
                             setIncludeMultiple(false);
+                            // Limpiar todos los embriones seleccionados al desmarcar
+                            updateField('embriones', []);
                           }
                         }}
                         className="mr-2 h-4 w-4"

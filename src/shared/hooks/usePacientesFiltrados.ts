@@ -37,7 +37,7 @@ export function usePacientesFiltrados(
       setLoading(true);
       setError(null);
       try {
-        const ids = pacientes.map((p) => p.id);
+        const ids = pacientes.map((p) => p.id); 
         const token = localStorage.getItem('token');
         const headers = token ? { Authorization: `Token ${token}` } : {};
 

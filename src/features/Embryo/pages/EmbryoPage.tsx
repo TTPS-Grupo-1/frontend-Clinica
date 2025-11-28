@@ -1,49 +1,20 @@
-import { useState } from 'react';
-import axios from 'axios';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import EmbryoList from '../components/EmbryoList';
 import { useEmbryoFetch } from '../../../shared/hooks/useEmbryoFetch';
 import { usePacientesFetch } from '../../../shared/hooks/usePacientesFetch';
-import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
+import { usePacientesFiltrados } from '../../../shared/hooks/usePacientesFiltrados';
+import type { Embryo as EmbryoType } from '../../../types/Embryo';
 export default function EmbryoPage() {
   const { pacientes } = usePacientesFetch();
+  // Un solo hook con múltiples estados (acentuados para coincidir con backend)
+  const estadosFiltro = useMemo(
+    () => ['Fertilización', 'Punción', 'Transferencia', 'Finalizado'],
+    []
+  );
+  const { filteredPacientes, loading: loadingPacientes, error } = usePacientesFiltrados(pacientes, estadosFiltro);
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
   const { embriones } = useEmbryoFetch(selectedPacienteId);
-  const { ovocitos } = useOvocitosFetch(selectedPacienteId);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // ✅ AGREGAR estos logs:
-  console.log('Paciente seleccionado:', selectedPacienteId);
-  console.log('Embriones cargados:', embriones);
-
-  console.log(ovocitos);
-  // Modal submit handler
-  const handleSubmitEmbrion = async (nuevoEmbryo: any) => {
-    // Mapear los datos del modal al modelo backend
-
-    console.log(nuevoEmbryo);
-    const payload = {
-      identificador: nuevoEmbryo.id,
-      fecha_fertilizacion: nuevoEmbryo.fecha_fertilizacion || new Date().toISOString().slice(0, 10),
-      ovocito: nuevoEmbryo.ovocito, // Debe ser el identificador o el id según backend
-      tecnica: nuevoEmbryo.tecnica || '',
-      tecnico_laboratorio: nuevoEmbryo.tecnico_laboratorio || '',
-      calidad: Number(nuevoEmbryo.calidad),
-      estado: nuevoEmbryo.estado || 'Fresco',
-      fecha_alta: new Date().toISOString().slice(0, 10),
-      fecha_baja: nuevoEmbryo.fecha_baja || null,
-      info_semen: nuevoEmbryo.info_semen || '',
-    };
-    try {
-      await axios.post('/api/embriones/', payload);
-      // Aquí podrías refrescar la lista de embriones si lo necesitas
-    } catch (err) {
-      // Manejo de error: podrías mostrar un toast o alerta
-      console.error('Error registrando embrión', err);
-    }
-    setIsModalOpen(false);
-  };
-
   return (
     <div className={`min-h-screen bg-gradient-to-br from-pink-50 to-rose-100 pt-20 pb-8`}>
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -72,7 +43,13 @@ export default function EmbryoPage() {
               <option className="text-black" value="">
                 -- Selecciona un paciente --
               </option>
-              {pacientes.map((p) => (
+              {loadingPacientes && (
+                <option disabled>Cargando pacientes...</option>
+              )}
+              {filteredPacientes && filteredPacientes.length === 0 && !loadingPacientes && (
+                <option disabled>No hay pacientes elegibles</option>
+              )}
+              {filteredPacientes?.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.last_name}, {p.first_name}
                 </option>
@@ -88,7 +65,7 @@ export default function EmbryoPage() {
             >
               <EmbryoList
                 key={selectedPacienteId} // ✅ AGREGAR esta línea
-                embryos={embriones}
+                embryos={embriones as unknown as EmbryoType[]}
                 selectedPacienteId={selectedPacienteId}
               />
             </motion.div>
@@ -99,7 +76,11 @@ export default function EmbryoPage() {
               transition={{ duration: 0.35 }}
               className="py-8 text-center text-gray-500"
             >
-              Selecciona un paciente para ver los embriones
+              {error
+                ? 'Error al filtrar pacientes'
+                : loadingPacientes
+                  ? 'Cargando pacientes disponibles...'
+                  : 'Selecciona un paciente para ver los embriones'}
             </motion.div>
           )}
         </div>

@@ -23,6 +23,8 @@ import {
 import { getTratamientoByPaciente, getEstudiosAgrupadosPorConsulta } from './consultasService';
 import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 
 const SECCIONES = [
   { key: 'estudios', label: 'Cargar estudios', icon: FlaskConical },
@@ -33,6 +35,7 @@ const SECCIONES = [
 ];
 
 const SegundaConsulta: React.FC = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +44,7 @@ const SegundaConsulta: React.FC = () => {
   const medicoId = user.id;
   const [objetivo, setObjetivo] = useState<string>('');
 
-  // 🧩 Estado general, igual que en ObjetivoParejaFemeninaRopa
+  
   const [formData, setFormData] = useState({
     estudios: {},
     protocolo: {},
@@ -52,12 +55,12 @@ const SegundaConsulta: React.FC = () => {
 
   const { pacienteId } = useParams();
 
-  // 🔁 Actualizar secciones
+
   const handleSectionChange = (key: string, data: any) => {
     setFormData((prev) => ({ ...prev, [key]: data }));
   };
 
-  // 📡 Cargar datos iniciales
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -78,10 +81,11 @@ const SegundaConsulta: React.FC = () => {
     fetchData();
   }, []);
 
-  // 🧾 Confirmar consulta
+ 
   const handleConfirmar = async () => {
     try {
       const form = new FormData();
+      
       const tratamientoId = localStorage.getItem('tratamiento_id');
       form.append('tratamiento_id', tratamientoId || '');
       form.append('protocolo', JSON.stringify(formData.protocolo));
@@ -98,13 +102,14 @@ const SegundaConsulta: React.FC = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       toast.success('Segunda consulta registrada correctamente.');
+      navigate('/medico/home');
     } catch (err) {
       console.error(err);
       toast.error('Error al guardar la segunda consulta.');
     }
   };
 
-  // 🧱 Determina qué sección renderizar
+  
   const renderSeccion = () => {
     switch (SECCIONES[step].key) {
       case 'estudios':
@@ -165,7 +170,7 @@ const SegundaConsulta: React.FC = () => {
         Volver al home
       </button>
 
-      {/* Pasos */}
+     
       <div className="mb-6 flex justify-center gap-4">
         {SECCIONES.map((sec, idx) => {
           const Icon = sec.icon;
@@ -185,10 +190,10 @@ const SegundaConsulta: React.FC = () => {
         })}
       </div>
 
-      {/* Sección actual */}
+      
       <div className="min-h-[300px]">{renderSeccion()}</div>
 
-      {/* Navegación */}
+      
       <div className="mt-8 flex justify-between">
         <button
           onClick={() => setStep((p) => Math.max(p - 1, 0))}

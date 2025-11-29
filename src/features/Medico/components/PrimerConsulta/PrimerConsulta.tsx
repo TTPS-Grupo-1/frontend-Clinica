@@ -10,9 +10,11 @@ import {
   ObjetivoParejaFemeninaRopa,
 } from './Objetivos';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const PrimerConsulta: React.FC = () => {
   const { pacienteId } = useParams();
+  const navigate = useNavigate();
   const user = useSelector((state: any) => state.auth.user);
   const medicoId = user.id;
   const [objetivoSeleccionado, setObjetivoSeleccionado] = useState<string | null>(null);
@@ -38,6 +40,7 @@ const PrimerConsulta: React.FC = () => {
       toast.success('Datos enviados correctamente');
       setFormData({});
       setObjetivoSeleccionado(null);
+      navigate('/medico/home');
     } catch (err: any) {
       setFormData({});
       setObjetivoSeleccionado(null);

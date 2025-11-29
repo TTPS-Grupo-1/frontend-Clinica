@@ -89,6 +89,12 @@ export default function CancelarTratamiento({
               <AlertTriangle className="h-5 w-5" />
               Confirmar cancelación del tratamiento #{idTratamiento}
             </p>
+            <div className="p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm mb-3">
+              ⚠️ <strong>Importante:</strong> Al cancelar este tratamiento, 
+              <strong>todos los embriones y ovocitos frescos de la paciente serán descartados permanentemente. </strong>
+              Esta acción no se puede deshacer.
+            </div>
+
 
             <textarea
               value={motivo}

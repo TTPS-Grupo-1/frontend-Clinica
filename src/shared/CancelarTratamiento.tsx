@@ -48,9 +48,7 @@ export default function CancelarTratamiento({
     } catch (e: any) {
       console.error('❌ Error al cancelar:', e);
       setError(
-        e.response?.data?.detail ||
-          e.message ||
-          'Error desconocido al cancelar el tratamiento.'
+        e.response?.data?.detail || e.message || 'Error desconocido al cancelar el tratamiento.'
       );
     } finally {
       setCargando(false);
@@ -62,39 +60,38 @@ export default function CancelarTratamiento({
       {/* 🔥 Botón minimalista de X roja */}
       <button
         onClick={() => setOpen(true)}
-        className="text-red-600 hover:text-red-800 transition"
+        className="text-red-600 transition hover:text-red-800"
         title="Cancelar tratamiento"
       >
-        <X className="w-6 h-6" />
+        <X className="h-6 w-6" />
       </button>
 
       {/* 🔥 Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="max-w-md w-full rounded-xl bg-white p-5 shadow-xl">
-            <div className="flex justify-between items-center mb-3">
+          <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl">
+            <div className="mb-3 flex items-center justify-between">
               <h3 className="flex items-center gap-2 text-xl font-semibold text-red-700">
                 <XCircle className="h-6 w-6" /> Cancelar tratamiento
               </h3>
 
-              <button
-                onClick={() => setOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="w-5 h-5" />
+              <button onClick={() => setOpen(false)} className="text-gray-500 hover:text-gray-700">
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <p className="flex items-center gap-2 font-medium text-red-700 mb-3">
+            <p className="mb-3 flex items-center gap-2 font-medium text-red-700">
               <AlertTriangle className="h-5 w-5" />
               Confirmar cancelación del tratamiento #{idTratamiento}
             </p>
-            <div className="p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm mb-3">
-              ⚠️ <strong>Importante:</strong> Al cancelar este tratamiento, 
-              <strong>todos los embriones y ovocitos frescos de la paciente serán descartados permanentemente. </strong>
+            <div className="mb-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              ⚠️ <strong>Importante:</strong> Al cancelar este tratamiento,
+              <strong>
+                todos los embriones y ovocitos frescos de la paciente serán descartados
+                permanentemente.{' '}
+              </strong>
               Esta acción no se puede deshacer.
             </div>
-
 
             <textarea
               value={motivo}
@@ -104,11 +101,9 @@ export default function CancelarTratamiento({
               rows={3}
             />
 
-            {error && (
-              <div className="mt-2 text-sm text-red-600">{error}</div>
-            )}
+            {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
 
-            <div className="mt-4 flex gap-3 justify-end">
+            <div className="mt-4 flex justify-end gap-3">
               <button
                 onClick={() => setOpen(false)}
                 className="rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"

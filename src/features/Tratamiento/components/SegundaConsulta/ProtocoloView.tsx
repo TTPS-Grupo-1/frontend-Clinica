@@ -23,7 +23,7 @@ export default function ProtocoloView({ protocolo }: ProtocoloViewProps) {
           </div>
           <h2 className="text-xl font-semibold text-gray-800">Protocolo de Estimulación</h2>
         </div>
-        
+
         <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center">
           <Syringe className="mx-auto mb-3 h-12 w-12 text-gray-400" />
           <p className="text-gray-500">No hay protocolo registrado</p>
@@ -43,7 +43,7 @@ export default function ProtocoloView({ protocolo }: ProtocoloViewProps) {
 
       <div className="space-y-6">
         {/* Información general del protocolo */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {protocolo.tipo && (
             <div className="rounded-lg bg-purple-50 p-4">
               <div className="mb-2 flex items-center gap-2">
@@ -97,18 +97,24 @@ export default function ProtocoloView({ protocolo }: ProtocoloViewProps) {
             <div className="space-y-3">
               {protocolo.medicamentos.map((medicamento: any, index: number) => (
                 <div key={index} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div>
                       <span className="text-sm font-medium text-gray-600">Medicamento</span>
-                      <div className="font-semibold text-gray-800">{medicamento.nombre || medicamento.medicamento}</div>
+                      <div className="font-semibold text-gray-800">
+                        {medicamento.nombre || medicamento.medicamento}
+                      </div>
                     </div>
                     <div>
                       <span className="text-sm font-medium text-gray-600">Dosis</span>
-                      <div className="font-semibold text-gray-800">{medicamento.dosis || 'No especificada'}</div>
+                      <div className="font-semibold text-gray-800">
+                        {medicamento.dosis || 'No especificada'}
+                      </div>
                     </div>
                     <div>
                       <span className="text-sm font-medium text-gray-600">Frecuencia</span>
-                      <div className="font-semibold text-gray-800">{medicamento.frecuencia || 'No especificada'}</div>
+                      <div className="font-semibold text-gray-800">
+                        {medicamento.frecuencia || 'No especificada'}
+                      </div>
                     </div>
                   </div>
                   {medicamento.indicaciones && (
@@ -135,7 +141,17 @@ export default function ProtocoloView({ protocolo }: ProtocoloViewProps) {
 
         {/* Otros campos dinámicos del protocolo */}
         {Object.entries(protocolo)
-          .filter(([key]) => !['tipo', 'medicamentos', 'dosis', 'duracion', 'fecha_inicio', 'observaciones'].includes(key))
+          .filter(
+            ([key]) =>
+              ![
+                'tipo',
+                'medicamentos',
+                'dosis',
+                'duracion',
+                'fecha_inicio',
+                'observaciones',
+              ].includes(key)
+          )
           .map(([key, value]) => {
             if (value && typeof value === 'string') {
               return (

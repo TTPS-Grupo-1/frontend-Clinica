@@ -219,31 +219,28 @@ export async function marcarTurnoAtendido(id: number): Promise<boolean> {
   }
 }
 
-
 export async function fetchTodosLosPacientes(headers: Record<string, string>) {
-  const response = await axios.get("http://localhost:8000/api/pacientes/", {
+  const response = await axios.get('http://localhost:8000/api/pacientes/', {
     headers,
   });
   return response.data;
 }
 
-
 export async function fetchPacientesByNameDirector(
   query: string,
   headers: Record<string, string> = {}
 ): Promise<PacienteMinimal[]> {
-
   const search = query.trim();
   if (!search) return [];
 
   try {
-    const res = await axios.get(`/api/pacientes/?search=${encodeURIComponent(search)}`, { headers });
+    const res = await axios.get(`/api/pacientes/?search=${encodeURIComponent(search)}`, {
+      headers,
+    });
 
-    const data: any[] =
-      Array.isArray(res.data) ? res.data :
-      res.data?.results ?? 
-      res.data?.data ?? 
-      [];
+    const data: any[] = Array.isArray(res.data)
+      ? res.data
+      : (res.data?.results ?? res.data?.data ?? []);
 
     // Filtrar solo pacientes que tengan tratamientos (lo mantenemos porque vos lo pediste)
     const pacientesFiltrados: PacienteMinimal[] = [];
@@ -255,17 +252,16 @@ export async function fetchPacientesByNameDirector(
       try {
         const tRes = await axios.get(`/api/tratamientos/por-paciente/${id}/`, { headers });
 
-        const tieneTratamiento =
-          Array.isArray(tRes.data)
-            ? tRes.data.length > 0
-            : Object.keys(tRes.data ?? {}).length > 0;
+        const tieneTratamiento = Array.isArray(tRes.data)
+          ? tRes.data.length > 0
+          : Object.keys(tRes.data ?? {}).length > 0;
 
         if (tieneTratamiento) {
           pacientesFiltrados.push({
             id,
             first_name: p.first_name,
             last_name: p.last_name,
-            dni: p.dni
+            dni: p.dni,
           });
         }
       } catch {
@@ -274,7 +270,6 @@ export async function fetchPacientesByNameDirector(
     }
 
     return pacientesFiltrados;
-
   } catch {
     return [];
   }
@@ -283,10 +278,7 @@ export async function fetchPacientesByNameDirector(
 export async function pacienteTieneTransferencia(pacienteId: number, headers: any) {
   try {
     // 1) Obtener tratamiento activo del paciente
-    const res = await axios.get(
-      `/api/tratamientos/por-paciente/${pacienteId}/`,
-      { headers }
-    );
+    const res = await axios.get(`/api/tratamientos/por-paciente/${pacienteId}/`, { headers });
 
     const tratamiento = Array.isArray(res.data) ? res.data[0] : res.data;
 
@@ -296,21 +288,15 @@ export async function pacienteTieneTransferencia(pacienteId: number, headers: an
 
     // 2) Consultar transferencias de ese tratamiento
     const tRes = await axios.get(
-  `/api/transferencia/transferencias/transferencias-por-tratamiento/${tratamientoId}/`,
-  { headers }
+      `/api/transferencia/transferencias/transferencias-por-tratamiento/${tratamientoId}/`,
+      { headers }
     );
-
-        
 
     const exists = tRes.data?.count > 0;
 
     return exists;
-
   } catch (error) {
-    console.error("Error consultando transferencia:", error);
+    console.error('Error consultando transferencia:', error);
     return false;
   }
 }
-
-
-

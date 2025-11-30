@@ -1,21 +1,8 @@
 import { useEffect, useRef } from 'react';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
-
+import type { Props } from '@/interfaces/Ovocito';
 cytoscape.use(dagre);
-
-type HistorialItem = {
-  id: number;
-  estado: string;
-  fecha: string;
-  nota?: string;
-  usuario_rep?: string;
-};
-
-type Props = {
-  historial: HistorialItem[];
-  onNodeClick?: (estado: string) => void;
-};
 
 export default function OvocitoStateDiagram({ historial = [], onNodeClick }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -39,10 +26,12 @@ export default function OvocitoStateDiagram({ historial = [], onNodeClick }: Pro
     ordered.forEach((ev, idx) => {
       if (!nodesMap.has(ev.estado)) {
         const id = ev.estado;
+        const firstDate = new Date(ev.fecha).toLocaleDateString();
         nodesMap.set(ev.estado, {
           data: {
             id,
-            label: ev.estado,
+            label: `${ev.estado}\n${firstDate}`,
+            firstSeen: ev.fecha,
             lastSeen: ev.fecha,
             nota: ev.nota,
             usuario: ev.usuario_rep,
@@ -59,7 +48,6 @@ export default function OvocitoStateDiagram({ historial = [], onNodeClick }: Pro
             id: `e-${prevEstado}-${ev.estado}-${idx}`,
             source: prevEstado,
             target: ev.estado,
-            label: new Date(ev.fecha).toLocaleDateString(),
           },
         });
       }

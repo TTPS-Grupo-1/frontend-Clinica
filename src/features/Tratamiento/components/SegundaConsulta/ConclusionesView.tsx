@@ -6,7 +6,11 @@ interface ConclusionesViewProps {
   semenViable?: boolean;
 }
 
-export default function ConclusionesView({ conclusiones, ovocitoViable, semenViable }: ConclusionesViewProps) {
+export default function ConclusionesView({
+  conclusiones,
+  ovocitoViable,
+  semenViable,
+}: ConclusionesViewProps) {
   const getViabilidadColor = (viable: boolean | undefined) => {
     if (viable === true) return 'text-green-600 bg-green-50';
     if (viable === false) return 'text-red-600 bg-red-50';
@@ -30,7 +34,7 @@ export default function ConclusionesView({ conclusiones, ovocitoViable, semenVia
 
       <div className="space-y-6">
         {/* Estado de viabilidad */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className={`rounded-lg border p-4 ${getViabilidadColor(ovocitoViable)}`}>
             <div className="mb-2 flex items-center gap-3">
               {getViabilidadIcon(ovocitoViable)}
@@ -38,7 +42,9 @@ export default function ConclusionesView({ conclusiones, ovocitoViable, semenVia
             </div>
             <div className="text-sm">
               {ovocitoViable === true && (
-                <span className="font-medium text-green-700">✓ Ovocitos viables para fertilización</span>
+                <span className="font-medium text-green-700">
+                  ✓ Ovocitos viables para fertilización
+                </span>
               )}
               {ovocitoViable === false && (
                 <span className="font-medium text-red-700">✗ Ovocitos no viables</span>
@@ -56,7 +62,9 @@ export default function ConclusionesView({ conclusiones, ovocitoViable, semenVia
             </div>
             <div className="text-sm">
               {semenViable === true && (
-                <span className="font-medium text-green-700">✓ Semen viable para fertilización</span>
+                <span className="font-medium text-green-700">
+                  ✓ Semen viable para fertilización
+                </span>
               )}
               {semenViable === false && (
                 <span className="font-medium text-red-700">✗ Semen no viable</span>
@@ -75,7 +83,9 @@ export default function ConclusionesView({ conclusiones, ovocitoViable, semenVia
             {ovocitoViable && semenViable ? (
               <div className="flex items-center gap-2 text-green-700">
                 <CheckCircle className="h-4 w-4" />
-                <span className="font-medium">Condiciones óptimas para proceder con fertilización</span>
+                <span className="font-medium">
+                  Condiciones óptimas para proceder con fertilización
+                </span>
               </div>
             ) : ovocitoViable === false || semenViable === false ? (
               <div className="flex items-center gap-2 text-red-700">
@@ -98,7 +108,7 @@ export default function ConclusionesView({ conclusiones, ovocitoViable, semenVia
             <div className="space-y-3">
               {Object.entries(conclusiones).map(([key, value]) => {
                 if (key === 'ovocitoViable' || key === 'semenViable') return null;
-                
+
                 return (
                   <div key={key} className="rounded-lg bg-gray-50 p-4">
                     <span className="text-sm font-medium text-gray-600 capitalize">
@@ -147,14 +157,16 @@ export default function ConclusionesView({ conclusiones, ovocitoViable, semenVia
         </div>
 
         {/* Información adicional */}
-        {(!conclusiones || Object.keys(conclusiones).length === 0) && 
-         ovocitoViable === undefined && 
-         semenViable === undefined && (
-          <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center">
-            <ClipboardCheck className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-            <p className="text-gray-500">Las conclusiones se completarán al finalizar todas las evaluaciones</p>
-          </div>
-        )}
+        {(!conclusiones || Object.keys(conclusiones).length === 0) &&
+          ovocitoViable === undefined &&
+          semenViable === undefined && (
+            <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center">
+              <ClipboardCheck className="mx-auto mb-3 h-12 w-12 text-gray-400" />
+              <p className="text-gray-500">
+                Las conclusiones se completarán al finalizar todas las evaluaciones
+              </p>
+            </div>
+          )}
       </div>
     </div>
   );

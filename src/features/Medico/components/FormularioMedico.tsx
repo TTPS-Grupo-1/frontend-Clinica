@@ -171,7 +171,7 @@ export default function FormularioMedico({
               name="is_director"
               type="checkbox"
               checked={director}
-              onChange ={(e) => setDirector(e.target.checked)}
+              onChange={(e) => setDirector(e.target.checked)}
               className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <label htmlFor="directorCheckbox" className="text-base font-medium text-gray-700">

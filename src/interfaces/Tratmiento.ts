@@ -2,7 +2,6 @@ import type { Paciente } from '../types/Paciente';
 import type { OvocitoModalRow } from '../types/Ovocito';
 import type { Fertilizacion } from '../types/Fertilizacion';
 
-
 export interface TreatmentTratamiento {
   id: number;
   paciente: number;
@@ -105,8 +104,16 @@ export interface TreatmentSegundaConsulta {
   droga?: string;
 }
 
-
-
+export interface TreatmentTransferencia {
+  id: number;
+  tratamiento: number;
+  fecha: string;
+  test_positivo: boolean;
+  observaciones?: string;
+  quirofano?: string;
+  realizado_por?: number;
+  embriones: number[];
+}
 
 export interface TreatmentData {
   tratamiento: TreatmentTratamiento | null;
@@ -122,7 +129,7 @@ export interface TreatmentData {
   segundaConsulta: TreatmentSegundaConsulta | null;
   pacienteLocal: Paciente | null;
   loading: boolean;
-  transferencias: any[]; // ✅ Agregar transferencias aquí
-  seguimiento: boolean; // ✅ Indica si el tratamiento está en seguimiento
+  transferencias: TreatmentTransferencia[];
+  seguimiento: boolean;
   puncion: boolean; // Indica si hay punción registrada
 }

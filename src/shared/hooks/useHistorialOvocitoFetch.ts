@@ -25,7 +25,6 @@ export function useHistorialOvocitoFetch(ovocitoId: number | null) {
       setError(null);
       try {
         const tryPathUrl = `/api/historial_ovocitos/por-ovocito/${ovocitoId}/`;
-         
 
         // First try the query-string URL
         let res = undefined;
@@ -45,7 +44,7 @@ export function useHistorialOvocitoFetch(ovocitoId: number | null) {
         if (!cancelled) setHistorial(payload);
       } catch (err) {
         // Mejor detalle del error para debug
-         
+
         console.error('useHistorialOvocitoFetch error', err);
         if (!cancelled) {
           const axiosErr = err as any;

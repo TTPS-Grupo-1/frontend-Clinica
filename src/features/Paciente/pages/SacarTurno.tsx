@@ -232,7 +232,9 @@ export default function SacarTurno() {
   } else {
     // ✅ Filtrar turnos disponibles y posteriores a la hora actual si es hoy
     const hoy = new Date();
-    const esHoy = fechaSeleccionada === `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+    const esHoy =
+      fechaSeleccionada ===
+      `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
 
     horariosSlots = turnosData
       .filter((t) => {
@@ -424,7 +426,11 @@ export default function SacarTurno() {
               const [yy, mm, dd] = fechaReasignar.split('-').map(Number);
               const base = new Date(yy, (mm || 1) - 1, dd);
               if (isNaN(base.getTime())) return false;
-              const inicioBase = new Date(base.getFullYear(), base.getMonth(), base.getDate()).getTime();
+              const inicioBase = new Date(
+                base.getFullYear(),
+                base.getMonth(),
+                base.getDate()
+              ).getTime();
               const inicioTry = fechaCheck.getTime();
               const unDiaMs = 24 * 60 * 60 * 1000;
               const diff = Math.abs(inicioTry - inicioBase);

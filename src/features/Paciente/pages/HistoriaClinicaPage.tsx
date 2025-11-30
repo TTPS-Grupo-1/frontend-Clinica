@@ -8,7 +8,7 @@ import { useEmbryoFetch } from '../../../shared/hooks/useEmbryoFetch';
 import { useFertilizacionesFetch } from '../../../shared/hooks/useFertilizacionesFetch';
 import HistoriaClinicaDetails from '../components/History/HistoriaClinicaDetails';
 import RoleHomeButton from '../../../shared/components/RoleHomeButton';
-import { useMonitoreosAtendidosPorPaciente } from '../../../shared/hooks/useMonitoreoFetch'; 
+import { useMonitoreosAtendidosPorPaciente } from '../../../shared/hooks/useMonitoreoFetch';
 
 export default function HistoriaClinicaPage() {
   const { pacienteId: pacienteIdParam } = useParams<{ pacienteId?: string }>();
@@ -28,8 +28,9 @@ export default function HistoriaClinicaPage() {
   const { ovocitos, loading: loadingOvocitos } = useOvocitosFetch(selectedPacienteId);
   const { embriones, loading: loadingEmbriones } = useEmbryoFetch(selectedPacienteId);
   const { fertilizaciones, loading: loadingFert } = useFertilizacionesFetch(selectedPacienteId);
-  const { monitoreos, loading: loadingMonitoreos } = useMonitoreosAtendidosPorPaciente(selectedPacienteId);
- 
+  const { monitoreos, loading: loadingMonitoreos } =
+    useMonitoreosAtendidosPorPaciente(selectedPacienteId);
+
   useEffect(() => {
     if (pacienteIdParam) setSelectedPacienteId(Number(pacienteIdParam));
   }, [pacienteIdParam]);
@@ -85,7 +86,6 @@ export default function HistoriaClinicaPage() {
                 embriones={embriones}
                 loadingEmbriones={loadingEmbriones}
                 fertilizaciones={fertilizaciones}
-                
                 loadingFert={loadingFert}
                 monitoreos={monitoreos}
                 loadingMonitoreos={loadingMonitoreos}

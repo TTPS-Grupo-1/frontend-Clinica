@@ -25,7 +25,6 @@ import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-
 const SECCIONES = [
   { key: 'estudios', label: 'Cargar estudios', icon: FlaskConical },
   { key: 'protocolo', label: 'Registrar protocolo', icon: Syringe },
@@ -44,7 +43,6 @@ const SegundaConsulta: React.FC = () => {
   const medicoId = user.id;
   const [objetivo, setObjetivo] = useState<string>('');
 
-  
   const [formData, setFormData] = useState({
     estudios: {},
     protocolo: {},
@@ -55,11 +53,9 @@ const SegundaConsulta: React.FC = () => {
 
   const { pacienteId } = useParams();
 
-
   const handleSectionChange = (key: string, data: any) => {
     setFormData((prev) => ({ ...prev, [key]: data }));
   };
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,11 +77,10 @@ const SegundaConsulta: React.FC = () => {
     fetchData();
   }, []);
 
- 
   const handleConfirmar = async () => {
     try {
       const form = new FormData();
-      
+
       const tratamientoId = localStorage.getItem('tratamiento_id');
       form.append('tratamiento_id', tratamientoId || '');
       form.append('protocolo', JSON.stringify(formData.protocolo));
@@ -109,7 +104,6 @@ const SegundaConsulta: React.FC = () => {
     }
   };
 
-  
   const renderSeccion = () => {
     switch (SECCIONES[step].key) {
       case 'estudios':
@@ -170,7 +164,6 @@ const SegundaConsulta: React.FC = () => {
         Volver al home
       </button>
 
-     
       <div className="mb-6 flex justify-center gap-4">
         {SECCIONES.map((sec, idx) => {
           const Icon = sec.icon;
@@ -190,10 +183,8 @@ const SegundaConsulta: React.FC = () => {
         })}
       </div>
 
-      
       <div className="min-h-[300px]">{renderSeccion()}</div>
 
-      
       <div className="mt-8 flex justify-between">
         <button
           onClick={() => setStep((p) => Math.max(p - 1, 0))}

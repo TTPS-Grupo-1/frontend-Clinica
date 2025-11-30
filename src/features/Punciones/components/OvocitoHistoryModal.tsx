@@ -2,14 +2,7 @@ import { useHistorialOvocitoFetch } from '../../../shared/hooks/useHistorialOvoc
 import { useHistorialEmbrionFetch } from '../../../shared/hooks/useHistorialEmbrionFetch';
 import OvocitoStateDiagram from './OvocitoStateDiagram';
 import { useState } from 'react';
-
-interface HistoryModalProps {
-  entityId: number | null;
-  entityIdentificador?: string;
-  entityType: 'ovocito' | 'embrion';
-  open: boolean;
-  onClose: () => void;
-}
+import type { HistoryModalProps } from '@/interfaces/Ovocito';
 
 export default function HistoryModal({
   entityId,
@@ -43,8 +36,8 @@ export default function HistoryModal({
     : historial;
 
   return (
-    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
-      <div className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-xl">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 p-4 pt-20 backdrop-blur-sm">
+      <div className="max-h-[85vh] w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between bg-gradient-to-r from-cyan-600 to-cyan-700 px-6 py-4">
           <h2 className="text-xl font-bold text-white">

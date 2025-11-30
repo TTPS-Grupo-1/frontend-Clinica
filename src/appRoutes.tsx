@@ -37,7 +37,6 @@ import DeudaPaciente from './features/Paciente/pages/DeudaPaciente';
 import DeudaPacientesPage from './features/Admin/pages/DeudaPacientesPage';
 import ObrasSocialesFinanzasPage from './features/Admin/pages/ObrasSocialesFinanzasPage';
 
-
 export default function getAppRoutes() {
   return (
     <>
@@ -61,8 +60,14 @@ export default function getAppRoutes() {
       <Route path="/pacientes/verOrdenesMedicas" element={<VerOrdenesMedicas />} />
       <Route path="/pacientes/:pacienteId/primeraConsulta" element={<PrimeraConsultaPage />} />
       <Route path="/pacientes/:pacienteId/segundaConsulta" element={<SegundaConsultaPage />} />
-      <Route path="/tratamiento/:tratamientoId/primera-consulta" element={<PrimeraConsultaViewPage />} />
-      <Route path="/tratamiento/:tratamientoId/segunda-consulta" element={<SegundaConsultaViewPage />} />
+      <Route
+        path="/tratamiento/:tratamientoId/primera-consulta"
+        element={<PrimeraConsultaViewPage />}
+      />
+      <Route
+        path="/tratamiento/:tratamientoId/segunda-consulta"
+        element={<SegundaConsultaViewPage />}
+      />
       <Route path="/operador/donaciones/nueva/:tipo" element={<DonacionPage />} />
       <Route path="/pacientes/turnos" element={<TurnosPacientePage />} />
       <Route path="/operador" element={<HomeLaboratorio />} />
@@ -80,9 +85,6 @@ export default function getAppRoutes() {
       <Route path="/pacientes/deuda" element={<DeudaPaciente />} />
       <Route path="/pacientes/deudaPacientes" element={<DeudaPacientesPage />} />
       <Route path="/obras-sociales/deuda" element={<ObrasSocialesFinanzasPage />} />
-
-   
-
     </>
   );
 }

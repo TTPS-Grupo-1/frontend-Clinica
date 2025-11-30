@@ -16,8 +16,6 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import { toast } from 'sonner';
 
-
-
 const initialState: TreatmentData = {
   tratamiento: null,
   ovocitos: [],
@@ -40,20 +38,25 @@ const initialState: TreatmentData = {
 export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
   const user = useSelector((state: RootState) => state.auth.user);
 
-
   const navigate = useNavigate();
-  
+
   // 🔥 NUEVO: Un solo estado unificado en lugar de 14 estados separados
   const [data, setData] = useState<TreatmentData>(initialState);
 
   // 🔥 Helper function para actualizar partes del estado
   const updateData = (updates: Partial<TreatmentData>) => {
-    setData(prevData => ({ ...prevData, ...updates }));
+    setData((prevData) => ({ ...prevData, ...updates }));
   };
 
   // Helper para mostrar el estado en texto amigable
-  function getEstadoTexto(tratamiento: any, monitoreos: any[], fertilizaciones: any[], transferencias: any[], seguimiento: boolean, puncion: boolean): string {
-    
+  function getEstadoTexto(
+    tratamiento: any,
+    monitoreos: any[],
+    fertilizaciones: any[],
+    transferencias: any[],
+    seguimiento: boolean,
+    puncion: boolean
+  ): string {
     console.log('🔍 DEBUG: Tratamiento para estado texto:', tratamiento);
     // Si no, puedes inferirlo por los datos presentes
     if (!tratamiento) return 'Desconocido';
@@ -68,11 +71,10 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
     return 'En proceso';
   }
 
-
   useEffect(() => {
     async function fetchTreatmentData() {
       updateData({ loading: true });
-      
+
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         const headers = token ? { Authorization: `Token ${token}` } : {};
@@ -85,26 +87,35 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
         const id_paciente = responseData.tratamiento.paciente;
 
         // Obtener monitoreos
-        const id_tratamiento = responseData.tratamiento.id; 
-        const monitoreos = await axios.get(`/api/monitoreo/monitoreos/atendidos-por-tratamiento/${id_tratamiento}/`, {
-          headers,
-        });
+        const id_tratamiento = responseData.tratamiento.id;
+        const monitoreos = await axios.get(
+          `/api/monitoreo/monitoreos/atendidos-por-tratamiento/${id_tratamiento}/`,
+          {
+            headers,
+          }
+        );
         responseData.monitoreos = monitoreos.data.data || [];
-      
+
         //obtener transferencias asociadas al tratamiento
-        const transferencias = await axios.get(`/api/transferencia/transferencias/transferencias-por-tratamiento/${id_tratamiento}/`, {
-          headers,
-        });
+        const transferencias = await axios.get(
+          `/api/transferencia/transferencias/transferencias-por-tratamiento/${id_tratamiento}/`,
+          {
+            headers,
+          }
+        );
         const transferenciasData = transferencias.data.data || [];
 
         //obtener si tiene seguimiento
-        const seguimientoRes = await axios.get(`/api/seguimiento/${id_tratamiento}/tiene-seguimiento/`, {
-          headers,
-        });
+        const seguimientoRes = await axios.get(
+          `/api/seguimiento/${id_tratamiento}/tiene-seguimiento/`,
+          {
+            headers,
+          }
+        );
         const seguimiento = seguimientoRes.data.tiene_seguimiento || false;
 
         //obtener las punciones de un id de paciente
-        const punciones = await axios.get(`/api/punciones/existe-puncion/${id_paciente}/`, {  
+        const punciones = await axios.get(`/api/punciones/existe-puncion/${id_paciente}/`, {
           headers,
         });
         const existePuncion = punciones.data.existe_puncion || false;
@@ -125,7 +136,7 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
           loading: false,
           transferencias: transferenciasData, // ✅ Agrega transferencias
           seguimiento: seguimiento, // Agrega seguimiento
-          puncion: existePuncion // Agrega existePuncion
+          puncion: existePuncion, // Agrega existePuncion
         });
 
         console.log('🔍 DEBUG: Datos de primera_consulta:', responseData.primera_consulta);
@@ -171,33 +182,38 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
     loading,
     transferencias,
     seguimiento,
-    puncion
+    puncion,
   } = data;
   const puedeVer =
-  user?.rol === 'MEDICO' &&
-  tratamiento?.activo === true &&
-  tratamiento?.medico === user?.id;
+    user?.rol === 'MEDICO' && tratamiento?.activo === true && tratamiento?.medico === user?.id;
   if (loading) return <div className="text-gray-500">Cargando detalles del tratamiento...</div>;
 
   // Si nos pasaron el objeto paciente, mostrar resumen reutilizable
   const showPaciente = !!(paciente || pacienteLocal);
 
-
-  return ( 
+  return (
     <div className="space-y-6">
       {/* Estado del tratamiento */}
-      <div className="rounded bg-blue-50 p-4 mb-2 flex items-center gap-4">
+      <div className="mb-2 flex items-center gap-4 rounded bg-blue-50 p-4">
         <span className="text-lg font-bold text-blue-900">Última atención del tratamiento:</span>
-        <span className="rounded-full bg-blue-200 px-4 py-2 text-blue-800 font-semibold shadow">
-          {getEstadoTexto(tratamiento,monitoreos , fertilizaciones, transferencias, seguimiento, puncion)}
+        <span className="rounded-full bg-blue-200 px-4 py-2 font-semibold text-blue-800 shadow">
+          {getEstadoTexto(
+            tratamiento,
+            monitoreos,
+            fertilizaciones,
+            transferencias,
+            seguimiento,
+            puncion
+          )}
         </span>
         {puedeVer && (
-    <CancelarTratamiento idTratamiento={tratamientoId} onCancelado={() => toast.success("Tratamiento cancelado")} />
-      )}
+          <CancelarTratamiento
+            idTratamiento={tratamientoId}
+            onCancelado={() => toast.success('Tratamiento cancelado')}
+          />
+        )}
       </div>
       {/* cancelar tratamiento si está activo y el usuario es médico */}
-      
-   
 
       {showPaciente ? (
         <div className="rounded bg-white p-4">
@@ -207,41 +223,45 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
       ) : null}
 
       {/* Navegación a vistas de consultas */}
-      {(primeraConsulta || segundaConsulta) ? (
-        <div className={`grid gap-4 ${
-          primeraConsulta && segundaConsulta 
-            ? 'grid-cols-1 md:grid-cols-2' 
-            : 'grid-cols-1 max-w-md mx-auto'
-        }`}>
+      {primeraConsulta || segundaConsulta ? (
+        <div
+          className={`grid gap-4 ${
+            primeraConsulta && segundaConsulta
+              ? 'grid-cols-1 md:grid-cols-2'
+              : 'mx-auto max-w-md grid-cols-1'
+          }`}
+        >
           {/* Primera Consulta - solo si tiene datos */}
           {primeraConsulta && (
-            <div 
-              onClick={() => navigate(`/tratamiento/${tratamientoId}/primera-consulta`, {
-                state: { 
-                  tratamientoData: {
-                    ...tratamiento,
-                    primera_consulta: primeraConsulta
+            <div
+              onClick={() =>
+                navigate(`/tratamiento/${tratamientoId}/primera-consulta`, {
+                  state: {
+                    tratamientoData: {
+                      ...tratamiento,
+                      primera_consulta: primeraConsulta,
+                    },
+                    paciente: paciente || pacienteLocal,
+                    antecedentes_ginecologicos: antecedentesGinecologicos,
+                    antecedentes_personales: antecedentesPersonales,
+                    resultados_estudios: resultadosEstudios,
+                    ordenes: ordenes,
                   },
-                  paciente: paciente || pacienteLocal,
-                  antecedentes_ginecologicos: antecedentesGinecologicos,
-                  antecedentes_personales: antecedentesPersonales,
-                  resultados_estudios: resultadosEstudios,
-                  ordenes: ordenes
-                }
-              })}
-              className="bg-blue-50 border border-blue-200 rounded-lg p-6 hover:bg-blue-100 cursor-pointer transition-colors"
+                })
+              }
+              className="cursor-pointer rounded-lg border border-blue-200 bg-blue-50 p-6 transition-colors hover:bg-blue-100"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="bg-blue-600 rounded-lg p-2">
+              <div className="mb-3 flex items-center gap-3">
+                <div className="rounded-lg bg-blue-600 p-2">
                   <FileText className="h-5 w-5 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-blue-800">Primera Consulta</h3>
               </div>
-              <p className="text-blue-700 text-sm mb-3">
+              <p className="mb-3 text-sm text-blue-700">
                 Ver datos generales, antecedentes, estudios y fenotipo del paciente
               </p>
-              <div className="flex items-center text-blue-600 text-sm font-medium">
-                <Eye className="h-4 w-4 mr-1" />
+              <div className="flex items-center text-sm font-medium text-blue-600">
+                <Eye className="mr-1 h-4 w-4" />
                 Ver detalles completos
               </div>
             </div>
@@ -249,39 +269,41 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
 
           {/* Segunda Consulta - solo si tiene datos */}
           {segundaConsulta && (
-            <div 
-              onClick={() => navigate(`/tratamiento/${tratamientoId}/segunda-consulta`, {
-                state: { 
-                  tratamientoData: {
-                    ...tratamiento,
-                    segunda_consulta: segundaConsulta
+            <div
+              onClick={() =>
+                navigate(`/tratamiento/${tratamientoId}/segunda-consulta`, {
+                  state: {
+                    tratamientoData: {
+                      ...tratamiento,
+                      segunda_consulta: segundaConsulta,
+                    },
+                    paciente: paciente || pacienteLocal,
                   },
-                  paciente: paciente || pacienteLocal
-                }
-              })}
-              className="bg-green-50 border border-green-200 rounded-lg p-6 hover:bg-green-100 cursor-pointer transition-colors"
+                })
+              }
+              className="cursor-pointer rounded-lg border border-green-200 bg-green-50 p-6 transition-colors hover:bg-green-100"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="bg-green-600 rounded-lg p-2">
+              <div className="mb-3 flex items-center gap-3">
+                <div className="rounded-lg bg-green-600 p-2">
                   <Calendar className="h-5 w-5 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-green-800">Segunda Consulta</h3>
               </div>
-              <p className="text-green-700 text-sm mb-3">
+              <p className="mb-3 text-sm text-green-700">
                 Ver resultados de estudios, protocolo, consentimiento y monitoreo
               </p>
-              <div className="flex items-center text-green-600 text-sm font-medium">
-                <Eye className="h-4 w-4 mr-1" />
+              <div className="flex items-center text-sm font-medium text-green-600">
+                <Eye className="mr-1 h-4 w-4" />
                 Ver detalles completos
               </div>
             </div>
           )}
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center bg-gray-50">
+        <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
           <FileText className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-          <h3 className="text-lg font-medium text-gray-600 mb-2">No hay consultas registradas</h3>
-          <p className="text-gray-500 text-sm">
+          <h3 className="mb-2 text-lg font-medium text-gray-600">No hay consultas registradas</h3>
+          <p className="text-sm text-gray-500">
             Este tratamiento aún no tiene consultas médicas asociadas.
           </p>
         </div>
@@ -305,9 +327,7 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
             </div>
             <div>
               <strong>Creado:</strong>{' '}
-              {tratamiento.fecha_creacion
-                ? formatDateShort(tratamiento.fecha_creacion)
-                : '-'}
+              {tratamiento.fecha_creacion ? formatDateShort(tratamiento.fecha_creacion) : '-'}
             </div>
           </div>
         ) : (
@@ -347,7 +367,7 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
           <FertilizacionesTable fertilizaciones={fertilizaciones} />
         )}
       </div>
-      
+
       <div>
         <h3 className="mb-2 text-lg font-semibold">Monitoreos</h3>
         {monitoreos.length === 0 ? (

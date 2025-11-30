@@ -27,19 +27,19 @@ export default function HomePage() {
       hoverColor: 'hover:bg-yellow-600',
     },
     {
-      title : 'Consultar deudas y cobros de pacientes',
+      title: 'Consultar deudas y cobros de pacientes',
       description: 'Ver y gestionar las deudas y pagos de los pacientes',
       path: '/pacientes/deudaPacientes',
       bgColor: 'bg-red-500',
       hoverColor: 'hover:bg-red-600',
     },
     {
-      title : 'Consultar deudas y cobros de obras sociales',
+      title: 'Consultar deudas y cobros de obras sociales',
       description: 'Ver y gestionar las deudas y pagos de las obras sociales',
       path: '/obras-sociales/deuda',
       bgColor: 'bg-purple-500',
       hoverColor: 'hover:bg-purple-600',
-    }
+    },
   ];
 
   return (

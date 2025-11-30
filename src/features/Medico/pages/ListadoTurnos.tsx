@@ -240,62 +240,68 @@ export default function ListadoTurnos() {
     }
   };
 
-
-
   return (
-    <div className="mx-auto mt-16 min-h-screen w-full max-w-7xl bg-gray-50 px-4 py-6 sm:px-6 md:mt-20">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="mb-2 text-center text-3xl font-bold tracking-tight text-blue-900">
-          Listado de Turnos del Día
-        </h1>
-        <p className="text-center text-lg text-indigo-600">
-          Gestiona los turnos de hoy —{' '}
-          <span className="font-semibold text-blue-700">{turnosHoy.length} turnos</span>
-        </p>
-      </div>
+    <div className="min-h-screen w-full bg-gradient-to-br from-blue-100 via-white to-blue-300">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 pt-20 sm:px-6 md:pt-24">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="mb-2 text-center text-3xl font-bold tracking-tight text-blue-900">
+            Listado de Turnos del Día
+          </h1>
+          <p className="text-center text-lg text-indigo-600">
+            Gestiona los turnos de hoy —{' '}
+            <span className="font-semibold text-blue-700">{turnosHoy.length} turnos</span>
+          </p>
+        </div>
 
-      {loading ? (
-        <TurnosSkeleton count={itemsPerPage} />
-      ) : error ? (
-        <div className="py-12 text-center text-lg text-red-500">{error}</div>
-      ) : (
-        <>
-          {/* Grid de tarjetas */}
-          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {currentTurnos.map((turno) => (
-              <PacientCard
-                key={turno.id}
-                paciente={{
-                  id: turno.id_paciente!,
-                  first_name: turno.paciente_data?.first_name || `Paciente ${turno.id_paciente}`,
-                  last_name: turno.paciente_data?.last_name || '',
-                  edad: turno.paciente_data?.edad || 0,
-                  fechaTurno: (() => {
-                    const [fecha] = turno.fecha_hora.split('T');
-                    const [año, mes, dia] = fecha.split('-');
-                    return `${dia}/${mes}/${año}`;
-                  })(),
-                  horaTurno: (() => {
-                    const [, hora] = turno.fecha_hora.split('T');
-                    return hora.substring(0, 5); // HH:MM
-                  })(),
-                }}
-                onAtender={() => handleAtender(turno.id_paciente!, turno.id_externo!, turno.id)}
-              />
-            ))}
+        {loading ? (
+          <TurnosSkeleton count={itemsPerPage} />
+        ) : error ? (
+          <div className="py-12 text-center text-lg text-red-500">{error}</div>
+        ) : turnosHoy.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="mb-4 text-6xl">📅</div>
+            <h2 className="mb-2 text-2xl font-bold text-gray-700">No hay turnos para hoy</h2>
+            <p className="text-gray-500">Los turnos pendientes aparecerán aquí.</p>
           </div>
+        ) : (
+          <>
+            {/* Grid de tarjetas */}
+            <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {currentTurnos.map((turno) => (
+                <PacientCard
+                  key={turno.id}
+                  paciente={{
+                    id: turno.id_paciente!,
+                    first_name: turno.paciente_data?.first_name || `Paciente ${turno.id_paciente}`,
+                    last_name: turno.paciente_data?.last_name || '',
+                    edad: turno.paciente_data?.edad || 0,
+                    fechaTurno: (() => {
+                      const [fecha] = turno.fecha_hora.split('T');
+                      const [año, mes, dia] = fecha.split('-');
+                      return `${dia}/${mes}/${año}`;
+                    })(),
+                    horaTurno: (() => {
+                      const [, hora] = turno.fecha_hora.split('T');
+                      return hora.substring(0, 5); // HH:MM
+                    })(),
+                  }}
+                  onAtender={() => handleAtender(turno.id_paciente!, turno.id_externo!, turno.id)}
+                />
+              ))}
+            </div>
 
-          {/* Paginación */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            itemsPerPage={itemsPerPage}
-            totalItems={turnosHoy.length}
-          />
-        </>
-      )}
+            {/* Paginación */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              totalItems={turnosHoy.length}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }

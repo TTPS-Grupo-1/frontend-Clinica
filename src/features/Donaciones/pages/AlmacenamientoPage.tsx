@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import TanquesStatsCard from '../components/TanquesStatsCard';
 
 export default function AlmacenamientoPage() {
-  const [gametes, setGametes] = useState<any[]>([]);
   const [stats, setStats] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -15,10 +14,8 @@ export default function AlmacenamientoPage() {
       console.log('Datos de tanques recibidos:', api);
       // Si la API es la de gametos, ajusta el parsing aquí
       if (api.success && api.data) {
-        setGametes(api.data.gametes || []);
         setStats(api.data.summary?.storage_capacity || null);
       } else {
-        setGametes([]);
         setStats(null);
       }
       setLoading(false);

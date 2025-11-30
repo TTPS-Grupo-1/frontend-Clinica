@@ -23,7 +23,7 @@ export interface PacientCardProps {
 export interface PacientCardOptions {
   showAtender?: boolean;
   showSeguimiento?: boolean;
-  onRealizarSeguimiento?: (id: number) => void;   // 👈 AGREGAR ESTO
+  onRealizarSeguimiento?: (id: number) => void; // 👈 AGREGAR ESTO
 }
 
 export interface DashboardCardProps {

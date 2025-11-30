@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import type { FenotipoDonacionProps2 } from "../../../../interfaces/Medico";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import type { FenotipoDonacionProps2 } from '../../../../interfaces/Medico';
 
-const FENOTIPOS_URL = "/api/primeras-consultas/fenotipos/";
+const FENOTIPOS_URL = '/api/primeras-consultas/fenotipos/';
 
 const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
   visible = true,
   onDataChange,
   value = {
-    ojos: "",
-    peloColor: "",
-    peloTipo: "",
-    altura: "",
-    complexion: "",
-    etnia: "",
+    ojos: '',
+    peloColor: '',
+    peloTipo: '',
+    altura: '',
+    complexion: '',
+    etnia: '',
   },
 }) => {
   const [opciones, setOpciones] = useState({
@@ -34,7 +34,7 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
         const data = resp.data;
 
         if (!data?.enums) {
-          console.error("Formato inesperado:", data);
+          console.error('Formato inesperado:', data);
           return;
         }
 
@@ -46,7 +46,7 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
           etnia: data.enums.ethnicity.values || [],
         });
       } catch (err) {
-        console.error("Error cargando fenotipos:", err);
+        console.error('Error cargando fenotipos:', err);
       } finally {
         setLoading(false);
       }
@@ -63,7 +63,6 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
 
   return (
     <div className="mx-auto mt-6 max-w-xl rounded-xl border border-gray-300 bg-white p-8 text-black shadow-lg">
-
       {loading ? (
         <p className="text-center text-gray-600">Cargando opciones...</p>
       ) : (
@@ -71,9 +70,9 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
           <div>
             <label className="mb-1 block font-medium">Color de ojos:</label>
             <select
-              className="w-full rounded border border-gray-400 px-2 py-1 bg-white"
+              className="w-full rounded border border-gray-400 bg-white px-2 py-1"
               value={value.ojos}
-              onChange={(e) => handleChange("ojos", e.target.value)}
+              onChange={(e) => handleChange('ojos', e.target.value)}
             >
               <option value="">Seleccione...</option>
               {opciones.ojos.map((o) => (
@@ -87,9 +86,9 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
           <div>
             <label className="mb-1 block font-medium">Color de pelo:</label>
             <select
-              className="w-full rounded border border-gray-400 px-2 py-1 bg-white"
+              className="w-full rounded border border-gray-400 bg-white px-2 py-1"
               value={value.peloColor}
-              onChange={(e) => handleChange("peloColor", e.target.value)}
+              onChange={(e) => handleChange('peloColor', e.target.value)}
             >
               <option value="">Seleccione...</option>
               {opciones.peloColor.map((o) => (
@@ -103,9 +102,9 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
           <div>
             <label className="mb-1 block font-medium">Tipo de pelo:</label>
             <select
-              className="w-full rounded border border-gray-400 px-2 py-1 bg-white"
+              className="w-full rounded border border-gray-400 bg-white px-2 py-1"
               value={value.peloTipo}
-              onChange={(e) => handleChange("peloTipo", e.target.value)}
+              onChange={(e) => handleChange('peloTipo', e.target.value)}
             >
               <option value="">Seleccione...</option>
               {opciones.peloTipo.map((t) => (
@@ -117,14 +116,12 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
           </div>
 
           <div>
-            <label className="mb-1 block font-medium text-black">
-              Altura (cm):
-            </label>
+            <label className="mb-1 block font-medium text-black">Altura (cm):</label>
             <input
               type="number"
               className="w-full rounded border border-gray-400 bg-white px-2 py-1 text-black"
               value={value.altura}
-              onChange={(e) => handleChange("altura", e.target.value)}
+              onChange={(e) => handleChange('altura', e.target.value)}
               placeholder="Ej: 165"
             />
           </div>
@@ -132,9 +129,9 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
           <div>
             <label className="mb-1 block font-medium">Complexión corporal:</label>
             <select
-              className="w-full rounded border border-gray-400 px-2 py-1 bg-white"
+              className="w-full rounded border border-gray-400 bg-white px-2 py-1"
               value={value.complexion}
-              onChange={(e) => handleChange("complexion", e.target.value)}
+              onChange={(e) => handleChange('complexion', e.target.value)}
             >
               <option value="">Seleccione...</option>
               {opciones.complexion.map((c) => (
@@ -148,9 +145,9 @@ const FenotipoDonacion: React.FC<FenotipoDonacionProps2> = ({
           <div>
             <label className="mb-1 block font-medium">Rasgos étnicos:</label>
             <select
-              className="w-full rounded border border-gray-400 px-2 py-1 bg-white"
+              className="w-full rounded border border-gray-400 bg-white px-2 py-1"
               value={value.etnia}
-              onChange={(e) => handleChange("etnia", e.target.value)}
+              onChange={(e) => handleChange('etnia', e.target.value)}
             >
               <option value="">Seleccione...</option>
               {opciones.etnia.map((e) => (

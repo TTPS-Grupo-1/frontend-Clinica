@@ -96,8 +96,17 @@ export interface DonacionOvocitosFormProps {
   initialData?: Partial<DonacionOvocitos>;
   isEditing?: boolean;
 }
-export interface UbicacionBanco {
-  tanque: string;
-  rack: string;
-  tubo: string;
+export interface StorageStats {
+  total_tanks: number;
+  sperm_tanks: number;
+  oocyte_tanks: number;
+  total_racks: number;
+  occupied_racks: number;
+  available_racks: number;
+  utilization_percentage: number;
+}
+
+export interface TanquesStatsCardProps {
+  loading: boolean;
+  stats?: StorageStats;
 }

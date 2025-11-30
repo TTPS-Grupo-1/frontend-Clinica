@@ -8,18 +8,18 @@ import FenotipView from '../components/PrimeraConsulta/FenotipView';
 export default function PrimeraConsultaViewPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { 
-    tratamientoData, 
+  const {
+    tratamientoData,
     paciente,
     antecedentes_ginecologicos = [],
     antecedentes_personales = [],
     resultados_estudios = [],
-    ordenes = []
+    ordenes = [],
   } = location.state || {};
   console.log('tratamientoData en PrimeraConsultaViewPage:', tratamientoData);
-  console.log(antecedentes_ginecologicos)
-  console.log(antecedentes_personales)
-  console.log(resultados_estudios)
+  console.log(antecedentes_ginecologicos);
+  console.log(antecedentes_personales);
+  console.log(resultados_estudios);
   if (!tratamientoData || !paciente) {
     return (
       <div className="relative flex min-h-screen items-center justify-center overflow-x-hidden bg-gradient-to-br from-blue-100 via-white to-blue-300">
@@ -37,7 +37,7 @@ export default function PrimeraConsultaViewPage() {
   }
 
   const primeraConsulta = tratamientoData.primera_consulta;
-  
+
   return (
     <section className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-100 via-white to-blue-300 py-8">
       {/* Fondo decorativo */}
@@ -46,7 +46,7 @@ export default function PrimeraConsultaViewPage() {
         <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-blue-300 opacity-30 blur-2xl" />
       </div>
 
-      <div className="z-10 relative mx-auto max-w-6xl px-4 p-20">
+      <div className="relative z-10 mx-auto max-w-6xl p-20 px-4">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between rounded-xl bg-white p-6 shadow-lg">
           <div className="flex items-center gap-4">
@@ -66,15 +66,15 @@ export default function PrimeraConsultaViewPage() {
           </div>
           <div className="flex items-center gap-2 rounded-lg bg-green-100 px-4 py-2">
             <CheckCircle className="h-5 w-5 text-green-600" />
-            <span className="text-green-700 font-medium">Completada</span>
+            <span className="font-medium text-green-700">Completada</span>
           </div>
         </div>
 
         {/* Grid de componentes */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Datos Generales */}
           <div className="lg:col-span-2">
-            <DatosGenerales 
+            <DatosGenerales
               objetivo={primeraConsulta?.objetivo_consulta || tratamientoData?.objetivo}
               fecha={primeraConsulta?.fecha}
               medico={tratamientoData?.medico_nombre || tratamientoData?.medico}
@@ -83,7 +83,7 @@ export default function PrimeraConsultaViewPage() {
           </div>
 
           {/* Antecedentes */}
-          <AntecedentesView 
+          <AntecedentesView
             antecedentes={{
               clinicos_1: primeraConsulta?.antecedentes_clinicos_1,
               clinicos_2: primeraConsulta?.antecedentes_clinicos_2,
@@ -93,7 +93,7 @@ export default function PrimeraConsultaViewPage() {
               quirurgicos_2: primeraConsulta?.antecedentes_quirurgicos_2,
               genitales: primeraConsulta?.antecedentes_genitales,
               examen_fisico_1: primeraConsulta?.examen_fisico_1,
-              examen_fisico_2: primeraConsulta?.examen_fisico_2
+              examen_fisico_2: primeraConsulta?.examen_fisico_2,
             }}
             objetivo={primeraConsulta?.objetivo_consulta || tratamientoData?.objetivo}
             antecedentesGinecologicos={antecedentes_ginecologicos}
@@ -101,7 +101,7 @@ export default function PrimeraConsultaViewPage() {
           />
 
           {/* Estudios */}
-          <EstudiosView 
+          <EstudiosView
             estudios={[]}
             objetivo={primeraConsulta?.objetivo_consulta || tratamientoData?.objetivo}
             resultadosEstudios={resultados_estudios}
@@ -109,8 +109,10 @@ export default function PrimeraConsultaViewPage() {
           />
 
           {/* Fenotipo */}
-          {((primeraConsulta?.objetivo_consulta || tratamientoData?.objetivo) === 'mujer_sola_donacion' || 
-            (primeraConsulta?.objetivo_consulta || tratamientoData?.objetivo) === 'pareja_femenina_donacion') && (
+          {((primeraConsulta?.objetivo_consulta || tratamientoData?.objetivo) ===
+            'mujer_sola_donacion' ||
+            (primeraConsulta?.objetivo_consulta || tratamientoData?.objetivo) ===
+              'pareja_femenina_donacion') && (
             <div className="lg:col-span-2">
               <FenotipView fenotipo={{}} />
             </div>

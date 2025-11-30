@@ -5,8 +5,7 @@ import { toast } from 'sonner';
 import type { Embryo } from '@/types/Embryo';
 import { useTransferenciaForm } from '../hooks/useTransferenciaForm';
 import { useApi } from '../hooks/useApi';
-import { usePacientesFetch } from '@/shared/hooks/usePacientesFetch';
-import { usePacientesFiltrados } from '@/shared/hooks/usePacientesFiltrados';
+import { usePacientesPorEstado } from '@/shared/hooks/usePacientesPorEstado';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import {
@@ -28,11 +27,13 @@ export default function TransferenciaPage() {
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
   const [includeMultiple, setIncludeMultiple] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  
 
-  // Cargar pacientes
-  const { pacientes, loading: pacientesLoading, error: pacientesError } = usePacientesFetch();
-  const { filteredPacientes } = usePacientesFiltrados(pacientes, 'Monitoreos finalizados');
+  // Cargar pacientes que están en estado "Fertilización" (UN SOLO FETCH)
+  const {
+    pacientes,
+    loading: pacientesLoading,
+    error: pacientesError,
+  } = usePacientesPorEstado(['Fertilización']);
 
   // Cargar tratamientos y embriones del paciente seleccionado
   const {
@@ -43,27 +44,26 @@ export default function TransferenciaPage() {
     submitTransferencia,
     refetchEmbriones,
   } = useApi(selectedPacienteId);
-    const { formData, updateField, toggleEmbrion, resetForm } = useTransferenciaForm();
-    const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
-    const operadorId = currentUser?.id ?? null;
-    console.log('formData', embriones);
+  const { formData, updateField, toggleEmbrion, resetForm } = useTransferenciaForm();
+  const currentUser = useSelector((state: RootState) => (state.auth as any)?.user);
+  const operadorId = currentUser?.id ?? null;
 
-    // Normalizar embriones para cumplir el tipo esperado por TransferenciaSelector
-    const normalizedEmbriones = (embriones || []).map((e) => ({
-      ...e,
-      calidad:
-        e.calidad !== undefined && e.calidad !== null
-          ? String((e as { calidad?: number | string }).calidad)
-          : 'N/A',
-      estado: (e.estado || '').toString(),
-    }));
+  // Normalizar embriones para cumplir el tipo esperado por TransferenciaSelector
+  const normalizedEmbriones = (embriones || []).map((e) => ({
+    ...e,
+    calidad:
+      e.calidad !== undefined && e.calidad !== null
+        ? String((e as { calidad?: number | string }).calidad)
+        : 'N/A',
+    estado: (e.estado || '').toString(),
+  }));
 
-    const availableEmbriones = (normalizedEmbriones || []).filter((e) => {
-      if (!e) return false;
-      const estado = String(e.estado || '').toLowerCase();
-      if (estado === 'transferido') return false;
-      return true;
-    });
+  const availableEmbriones = (normalizedEmbriones || []).filter((e) => {
+    if (!e) return false;
+    const estado = String(e.estado || '').toLowerCase();
+    if (estado === 'transferido') return false;
+    return true;
+  });
   const handleEmbrionToggle = (embrionId: number) => {
     if (includeMultiple) {
       // allow the hook to toggle as usual for multi-select
@@ -95,7 +95,8 @@ export default function TransferenciaPage() {
     if (notFinalized && notFinalized.id) {
       updateField('tratamiento', notFinalized.id);
     }
-  }, [tratamientos, selectedPacienteId, updateField]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tratamientos, selectedPacienteId]);
 
   const handlePacienteChange = (pacienteId: number | null) => {
     setSelectedPacienteId(pacienteId);
@@ -228,7 +229,7 @@ export default function TransferenciaPage() {
 
         <div className="space-y-8">
           <PacienteSelector
-            pacientes={filteredPacientes !== null ? filteredPacientes : pacientes}
+            pacientes={pacientes}
             selectedPaciente={selectedPacienteId}
             onPacienteChange={handlePacienteChange}
             isLoading={pacientesLoading}
@@ -251,23 +252,23 @@ export default function TransferenciaPage() {
               {embriones.length > 1 && (
                 <div className="flex items-center gap-3">
                   <label className="flex cursor-pointer items-center select-none">
-                      <input
-                        type="checkbox"
-                        checked={includeMultiple}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          if (checked) {
-                            setConfirmModalOpen(true);
-                          } else {
-                            setIncludeMultiple(false);
-                            // Limpiar todos los embriones seleccionados al desmarcar
-                            updateField('embriones', []);
-                          }
-                        }}
-                        className="mr-2 h-4 w-4"
-                      />
-                      <span className="text-sm text-gray-700">Incluir más de un embrión</span>
-                    </label>
+                    <input
+                      type="checkbox"
+                      checked={includeMultiple}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        if (checked) {
+                          setConfirmModalOpen(true);
+                        } else {
+                          setIncludeMultiple(false);
+                          // Limpiar todos los embriones seleccionados al desmarcar
+                          updateField('embriones', []);
+                        }
+                      }}
+                      className="mr-2 h-4 w-4"
+                    />
+                    <span className="text-sm text-gray-700">Incluir más de un embrión</span>
+                  </label>
                   <span className="text-xs text-gray-400">
                     {includeMultiple ? 'Modo múltiple' : 'Modo único'}
                   </span>

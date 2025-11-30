@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
-import { usePacientesFiltrados } from '../../../shared/hooks/usePacientesFiltrados';
+import { usePacientesPorEstado } from '../../../shared/hooks/usePacientesPorEstado';
 import PacienteSelector from '../../Transferencia/components/PacienteSelector';
 import FertilizacionModal from '../components/FertilizacionModal';
 import RoleHomeButton from '../../../shared/components/RoleHomeButton';
-import { usePacientesFetch } from '../../../shared/hooks/usePacientesFetch';
 import { useFertilizacionesFetch } from '../../../shared/hooks/useFertilizacionesFetch';
 import FertilizacionesTable from '../components/Fertilizaciones';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -13,17 +12,18 @@ import FertilizacionesTableSkeleton from '../components/FertilizacionesTableSkel
 import { Suspense } from 'react';
 
 export default function FertilizacionPage() {
-  const { pacientes, loading: loadingPacientes } = usePacientesFetch();
+  const { pacientes, loading: loadingPacientes } = usePacientesPorEstado([
+    'Punción',
+    'Monitoreos finalizados',
+  ]);
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
-  const { filteredPacientes, loading: filterLoading } = usePacientesFiltrados(pacientes, 'Monitoreos finalizados');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { fertilizaciones, loading } = useFertilizacionesFetch(selectedPacienteId);
 
   // Obtener usuario actual desde el store persistido (localStorage)
   const currentUser = useSelector((state: RootState) => state.auth.user);
 
-  const effectivePacientes = filteredPacientes !== null ? filteredPacientes : pacientes;
-  const selectedPaciente = (effectivePacientes || []).find((p) => p.id === selectedPacienteId) ?? null;
+  const selectedPaciente = (pacientes || []).find((p) => p.id === selectedPacienteId) ?? null;
   const selectedPacienteNombre = selectedPaciente
     ? `${selectedPaciente.last_name}, ${selectedPaciente.first_name}`
     : null;
@@ -62,10 +62,10 @@ export default function FertilizacionPage() {
             className="flex flex-col items-center justify-center gap-2 sm:flex-row"
           >
             <PacienteSelector
-              pacientes={effectivePacientes || []}
+              pacientes={pacientes || []}
               selectedPaciente={selectedPacienteId}
               onPacienteChange={(id) => setSelectedPacienteId(id)}
-              isLoading={loadingPacientes || filterLoading}
+              isLoading={loadingPacientes}
             />
           </motion.div>
         </div>

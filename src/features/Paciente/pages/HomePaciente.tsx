@@ -62,7 +62,6 @@ export default function HomePaciente() {
             bgColor="bg-white"
             iconColor="text-orange-500"
           />
-
         </div>
       </div>
     </div>

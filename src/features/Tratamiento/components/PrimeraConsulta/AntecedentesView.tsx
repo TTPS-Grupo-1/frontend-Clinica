@@ -7,29 +7,34 @@ interface AntecedentesViewProps {
   antecedentesPersonales?: any[];
 }
 
-export default function AntecedentesView({ 
-  antecedentes, 
-  objetivo, 
-  antecedentesGinecologicos = [], 
-  antecedentesPersonales = [] 
+export default function AntecedentesView({
+  antecedentes,
+  objetivo,
+  antecedentesGinecologicos = [],
+  antecedentesPersonales = [],
 }: AntecedentesViewProps) {
   // Determinar si es pareja basado en la presencia de datos de la segunda persona
-  const isPareja = objetivo === 'pareja_heterosexual' || objetivo === 'pareja_femenina_ropa' || 
-                   (antecedentes.clinicos_2 || antecedentes.familiares_2 || antecedentes.quirurgicos_2 || antecedentes.examen_fisico_2);
-  
+  const isPareja =
+    objetivo === 'pareja_heterosexual' ||
+    objetivo === 'pareja_femenina_ropa' ||
+    antecedentes.clinicos_2 ||
+    antecedentes.familiares_2 ||
+    antecedentes.quirurgicos_2 ||
+    antecedentes.examen_fisico_2;
+
   // Debug: Log de todos los datos recibidos
   console.log('🔍 AntecedentesView - Datos recibidos:', {
     antecedentes,
     objetivo,
     isPareja,
     antecedentesGinecologicos,
-    antecedentesPersonales
+    antecedentesPersonales,
   });
-  
+
   // Manejar múltiples antecedentes ginecológicos y personales
   const ginecologicos = antecedentesGinecologicos; // Array de antecedentes
   const personales = antecedentesPersonales; // Array de antecedentes
-  
+
   return (
     <div className="rounded-xl bg-white p-6 shadow-lg">
       <div className="mb-4 flex items-center gap-3">
@@ -47,7 +52,7 @@ export default function AntecedentesView({
             Antecedentes Clínicos
           </h3>
           {isPareja ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-lg bg-pink-50 p-3">
                 <h4 className="mb-2 font-medium text-pink-800">Mujer</h4>
                 <div className="space-y-1">
@@ -58,11 +63,15 @@ export default function AntecedentesView({
                           {Object.entries(antecedentes.clinicos_1).map(([key, value]) => (
                             <div key={key} className="flex justify-between">
                               <span className="capitalize">{key.replace('_', ' ')}:</span>
-                              <span className={`font-medium ${
-                                value === true ? 'text-red-600' : 
-                                value === false ? 'text-green-600' : 
-                                'text-gray-800'
-                              }`}>
+                              <span
+                                className={`font-medium ${
+                                  value === true
+                                    ? 'text-red-600'
+                                    : value === false
+                                      ? 'text-green-600'
+                                      : 'text-gray-800'
+                                }`}
+                              >
                                 {value === true ? 'Sí' : value === false ? 'No' : String(value)}
                               </span>
                             </div>
@@ -87,11 +96,15 @@ export default function AntecedentesView({
                           {Object.entries(antecedentes.clinicos_2).map(([key, value]) => (
                             <div key={key} className="flex justify-between">
                               <span className="capitalize">{key.replace('_', ' ')}:</span>
-                              <span className={`font-medium ${
-                                value === true ? 'text-red-600' : 
-                                value === false ? 'text-green-600' : 
-                                'text-gray-800'
-                              }`}>
+                              <span
+                                className={`font-medium ${
+                                  value === true
+                                    ? 'text-red-600'
+                                    : value === false
+                                      ? 'text-green-600'
+                                      : 'text-gray-800'
+                                }`}
+                              >
                                 {value === true ? 'Sí' : value === false ? 'No' : String(value)}
                               </span>
                             </div>
@@ -116,11 +129,15 @@ export default function AntecedentesView({
                       {Object.entries(antecedentes.clinicos_1).map(([key, value]) => (
                         <div key={key} className="flex justify-between">
                           <span className="capitalize">{key.replace('_', ' ')}:</span>
-                          <span className={`font-medium ${
-                            value === true ? 'text-red-600' : 
-                            value === false ? 'text-green-600' : 
-                            'text-gray-800'
-                          }`}>
+                          <span
+                            className={`font-medium ${
+                              value === true
+                                ? 'text-red-600'
+                                : value === false
+                                  ? 'text-green-600'
+                                  : 'text-gray-800'
+                            }`}
+                          >
                             {value === true ? 'Sí' : value === false ? 'No' : String(value)}
                           </span>
                         </div>
@@ -144,7 +161,7 @@ export default function AntecedentesView({
             Antecedentes Familiares
           </h3>
           {isPareja ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-lg bg-pink-50 p-3">
                 <h4 className="mb-2 font-medium text-pink-800">Mujer</h4>
                 <p className="text-sm text-gray-700">
@@ -174,7 +191,7 @@ export default function AntecedentesView({
             Antecedentes Quirúrgicos
           </h3>
           {isPareja ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-lg bg-pink-50 p-3">
                 <h4 className="mb-2 font-medium text-pink-800">Mujer</h4>
                 <p className="text-sm text-gray-700">
@@ -217,7 +234,7 @@ export default function AntecedentesView({
             Examen Físico
           </h3>
           {isPareja ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-lg bg-pink-50 p-3">
                 <h4 className="mb-2 font-medium text-pink-800">Mujer</h4>
                 <p className="text-sm text-gray-700">
@@ -249,16 +266,15 @@ export default function AntecedentesView({
             </h3>
             <div className="space-y-4">
               {personales.map((personal: any, index: number) => (
-                <div key={index} className="border rounded-lg p-4 bg-gray-50">
+                <div key={index} className="rounded-lg border bg-gray-50 p-4">
                   <h4 className="mb-3 font-medium text-gray-800">Registro {index + 1}</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="rounded-lg bg-yellow-50 p-3">
                       <h5 className="mb-2 font-medium text-yellow-800">Tabaquismo</h5>
                       <p className="text-sm text-gray-700">
-                        {personal?.fuma_pack_dias 
+                        {personal?.fuma_pack_dias
                           ? `${personal.fuma_pack_dias} pack-días`
-                          : 'No fuma'
-                        }
+                          : 'No fuma'}
                       </p>
                     </div>
                     <div className="rounded-lg bg-amber-50 p-3">
@@ -295,16 +311,20 @@ export default function AntecedentesView({
             </h3>
             <div className="space-y-4">
               {ginecologicos.map((gineco: any, index: number) => (
-                <div key={index} className="rounded-lg bg-pink-50 p-4 border">
+                <div key={index} className="rounded-lg border bg-pink-50 p-4">
                   <h4 className="mb-3 font-medium text-pink-800">Registro {index + 1}</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                     <div>
                       <span className="font-medium text-pink-800">Menarca:</span>
-                      <span className="ml-2 text-gray-700">{gineco.menarca ? `${gineco.menarca} años` : 'N/D'}</span>
+                      <span className="ml-2 text-gray-700">
+                        {gineco.menarca ? `${gineco.menarca} años` : 'N/D'}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium text-pink-800">Ciclo:</span>
-                      <span className="ml-2 text-gray-700">{gineco.ciclo_menstrual ? `${gineco.ciclo_menstrual} días` : 'N/D'}</span>
+                      <span className="ml-2 text-gray-700">
+                        {gineco.ciclo_menstrual ? `${gineco.ciclo_menstrual} días` : 'N/D'}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium text-pink-800">Regularidad:</span>
@@ -312,23 +332,35 @@ export default function AntecedentesView({
                     </div>
                     <div>
                       <span className="font-medium text-pink-800">Duración:</span>
-                      <span className="ml-2 text-gray-700">{gineco.duracion_menstrual_dias ? `${gineco.duracion_menstrual_dias} días` : 'N/D'}</span>
+                      <span className="ml-2 text-gray-700">
+                        {gineco.duracion_menstrual_dias
+                          ? `${gineco.duracion_menstrual_dias} días`
+                          : 'N/D'}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium text-pink-800">Sangrado:</span>
-                      <span className="ml-2 text-gray-700">{gineco.caracteristicas_sangrado || 'N/D'}</span>
+                      <span className="ml-2 text-gray-700">
+                        {gineco.caracteristicas_sangrado || 'N/D'}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium text-pink-800">Embarazos (G):</span>
-                      <span className="ml-2 text-gray-700">{gineco.g !== null ? gineco.g : 'N/D'}</span>
+                      <span className="ml-2 text-gray-700">
+                        {gineco.g !== null ? gineco.g : 'N/D'}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium text-pink-800">Partos (P):</span>
-                      <span className="ml-2 text-gray-700">{gineco.p !== null ? gineco.p : 'N/D'}</span>
+                      <span className="ml-2 text-gray-700">
+                        {gineco.p !== null ? gineco.p : 'N/D'}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium text-pink-800">Abortos (AB):</span>
-                      <span className="ml-2 text-gray-700">{gineco.ab !== null ? gineco.ab : 'N/D'}</span>
+                      <span className="ml-2 text-gray-700">
+                        {gineco.ab !== null ? gineco.ab : 'N/D'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -338,13 +370,18 @@ export default function AntecedentesView({
         )}
 
         {/* Empty state */}
-        {!antecedentes.clinicos_1 && !antecedentes.familiares_1 && !antecedentes.quirurgicos_1 && 
-         !antecedentes.genitales && !antecedentes.examen_fisico_1 && ginecologicos.length === 0 && personales.length === 0 && (
-          <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center">
-            <FileText className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-            <p className="text-gray-500">No hay antecedentes registrados para este paciente</p>
-          </div>
-        )}
+        {!antecedentes.clinicos_1 &&
+          !antecedentes.familiares_1 &&
+          !antecedentes.quirurgicos_1 &&
+          !antecedentes.genitales &&
+          !antecedentes.examen_fisico_1 &&
+          ginecologicos.length === 0 &&
+          personales.length === 0 && (
+            <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center">
+              <FileText className="mx-auto mb-3 h-12 w-12 text-gray-400" />
+              <p className="text-gray-500">No hay antecedentes registrados para este paciente</p>
+            </div>
+          )}
       </div>
     </div>
   );

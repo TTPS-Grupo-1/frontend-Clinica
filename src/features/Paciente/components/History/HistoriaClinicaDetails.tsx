@@ -7,8 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import PatientDetails from './PatientDetails';
 import MonitoreoTable from '../MonitoreoTable';
 
-
-
 interface ExtendedProps extends Props {
   userType?: 'paciente' | 'medico';
 }
@@ -19,7 +17,7 @@ export default function HistoriaClinicaDetails({
   loadingPaciente,
   ovocitos,
   loadingOvocitos,
-  embriones, 
+  embriones,
   loadingEmbriones,
   fertilizaciones,
   loadingFert,

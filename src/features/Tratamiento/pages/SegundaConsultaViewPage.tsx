@@ -28,7 +28,7 @@ export default function SegundaConsultaViewPage() {
   }
 
   const segundaConsulta = tratamientoData.segunda_consulta;
-  
+
   return (
     <section className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-green-100 via-white to-green-300 py-8">
       {/* Fondo decorativo */}
@@ -37,7 +37,7 @@ export default function SegundaConsultaViewPage() {
         <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-green-300 opacity-30 blur-2xl" />
       </div>
 
-      <div className="z-10 relative mx-auto max-w-6xl px-4 p-20">
+      <div className="relative z-10 mx-auto max-w-6xl p-20 px-4">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between rounded-xl bg-white p-6 shadow-lg">
           <div className="flex items-center gap-4">
@@ -57,7 +57,7 @@ export default function SegundaConsultaViewPage() {
           </div>
           <div className="flex items-center gap-2 rounded-lg bg-green-100 px-4 py-2">
             <CheckCircle className="h-5 w-5 text-green-600" />
-            <span className="text-green-700 font-medium">Completada</span>
+            <span className="font-medium text-green-700">Completada</span>
           </div>
         </div>
 
@@ -82,42 +82,37 @@ export default function SegundaConsultaViewPage() {
         </div>
 
         {/* Grid de componentes */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Resultados de Estudios */}
           <div className="lg:col-span-2">
-            <ResultadosEstudios 
-              estudios={[]}
-              fecha={segundaConsulta?.fecha}
-            />
+            <ResultadosEstudios estudios={[]} fecha={segundaConsulta?.fecha} />
           </div>
 
           {/* Protocolo */}
-          <ProtocoloView 
+          <ProtocoloView
             protocolo={{
               tipo_medicacion: segundaConsulta?.tipo_medicacion,
               dosis_medicacion: segundaConsulta?.dosis_medicacion,
               duracion_medicacion: segundaConsulta?.duracion_medicacion,
               droga: segundaConsulta?.droga,
-              orden_droga_pdf: segundaConsulta?.orden_droga_pdf
+              orden_droga_pdf: segundaConsulta?.orden_droga_pdf,
             }}
           />
 
           {/* Consentimiento */}
-          <ConsentimientoView 
+          <ConsentimientoView
             consentimiento={segundaConsulta?.consentimiento_informado}
             fecha={segundaConsulta?.fecha}
           />
 
           {/* Monitoreo */}
           <div className="lg:col-span-2">
-            <MonitoreoView 
-              monitoreo={[]}
-            />
+            <MonitoreoView monitoreo={[]} />
           </div>
 
           {/* Conclusiones */}
           <div className="lg:col-span-2">
-            <ConclusionesView 
+            <ConclusionesView
               conclusiones={{}}
               ovocitoViable={segundaConsulta?.ovocito_viable}
               semenViable={segundaConsulta?.semen_viable}

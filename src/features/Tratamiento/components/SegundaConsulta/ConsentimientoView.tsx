@@ -72,10 +72,10 @@ export default function ConsentimientoView({ consentimiento, fecha }: Consentimi
                   <p className="text-sm text-gray-600">Documento legal firmado</p>
                 </div>
               </div>
-              
+
               <button
                 onClick={handleDownload}
-                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
               >
                 <Download className="h-4 w-4" />
                 Descargar
@@ -88,14 +88,13 @@ export default function ConsentimientoView({ consentimiento, fecha }: Consentimi
             <h3 className="mb-2 font-medium text-blue-800">Información Legal</h3>
             <div className="space-y-2 text-sm text-blue-700">
               <p>
-                • Este documento contiene la autorización expresa del/los paciente(s) para el tratamiento de reproducción asistida.
+                • Este documento contiene la autorización expresa del/los paciente(s) para el
+                tratamiento de reproducción asistida.
               </p>
               <p>
                 • Se han explicado todos los procedimientos, riesgos y alternativas al paciente.
               </p>
-              <p>
-                • El documento ha sido firmado de manera voluntaria y con pleno conocimiento.
-              </p>
+              <p>• El documento ha sido firmado de manera voluntaria y con pleno conocimiento.</p>
             </div>
           </div>
 
@@ -108,7 +107,7 @@ export default function ConsentimientoView({ consentimiento, fecha }: Consentimi
                 <p className="text-gray-600">Documento PDF</p>
                 <button
                   onClick={() => window.open(consentimiento, '_blank')}
-                  className="mt-2 text-blue-600 hover:text-blue-800 underline"
+                  className="mt-2 text-blue-600 underline hover:text-blue-800"
                 >
                   Ver documento completo
                 </button>

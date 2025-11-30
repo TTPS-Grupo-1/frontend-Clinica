@@ -9,15 +9,15 @@ interface ResultadosEstudiosProps {
 export default function ResultadosEstudios({ estudios, fecha }: ResultadosEstudiosProps) {
   const groupEstudiosByPersona = (estudios: any[]) => {
     const grouped: { [key: string]: any[] } = {};
-    
-    estudios.forEach(estudio => {
+
+    estudios.forEach((estudio) => {
       const persona = estudio.persona || 'Paciente';
       if (!grouped[persona]) {
         grouped[persona] = [];
       }
       grouped[persona].push(estudio);
     });
-    
+
     return grouped;
   };
 
@@ -25,22 +25,30 @@ export default function ResultadosEstudios({ estudios, fecha }: ResultadosEstudi
 
   const getPersonaColor = (persona: string) => {
     const colors: { [key: string]: string } = {
-      'PACIENTE': 'bg-pink-50 border-pink-200',
-      'PAREJA': 'bg-blue-50 border-blue-200',
-      'Paciente': 'bg-pink-50 border-pink-200',
-      'Pareja': 'bg-blue-50 border-blue-200'
+      PACIENTE: 'bg-pink-50 border-pink-200',
+      PAREJA: 'bg-blue-50 border-blue-200',
+      Paciente: 'bg-pink-50 border-pink-200',
+      Pareja: 'bg-blue-50 border-blue-200',
     };
     return colors[persona] || 'bg-gray-50 border-gray-200';
   };
 
   const getEstadoColor = (valor: string) => {
     if (!valor) return 'text-gray-500';
-    
+
     const valorLower = valor.toLowerCase();
-    if (valorLower.includes('normal') || valorLower.includes('negativo') || valorLower.includes('ok')) {
+    if (
+      valorLower.includes('normal') ||
+      valorLower.includes('negativo') ||
+      valorLower.includes('ok')
+    ) {
       return 'text-green-600';
     }
-    if (valorLower.includes('positivo') || valorLower.includes('alterado') || valorLower.includes('anormal')) {
+    if (
+      valorLower.includes('positivo') ||
+      valorLower.includes('alterado') ||
+      valorLower.includes('anormal')
+    ) {
       return 'text-red-600';
     }
     return 'text-blue-600';
@@ -72,26 +80,30 @@ export default function ResultadosEstudios({ estudios, fecha }: ResultadosEstudi
         <div className="space-y-6">
           {Object.entries(groupedEstudios).map(([persona, estudiosPersona]) => (
             <div key={persona}>
-              <h3 className={`mb-4 inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-medium ${getPersonaColor(persona)}`}>
+              <h3
+                className={`mb-4 inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-medium ${getPersonaColor(persona)}`}
+              >
                 {persona === 'PACIENTE' || persona === 'Paciente' ? '👩 Paciente' : '👨 Pareja'}
-                <span className="ml-1 rounded bg-white bg-opacity-70 px-2 py-0.5 text-xs">
+                <span className="bg-opacity-70 ml-1 rounded bg-white px-2 py-0.5 text-xs">
                   {estudiosPersona.length} estudios
                 </span>
               </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {estudiosPersona.map((estudio, index) => (
                   <div key={index} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <div className="mb-3 flex items-start justify-between">
                       <div className="flex-1">
-                        <h4 className="font-medium text-gray-800">{estudio.nombre || estudio.nombre_estudio}</h4>
+                        <h4 className="font-medium text-gray-800">
+                          {estudio.nombre || estudio.nombre_estudio}
+                        </h4>
                         {estudio.tipo && (
                           <span className="mt-1 inline-block rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
                             {estudio.tipo}
                           </span>
                         )}
                       </div>
-                      
+
                       {estudio.completado !== undefined && (
                         <div className="ml-2">
                           {estudio.completado ? (
@@ -102,7 +114,7 @@ export default function ResultadosEstudios({ estudios, fecha }: ResultadosEstudi
                         </div>
                       )}
                     </div>
-                    
+
                     {estudio.valor && (
                       <div className="rounded-lg bg-white p-3">
                         <div className="flex items-center gap-2">
@@ -113,13 +125,13 @@ export default function ResultadosEstudios({ estudios, fecha }: ResultadosEstudi
                         </div>
                       </div>
                     )}
-                    
+
                     {estudio.fecha_resultado && (
                       <div className="mt-2 text-xs text-gray-500">
                         Fecha: {formatDate(estudio.fecha_resultado)}
                       </div>
                     )}
-                    
+
                     {estudio.observaciones && (
                       <div className="mt-2 rounded bg-yellow-50 p-2">
                         <p className="text-xs text-yellow-800">{estudio.observaciones}</p>
@@ -137,20 +149,20 @@ export default function ResultadosEstudios({ estudios, fecha }: ResultadosEstudi
       {Object.keys(groupedEstudios).length > 0 && (
         <div className="mt-6 rounded-lg bg-blue-50 p-4">
           <h3 className="mb-2 font-medium text-blue-800">Resumen de Resultados</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
             <div className="text-center">
               <div className="font-bold text-blue-700">{estudios.length}</div>
               <div className="text-blue-600">Total estudios</div>
             </div>
             <div className="text-center">
               <div className="font-bold text-green-700">
-                {estudios.filter(e => e.completado || e.valor).length}
+                {estudios.filter((e) => e.completado || e.valor).length}
               </div>
               <div className="text-green-600">Completados</div>
             </div>
             <div className="text-center">
               <div className="font-bold text-red-700">
-                {estudios.filter(e => e.completado === false || !e.valor).length}
+                {estudios.filter((e) => e.completado === false || !e.valor).length}
               </div>
               <div className="text-red-600">Pendientes</div>
             </div>

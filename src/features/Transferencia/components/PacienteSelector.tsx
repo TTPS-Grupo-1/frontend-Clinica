@@ -34,7 +34,9 @@ export default function PacienteSelector({
     return (
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-800">Paciente</label>
-        <div className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-700">No hay pacientes disponibles.</div>
+        <div className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-700">
+          No hay pacientes disponibles.
+        </div>
       </div>
     );
   }

@@ -27,7 +27,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
                 <Link
                   to="/operador/donaciones/nueva/semen"
                   onClick={onCloseMobile}
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Semen
                 </Link>
@@ -36,7 +36,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
                 <Link
                   to="/operador/donaciones/nueva/ovocitos"
                   onClick={onCloseMobile}
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Ovocitos
                 </Link>
@@ -59,7 +59,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
                 <Link
                   to="/operador/criopreservacion/semen"
                   onClick={onCloseMobile}
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Semen
                 </Link>
@@ -68,7 +68,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
                 <Link
                   to="/operador/criopreservacion/ovocitos"
                   onClick={onCloseMobile}
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Ovocitos
                 </Link>
@@ -91,7 +91,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
                 <Link
                   to="/operador/punciones"
                   onClick={onCloseMobile}
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Punciones
                 </Link>
@@ -100,7 +100,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
                 <Link
                   to="/operador/transferencias"
                   onClick={onCloseMobile}
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Transferencias
                 </Link>
@@ -109,7 +109,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
                 <Link
                   to="/operador/fertilizaciones"
                   onClick={onCloseMobile}
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Fertilizaciones
                 </Link>
@@ -141,8 +141,10 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
         <div
           onMouseEnter={() => setOpen('donaciones')}
           onMouseLeave={() => setOpen(null)}
-          className={`ring-opacity-5 absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black transition-all duration-200 ${
-            open === 'donaciones' ? 'visible scale-100 transform opacity-100' : 'invisible scale-95 transform opacity-0'
+          className={`ring-opacity-5 absolute top-full right-0 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black transition-all duration-200 ${
+            open === 'donaciones'
+              ? 'visible scale-100 transform opacity-100'
+              : 'invisible scale-95 transform opacity-0'
           }`}
         >
           <div className="p-3">
@@ -150,7 +152,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/operador/donaciones"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Donaciones (resumen)
                 </Link>
@@ -158,7 +160,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/operador/donaciones/nueva/semen"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Semen
                 </Link>
@@ -166,7 +168,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/operador/donaciones/nueva/ovocitos"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Ovocitos
                 </Link>
@@ -193,8 +195,10 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
         <div
           onMouseEnter={() => setOpen('criopreservacion')}
           onMouseLeave={() => setOpen(null)}
-          className={`ring-opacity-5 absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black transition-all duration-200 ${
-            open === 'criopreservacion' ? 'visible scale-100 transform opacity-100' : 'invisible scale-95 transform opacity-0'
+          className={`ring-opacity-5 absolute top-full right-0 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black transition-all duration-200 ${
+            open === 'criopreservacion'
+              ? 'visible scale-100 transform opacity-100'
+              : 'invisible scale-95 transform opacity-0'
           }`}
         >
           <div className="p-3">
@@ -202,7 +206,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/operador/criopreservacion"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Criopreservación (resumen)
                 </Link>
@@ -210,7 +214,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/operador/criopreservacion/semen"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Semen
                 </Link>
@@ -218,7 +222,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/operador/criopreservacion/ovocitos"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Ovocitos
                 </Link>
@@ -245,8 +249,10 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
         <div
           onMouseEnter={() => setOpen('funciones')}
           onMouseLeave={() => setOpen(null)}
-          className={`ring-opacity-5 absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black transition-all duration-200 ${
-            open === 'funciones' ? 'visible scale-100 transform opacity-100' : 'invisible scale-95 transform opacity-0'
+          className={`ring-opacity-5 absolute top-full right-0 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black transition-all duration-200 ${
+            open === 'funciones'
+              ? 'visible scale-100 transform opacity-100'
+              : 'invisible scale-95 transform opacity-0'
           }`}
         >
           <div className="p-3">
@@ -254,7 +260,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/operador/punciones"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Punciones
                 </Link>
@@ -262,7 +268,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/transferencias"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Transferencias
                 </Link>
@@ -270,7 +276,7 @@ export default function OperadorSection({ isMobile = false, onCloseMobile }: Ope
               <li>
                 <Link
                   to="/operador/fertilizaciones"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  className="block w-full rounded-md px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Fertilizaciones
                 </Link>

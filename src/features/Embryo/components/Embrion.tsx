@@ -38,7 +38,7 @@ export default function EmbrionForm({
 
     // ✅ Si ya fue criopreservado y el estado actual es fresco, solo transferido o descartado
     if (fueCriopreservado && estadoActual === 'fresco') {
-      return ['descartado','fresco'];
+      return ['descartado', 'fresco'];
     }
 
     // Si actualmente es criopreservado, solo puede pasar a fresco
@@ -180,11 +180,14 @@ export default function EmbrionForm({
       )}
 
       {/* ✅ Mensaje si ya fue criopreservado y ahora es fresco */}
-      {fueCriopreservado && formData.estado === 'fresco' && initialData?.estado !== 'criopreservado' && (
-        <div className="mb-4 rounded-lg bg-yellow-100 p-3 text-center font-semibold text-yellow-700">
-          Este embrión ya fue criopreservado anteriormente. Solo puede ser transferido o descartado.
-        </div>
-      )}
+      {fueCriopreservado &&
+        formData.estado === 'fresco' &&
+        initialData?.estado !== 'criopreservado' && (
+          <div className="mb-4 rounded-lg bg-yellow-100 p-3 text-center font-semibold text-yellow-700">
+            Este embrión ya fue criopreservado anteriormente. Solo puede ser transferido o
+            descartado.
+          </div>
+        )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Calidad */}
@@ -237,14 +240,14 @@ export default function EmbrionForm({
           <label className="mb-2 block text-sm font-semibold text-gray-700">
             Estado <span className="text-red-500">*</span>
           </label>
-          
+
           {/* ✅ Mostrar el estado actual */}
           {isEdit && initialData?.estado && (
-            <div className="mb-3 rounded-lg bg-blue-50 p-3 border border-blue-200">
+            <div className="mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3">
               <p className="text-sm font-semibold text-blue-800">
                 Estado actual: <span className="capitalize">{initialData.estado}</span>
               </p>
-              <p className="text-xs text-blue-600 mt-1">
+              <p className="mt-1 text-xs text-blue-600">
                 Puedes mantener este estado o cambiarlo usando el selector de abajo
               </p>
             </div>
@@ -262,9 +265,15 @@ export default function EmbrionForm({
           >
             {/* ✅ Renderizar opciones permitidas */}
             {opcionesEstado.includes('fresco') && <option value="fresco">Fresco</option>}
-            {opcionesEstado.includes('criopreservado') && <option value="criopreservado">Criopreservado</option>}
-            {opcionesEstado.includes('transferido') && <option value="transferido">Transferido</option>}
-            {opcionesEstado.includes('descartado') && <option value="descartado">Descartado</option>}
+            {opcionesEstado.includes('criopreservado') && (
+              <option value="criopreservado">Criopreservado</option>
+            )}
+            {opcionesEstado.includes('transferido') && (
+              <option value="transferido">Transferido</option>
+            )}
+            {opcionesEstado.includes('descartado') && (
+              <option value="descartado">Descartado</option>
+            )}
           </select>
           {errors.estado && <p className="mt-1 text-sm text-red-500">{errors.estado}</p>}
         </div>

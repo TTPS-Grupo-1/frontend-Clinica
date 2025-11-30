@@ -1,4 +1,5 @@
 import TurnoCard from '../components/TurnosPacienteComponente';
+import TurnosSkeleton from '../components/TurnosSkeleton';
 import Pagination from '../../../components/Pagination';
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
@@ -6,38 +7,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import ConfirmModal from '../components/ModalConfirmacionComponente';
 import { useNavigate } from 'react-router-dom';
-
-// --- INTERFACES ---
-interface TurnoAPI {
-  id: number;
-  id_medico: number;
-  id_paciente: number;
-  fecha_hora: string; // "YYYY-MM-DDTHH:MM:SS+00:00"
-  es_monitoreo: boolean;
-}
-
-interface Turnos {
-  id: number;
-  fecha: string;
-  hora: string;
-  medico: string;
-  es_monitoreo: boolean;
-}
-
-interface UserState {
-  auth: {
-    user: {
-      id: number;
-      rol: string;
-    } | null;
-  };
-}
-
-interface Medico {
-  id: number;
-  first_name: string;
-  last_name: string;
-}
+import type { Medico, TurnoAPI, Turnos, UserState } from '@/interfaces/Paciente';
 
 export default function MisTurnos() {
   const navigate = useNavigate();
@@ -184,31 +154,44 @@ export default function MisTurnos() {
   // --- Renderizado Condicional ---
   if (loading) {
     return (
-      /* ... Mensaje de carga */
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-300 py-20 text-center">
-        <p className="text-xl font-medium text-blue-700">Cargando tus turnos...</p>
+      <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-blue-100 via-white to-blue-300">
+        <Toaster position="top-center" />
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-6 pt-24 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mb-6"
+          >
+            <h1 className="mb-6 text-2xl font-bold text-gray-800">Mis Turnos</h1>
+            <p className="text-center text-lg text-gray-700">Cargando tus próximos turnos...</p>
+          </motion.div>
+          <TurnosSkeleton />
+        </div>
       </div>
     );
   }
 
   if (misTurnos.length === 0) {
     return (
-      /* ... Mensaje de no turnos */
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-300 py-20 text-center">
-        <h1 className="text-3xl font-bold text-blue-700">No tienes turnos agendados.</h1>
-        <p className="mt-4 text-gray-600">
-          Puedes sacar un nuevo turno desde la sección correspondiente.
-        </p>
+      <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-blue-100 via-white to-blue-300">
+        <Toaster position="top-center" />
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 pt-24 text-center sm:px-6">
+          <h1 className="text-3xl font-bold text-blue-700">No tienes turnos agendados.</h1>
+          <p className="mt-4 text-gray-600">
+            Puedes sacar un nuevo turno desde la sección correspondiente.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative mx-auto mt-16 min-h-screen w-full max-w-7xl overflow-x-hidden bg-gradient-to-br from-blue-100 via-white to-blue-300 px-4 py-6 sm:px-6 md:mt-20">
+    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-blue-100 via-white to-blue-300">
       <Toaster position="top-center" />
       {/* ... (Fondo decorativo y Header) ... */}
 
-      <div className="relative z-10">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-6 pt-24 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

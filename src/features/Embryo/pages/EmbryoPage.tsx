@@ -1,18 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import EmbryoList from '../components/EmbryoList';
 import { useEmbryoFetch } from '../../../shared/hooks/useEmbryoFetch';
-import { usePacientesFetch } from '../../../shared/hooks/usePacientesFetch';
-import { usePacientesFiltrados } from '../../../shared/hooks/usePacientesFiltrados';
+// import { usePacientesPorEstado } from '../../../shared/hooks/usePacientesPorEstado';
 import type { Embryo as EmbryoType } from '../../../types/Embryo';
+import { usePacientesFetch } from '@/shared/hooks/usePacientesFetch';
 export default function EmbryoPage() {
-  const { pacientes } = usePacientesFetch();
-  // Un solo hook con múltiples estados (acentuados para coincidir con backend)
-  const estadosFiltro = useMemo(
-    () => ['Fertilización', 'Punción', 'Transferencia', 'Finalizado'],
-    []
-  );
-  const { filteredPacientes, loading: loadingPacientes, error } = usePacientesFiltrados(pacientes, estadosFiltro);
+  // Un solo fetch que trae directamente los pacientes filtrados
+  // const { pacientes, loading: loadingPacientes, error } = usePacientesPorEstado(['Fertilización', 'Punción', 'Transferencia', 'Finalizado']);
+  const { pacientes, loading: loadingPacientes, error } = usePacientesFetch();
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
   const { embriones } = useEmbryoFetch(selectedPacienteId);
   return (
@@ -43,13 +39,11 @@ export default function EmbryoPage() {
               <option className="text-black" value="">
                 -- Selecciona un paciente --
               </option>
-              {loadingPacientes && (
-                <option disabled>Cargando pacientes...</option>
-              )}
-              {filteredPacientes && filteredPacientes.length === 0 && !loadingPacientes && (
+              {loadingPacientes && <option disabled>Cargando pacientes...</option>}
+              {pacientes && pacientes.length === 0 && !loadingPacientes && (
                 <option disabled>No hay pacientes elegibles</option>
               )}
-              {filteredPacientes?.map((p) => (
+              {pacientes?.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.last_name}, {p.first_name}
                 </option>

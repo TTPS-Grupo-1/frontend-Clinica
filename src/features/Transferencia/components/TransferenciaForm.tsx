@@ -1,14 +1,4 @@
-import type { TransferenciaFormData } from '../../../types/Transferencia';
-
-interface TransferenciaFormProps {
-  formData: TransferenciaFormData;
-  onFormChange: (field: keyof TransferenciaFormData, value: any) => void;
-  onSubmit: () => void;
-  onReset: () => void;
-  isLoading: boolean;
-  message: string | null;
-  messageType: 'info' | 'success' | 'error' | 'warning';
-}
+import type { TransferenciaFormProps } from '@/interfaces/Transferencia';
 
 export default function TransferenciaForm({
   formData,
@@ -34,6 +24,18 @@ export default function TransferenciaForm({
 
   return (
     <div className="space-y-6">
+      {/* Quirofano */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-gray-800">Quirófano / Sala</label>
+        <input
+          type="text"
+          value={formData.quirofano || ''}
+          onChange={(e) => onFormChange('quirofano', e.target.value)}
+          disabled={isLoading}
+          placeholder="Ej: Quirófano 3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800"
+        />
+      </div>
       {/* Detalles de la Transferencia */}
       <div className="flex justify-center">
         <div className="flex items-center space-x-2">
@@ -49,19 +51,6 @@ export default function TransferenciaForm({
             Test positivo
           </label>
         </div>
-      </div>
-
-      {/* Quirofano */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-800">Quirófano / Sala</label>
-        <input
-          type="text"
-          value={formData.quirofano || ''}
-          onChange={(e) => onFormChange('quirofano', e.target.value)}
-          disabled={isLoading}
-          placeholder="Ej: Quirófano 3"
-          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800"
-        />
       </div>
 
       {/* Mensaje */}

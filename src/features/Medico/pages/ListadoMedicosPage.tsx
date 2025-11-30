@@ -27,19 +27,20 @@ export default function ListadoMedicosPage() {
     fetchMedicos();
   }, []);
 
-  const verificarSiPuedeEliminar = async (medico: Medico): Promise<{ puedeEliminar: boolean; razon?: string }> => {
+  const verificarSiPuedeEliminar = async (
+    medico: Medico
+  ): Promise<{ puedeEliminar: boolean; razon?: string }> => {
     const headers = { Authorization: `Bearer ${localStorage.getItem('access_token')}` };
-    
 
     const [tieneTratamientos, tieneTurnos] = await Promise.all([
       tieneTratamientosActivos(medico.id, headers),
-      tieneTurnosPendientes(medico.id, headers)
+      tieneTurnosPendientes(medico.id, headers),
     ]);
 
     if (tieneTratamientos || tieneTurnos) {
       return { puedeEliminar: false, razon: 'El médico tiene turnos o tratamientos activos' };
     }
-    
+
     return { puedeEliminar: true };
   };
 
@@ -89,10 +90,7 @@ export default function ListadoMedicosPage() {
           {medicos.length === 0 ? (
             <p className="text-gray-500">No hay médicos registrados</p>
           ) : (
-            <MedicoList
-              medicos={medicos}
-              onEliminar={handleEliminar}
-            />
+            <MedicoList medicos={medicos} onEliminar={handleEliminar} />
           )}
         </div>
       </div>

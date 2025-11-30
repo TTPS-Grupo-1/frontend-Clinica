@@ -2,7 +2,6 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import FenotipoForm from '../components/FenotipoFormNew';
-import { Dialog } from '@headlessui/react';
 import Modal from '../components/Modal';
 
 export default function DonacionPage() {

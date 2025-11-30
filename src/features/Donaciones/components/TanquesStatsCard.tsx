@@ -1,17 +1,4 @@
-interface StorageStats {
-  total_tanks: number;
-  sperm_tanks: number;
-  oocyte_tanks: number;
-  total_racks: number;
-  occupied_racks: number;
-  available_racks: number;
-  utilization_percentage: number;
-}
-
-interface TanquesStatsCardProps {
-  loading: boolean;
-  stats?: StorageStats;
-}
+import type { TanquesStatsCardProps } from '@/interfaces/Donaciones';
 
 function SkeletonStatsCard() {
   return (
@@ -29,31 +16,43 @@ function SkeletonStatsCard() {
 export default function TanquesStatsCard({ loading, stats }: TanquesStatsCardProps) {
   if (loading || !stats) return <SkeletonStatsCard />;
   return (
-    <div className="mb-8 flex flex-col items-center justify-between gap-6 rounded-xl border border-gray-200 bg-white p-6 shadow md:flex-row">
-      <div className="flex flex-col items-center">
-        <span className="text-lg font-semibold text-gray-700">Tanques totales</span>
-        <span className="text-2xl font-bold text-blue-700">{stats.total_tanks}</span>
-      </div>
-      <div className="flex flex-col items-center">
-        <span className="text-lg font-semibold text-gray-700">Tanques de esperma</span>
-        <span className="text-2xl font-bold text-blue-600">{stats.sperm_tanks}</span>
-      </div>
-      <div className="flex flex-col items-center">
-        <span className="text-lg font-semibold text-gray-700">Tanques de ovocitos</span>
-        <span className="text-2xl font-bold text-pink-600">{stats.oocyte_tanks}</span>
-      </div>
-      <div className="flex flex-col items-center">
-        <span className="text-lg font-semibold text-gray-700">Racks ocupados</span>
-        <span className="text-2xl font-bold text-red-600">{stats.occupied_racks}</span>
-      </div>
-      <div className="flex flex-col items-center">
-        <span className="text-lg font-semibold text-gray-700">Racks disponibles</span>
-        <span className="text-2xl font-bold text-green-600">{stats.available_racks}</span>
-      </div>
-      <div className="flex flex-col items-center">
-        <span className="text-lg font-semibold text-gray-700">Utilización</span>
-        <span className="text-2xl font-bold text-indigo-600">{stats.utilization_percentage}%</span>
-      </div>
-    </div>
+    <section className="mb-8 flex flex-col items-center justify-between gap-6 rounded-xl border border-gray-200 bg-white p-6 shadow md:flex-row">
+      <article className="flex flex-col items-center">
+        <h3 className="text-lg font-semibold text-gray-700">Tanques totales</h3>
+        <data value={stats.total_tanks} className="text-2xl font-bold text-blue-700">
+          {stats.total_tanks}
+        </data>
+      </article>
+      <article className="flex flex-col items-center">
+        <h3 className="text-lg font-semibold text-gray-700">Tanques de esperma</h3>
+        <data value={stats.sperm_tanks} className="text-2xl font-bold text-blue-600">
+          {stats.sperm_tanks}
+        </data>
+      </article>
+      <article className="flex flex-col items-center">
+        <h3 className="text-lg font-semibold text-gray-700">Tanques de ovocitos</h3>
+        <data value={stats.oocyte_tanks} className="text-2xl font-bold text-pink-600">
+          {stats.oocyte_tanks}
+        </data>
+      </article>
+      <article className="flex flex-col items-center">
+        <h3 className="text-lg font-semibold text-gray-700">Racks ocupados</h3>
+        <data value={stats.occupied_racks} className="text-2xl font-bold text-red-600">
+          {stats.occupied_racks}
+        </data>
+      </article>
+      <article className="flex flex-col items-center">
+        <h3 className="text-lg font-semibold text-gray-700">Racks disponibles</h3>
+        <data value={stats.available_racks} className="text-2xl font-bold text-green-600">
+          {stats.available_racks}
+        </data>
+      </article>
+      <article className="flex flex-col items-center">
+        <h3 className="text-lg font-semibold text-gray-700">Utilización</h3>
+        <data value={stats.utilization_percentage} className="text-2xl font-bold text-indigo-600">
+          {stats.utilization_percentage}%
+        </data>
+      </article>
+    </section>
   );
 }

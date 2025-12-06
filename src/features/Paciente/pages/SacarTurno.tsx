@@ -334,7 +334,8 @@ export default function SacarTurno() {
       return;
     }
 
-    try {
+   try {
+      const esMonitoreo = true;
       // 1) Cancelar el turno original
       const cancelarRes = await fetch(`${PROXY_CANCELAR_URL}?id_turno=${turnoIdReasignar}`, {
         method: 'PATCH',
@@ -352,6 +353,7 @@ export default function SacarTurno() {
         body: JSON.stringify({
           id_paciente: PACIENTE_ID,
           id_turno: turnoSeleccionado.id,
+          ...(esMonitoreo && { es_monitoreo: true }),
         }),
       });
 

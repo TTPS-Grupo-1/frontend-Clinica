@@ -15,6 +15,7 @@ export default function FertilizacionPage() {
   const { pacientes, loading: loadingPacientes } = usePacientesPorEstado([
     'Punción',
     'Monitoreos finalizados',
+    'Fertilización', // ✅ Incluir para que sigan apareciendo después de fertilizar
   ]);
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

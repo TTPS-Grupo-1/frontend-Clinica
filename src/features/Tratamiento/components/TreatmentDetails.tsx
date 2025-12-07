@@ -85,42 +85,8 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
         const responseData = response.data;
         console.log('🔍 DEBUG: Datos completos del tratamiento recibidos:', responseData);
         const id_paciente = responseData.tratamiento.paciente;
+        
 
-        // Obtener monitoreos
-        const id_tratamiento = responseData.tratamiento.id;
-        const monitoreos = await axios.get(
-          `/api/monitoreo/monitoreos/atendidos-por-tratamiento/${id_tratamiento}/`,
-          {
-            headers,
-          }
-        );
-        responseData.monitoreos = monitoreos.data.data || [];
-
-        //obtener transferencias asociadas al tratamiento
-        const transferencias = await axios.get(
-          `/api/transferencia/transferencias/transferencias-por-tratamiento/${id_tratamiento}/`,
-          {
-            headers,
-          }
-        );
-        const transferenciasData = transferencias.data.data || [];
-
-        //obtener si tiene seguimiento
-        const seguimientoRes = await axios.get(
-          `/api/seguimiento/${id_tratamiento}/tiene-seguimiento/`,
-          {
-            headers,
-          }
-        );
-        const seguimiento = seguimientoRes.data.tiene_seguimiento || false;
-
-        //obtener las punciones de un id de paciente
-        const punciones = await axios.get(`/api/punciones/existe-puncion/${id_paciente}/`, {
-          headers,
-        });
-        const existePuncion = punciones.data.existe_puncion || false;
-
-        // 🔥 NUEVO: Actualizar todo el estado de una vez
         updateData({
           tratamiento: responseData.tratamiento,
           ovocitos: responseData.ovocitos || [],
@@ -133,10 +99,10 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
           ordenes: responseData.ordenes || [],
           primeraConsulta: responseData.primera_consulta || null,
           segundaConsulta: responseData.segunda_consulta || null,
+          transferencias: responseData.transferencias || [],
+          seguimiento: responseData.tiene_seguimiento || false,
+          puncion: responseData.existe_puncion || false,
           loading: false,
-          transferencias: transferenciasData, // ✅ Agrega transferencias
-          seguimiento: seguimiento, // Agrega seguimiento
-          puncion: existePuncion, // Agrega existePuncion
         });
 
         console.log('🔍 DEBUG: Datos de primera_consulta:', responseData.primera_consulta);
@@ -184,6 +150,44 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
     seguimiento,
     puncion,
   } = data;
+  
+  // Determinar el estado actual del tratamiento
+  const estadoActual = getEstadoTexto(
+    tratamiento,
+    monitoreos,
+    fertilizaciones,
+    transferencias,
+    seguimiento,
+    puncion
+  );
+  
+  // Determinar qué secciones mostrar según el estado
+  const mostrarOvocitos = ![
+    'Primera consulta',
+    'Segunda consulta',
+    'Monitoreos',
+    'En proceso',
+    'Desconocido',
+  ].includes(estadoActual);
+  
+  const mostrarFertilizaciones = ![
+    'Primera consulta',
+    'Segunda consulta',
+    'Monitoreos',
+    'Punción',
+    'En proceso',
+    'Desconocido',
+  ].includes(estadoActual);
+  
+  const mostrarEmbriones = ![
+    'Primera consulta',
+    'Segunda consulta',
+    'Monitoreos',
+    'Punción',
+    'En proceso',
+    'Desconocido',
+  ].includes(estadoActual);
+  
   const puedeVer =
     user?.rol === 'MEDICO' && tratamiento?.activo === true && tratamiento?.medico === user?.id;
   if (loading) return <div className="text-gray-500">Cargando detalles del tratamiento...</div>;
@@ -197,14 +201,7 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
       <div className="mb-2 flex items-center gap-4 rounded bg-blue-50 p-4">
         <span className="text-lg font-bold text-blue-900">Última atención del tratamiento:</span>
         <span className="rounded-full bg-blue-200 px-4 py-2 font-semibold text-blue-800 shadow">
-          {getEstadoTexto(
-            tratamiento,
-            monitoreos,
-            fertilizaciones,
-            transferencias,
-            seguimiento,
-            puncion
-          )}
+          {estadoActual}
         </span>
         {puedeVer && (
           <CancelarTratamiento
@@ -335,38 +332,47 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
         )}
       </div>
 
-      <div>
-        <h3 className="mb-2 text-lg font-semibold">Ovocitos</h3>
-        {ovocitos.length === 0 ? (
-          <div className="text-gray-500">
-            No se encontraron ovocitos relacionados al tratamiento.
-          </div>
-        ) : (
-          <div className="bg-white">
-            <OvocitosTable ovocitos={ovocitos} />
-          </div>
-        )}
-      </div>
+      {/* Ovocitos - Solo mostrar desde Punción en adelante */}
+      {mostrarOvocitos && (
+        <div>
+          <h3 className="mb-2 text-lg font-semibold">Ovocitos</h3>
+          {ovocitos.length === 0 ? (
+            <div className="text-gray-500">
+              No se encontraron ovocitos relacionados al tratamiento.
+            </div>
+          ) : (
+            <div className="bg-white">
+              <OvocitosTable ovocitos={ovocitos} />
+            </div>
+          )}
+        </div>
+      )}
 
-      <div>
-        <h3 className="mb-2 text-lg font-semibold">Embriones</h3>
-        {embriones.length === 0 ? (
-          <div className="text-gray-500">
-            No se encontraron embriones relacionados al tratamiento.
-          </div>
-        ) : (
-          <EmbrionesTable embriones={embriones} />
-        )}
-      </div>
+      {/* Fertilizaciones - Solo mostrar desde Fertilización en adelante */}
+      {mostrarFertilizaciones && (
+        <div>
+          <h3 className="mb-2 text-lg font-semibold">Fertilizaciones</h3>
+          {fertilizaciones.length === 0 ? (
+            <div className="text-gray-500">No hay fertilizaciones relacionadas al tratamiento.</div>
+          ) : (
+            <FertilizacionesTable fertilizaciones={fertilizaciones} />
+          )}
+        </div>
+      )}
 
-      <div>
-        <h3 className="mb-2 text-lg font-semibold">Fertilizaciones</h3>
-        {fertilizaciones.length === 0 ? (
-          <div className="text-gray-500">No hay fertilizaciones relacionadas al tratamiento.</div>
-        ) : (
-          <FertilizacionesTable fertilizaciones={fertilizaciones} />
-        )}
-      </div>
+      {/* Embriones - Solo mostrar desde Fertilización en adelante */}
+      {mostrarEmbriones && (
+        <div>
+          <h3 className="mb-2 text-lg font-semibold">Embriones</h3>
+          {embriones.length === 0 ? (
+            <div className="text-gray-500">
+              No se encontraron embriones relacionados al tratamiento.
+            </div>
+          ) : (
+            <EmbrionesTable embriones={embriones} />
+          )}
+        </div>
+      )}
 
       <div>
         <h3 className="mb-2 text-lg font-semibold">Monitoreos</h3>

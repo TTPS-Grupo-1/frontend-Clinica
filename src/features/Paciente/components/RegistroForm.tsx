@@ -6,7 +6,7 @@ import type { PacienteFormData } from '../../../types/Paciente';
 import type { PropsPaciente } from '../../../interfaces/Paciente';
 import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 
-const SEXOS = ['Femenino', 'Masculino', 'Intersex', 'Otro'];
+const SEXOS = ['Femenino', 'Masculino', 'Otro'];
 
 export default function RegistroForm({ onSubmit, initialData }: PropsPaciente) {
   const [form, setForm] = useState<PacienteFormData>(

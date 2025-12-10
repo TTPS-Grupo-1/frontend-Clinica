@@ -115,6 +115,23 @@ export default function TransferenciaPage() {
     if (formData.embriones.length === 0) {
       return 'Seleccioná al menos un embrión.';
     }
+
+    // Validar PGT de los embriones seleccionados
+    const embrionesSeleccionados = availableEmbriones.filter((e) =>
+      formData.embriones.includes(e.id)
+    );
+
+    const embrionesConPgtFallido = embrionesSeleccionados.filter((e) => {
+      // Verificar si el PGT es "no exitoso"
+      const pgtValue = String(e.pgt || '').toLowerCase();
+      return pgtValue === 'no_exitoso';
+    });
+
+    if (embrionesConPgtFallido.length > 0) {
+      const ids = embrionesConPgtFallido.map(e => `#${e.id}`).join(', ');
+      return `No se puede realizar la transferencia. Los siguientes embriones tienen PGT no exitoso: ${ids}`;
+    }
+
     return null;
   };
 

@@ -5,7 +5,7 @@ import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
 import Pagination from '../../../components/Pagination';
 import OvocitosTableSkeleton from '../../../components/OvocitosTableSkeleton';
-import OvocitosTable from '../../../components/OvocitosTable';
+import OvocitosTableSimple from '../components/OvocitosTableSimple';
 import PuncionModal from '../components/PuncionModal';
 
 const ITEMS_PER_PAGE = 6;
@@ -126,7 +126,7 @@ export default function HomePuncion() {
                   <div className="animate-pulse p-4 text-red-700">{errorOvocitos}</div>
                 ) : (
                   <>
-                    <OvocitosTable ovocitos={paginatedOvocitos} />
+                    <OvocitosTableSimple ovocitos={paginatedOvocitos} />
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}

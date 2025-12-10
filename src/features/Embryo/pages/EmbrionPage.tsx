@@ -58,19 +58,25 @@ export default function EmbrionPage() {
 
   const handleSubmit = async (data: Partial<Embryo>) => {
     setLoading(true);
+    
+    // 🔍 Imprimir lo que se envía al backend
+    console.log('📤 DATOS QUE SE ENVÍAN AL BACKEND:', JSON.stringify(data, null, 2));
+    
     try {
       let response;
       if (id) {
         // Actualizar embrión existente
+        console.log(`📡 PUT a http://localhost:8000/api/embriones/${id}/`);
         response = await axios.put(`http://localhost:8000/api/embriones/${id}/`, data);
         toast.success('Embrión actualizado exitosamente');
       } else {
         // Crear nuevo embrión
+        console.log('📡 POST a http://localhost:8000/api/embriones/');
         response = await axios.post('http://localhost:8000/api/embriones/', data);
         toast.success('Datos del embrión registrados exitosamente');
       }
 
-      console.log('Embrión guardado:', response);
+      console.log('✅ Respuesta del servidor:', response.data);
 
       if (response.status === 201 || response.status === 200) {
         setTimeout(() => {

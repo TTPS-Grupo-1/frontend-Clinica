@@ -36,7 +36,7 @@ import SegundaConsultaViewPage from './features/Tratamiento/pages/SegundaConsult
 import DeudaPaciente from './features/Paciente/pages/DeudaPaciente';
 import DeudaPacientesPage from './features/Admin/pages/DeudaPacientesPage';
 import ObrasSocialesFinanzasPage from './features/Admin/pages/ObrasSocialesFinanzasPage';
-
+import GestionOvocitosPage from './features/Punciones/pages/GestionOvoPage';
 export default function getAppRoutes() {
   return (
     <>
@@ -85,6 +85,7 @@ export default function getAppRoutes() {
       <Route path="/pacientes/deuda" element={<DeudaPaciente />} />
       <Route path="/pacientes/deudaPacientes" element={<DeudaPacientesPage />} />
       <Route path="/obras-sociales/deuda" element={<ObrasSocialesFinanzasPage />} />
+      <Route path="/operador/gestion-ovocitos" element={<GestionOvocitosPage />} />
     </>
   );
 }

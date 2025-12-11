@@ -12,9 +12,23 @@ export type OvocitoModalProps = {
   nombreDonante: string;
   apellidoDonante: string;
 };
+
 export type OvocitoModalRow = {
   id_ovocito: number;
   identificador: string;
   madurez: MadurezOvocito;
   tipo_estado: TipoEstadoOvocito;
 };
+
+export interface Ovocito {
+  id_ovocito: number;
+  identificador: string;
+  calidad?: string;
+  estado?: string;
+  madurez?: MadurezOvocito;
+  tipo_estado?: TipoEstadoOvocito;
+  fecha_extraccion?: string;
+  usado: boolean;
+  paciente?: number;
+  fue_criopreservado?: boolean; // Indica si alguna vez estuvo criopreservado
+}

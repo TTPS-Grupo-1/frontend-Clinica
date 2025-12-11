@@ -185,6 +185,35 @@ export default function HomePage() {
                 onClick={handleEmbriones}
               />
             </div>
+
+            {/* Card 6: Gestión de Ovocitos */}
+            <div className="transition-transform duration-200 hover:-translate-y-1">
+              <DashboardCard
+                title="Gestión de Ovocitos"
+                description="Consulta y edita ovocitos no usados disponibles en el laboratorio."
+                count={24}
+                icon={
+                  <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="6"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      fill="none"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6V4m0 16v-2m8-8h-2M6 12H4"
+                    />
+                  </svg>
+                }
+                iconColor="text-rose-600"
+                onClick={() => navigate('/operador/gestion-ovocitos')}
+              />
+            </div>
           </article>
 
           <div className="mt-20 text-center">

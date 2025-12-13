@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePacientesPorEstado } from '../../../shared/hooks/usePacientesPorEstado';
 import { motion } from 'framer-motion';
-import RoleHomeButton from '../../../shared/components/RoleHomeButton';
 import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
 import Pagination from '../../../components/Pagination';
 import OvocitosTableSkeleton from '../../../components/OvocitosTableSkeleton';

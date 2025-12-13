@@ -58,6 +58,10 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
     puncion: boolean
   ): string {
     console.log('🔍 DEBUG: Tratamiento para estado texto:', tratamiento);
+    // Preferir estado provisto por el backend si existe
+    if (tratamiento && typeof tratamiento.estado_actual === 'string') {
+      return tratamiento.estado_actual;
+    }
     // Si no, puedes inferirlo por los datos presentes
     if (!tratamiento) return 'Desconocido';
     if (!tratamiento.activo) return 'Finalizado';
@@ -89,7 +93,9 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
         
 
         updateData({
-          tratamiento: responseData.tratamiento,
+          tratamiento: responseData.tratamiento
+            ? { ...responseData.tratamiento, estado_actual: responseData.estado_actual }
+            : null,
           ovocitos: responseData.ovocitos || [],
           fertilizaciones: responseData.fertilizaciones || [],
           embriones: responseData.embriones || [],
@@ -166,6 +172,7 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
   const mostrarOvocitos = ![
     'Primera consulta',
     'Segunda consulta',
+    // Permitir ver desde 'Punción' en adelante; si backend indica 'Transferencia', también mostrar
     'Monitoreos',
     'En proceso',
     'Desconocido',
@@ -174,6 +181,7 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
   const mostrarFertilizaciones = ![
     'Primera consulta',
     'Segunda consulta',
+    // Ocultar en etapas anteriores; mostrar en 'Fertilización' y 'Transferencia'
     'Monitoreos',
     'Punción',
     'En proceso',
@@ -183,6 +191,7 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
   const mostrarEmbriones = ![
     'Primera consulta',
     'Segunda consulta',
+    // Igual que fertilizaciones: desde 'Fertilización' en adelante
     'Monitoreos',
     'Punción',
     'En proceso',

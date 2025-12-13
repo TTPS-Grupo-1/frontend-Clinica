@@ -8,7 +8,12 @@ import {
 import { toast } from 'sonner';
 import { generateUniqueId } from '../../../shared/utils/generateUniqueId';
 import type { FertilizacionParams, FertilizacionForm } from '../../../interfaces/Fertilizacion';
-export const useFertilizacionForm = (currentUser: any, ovocitos: any[], onClose: () => void) => {
+export const useFertilizacionForm = (
+  currentUser: any,
+  ovocitos: any[],
+  onClose: () => void,
+  selectedPacienteId?: number | null
+) => {
   const [form, setForm] = useState<FertilizacionForm>({
     ovocito: '',
     semen_info: '',
@@ -37,7 +42,7 @@ export const useFertilizacionForm = (currentUser: any, ovocitos: any[], onClose:
     e.preventDefault();
     setSubmitting(true);
 
-    const payload = {
+    const payload: any = {
       ovocito: form.ovocito ? Number(form.ovocito) : null,
       semen_info: form.semen_info || null,
       fecha_fertilizacion: form.fecha_fertilizacion,
@@ -48,6 +53,11 @@ export const useFertilizacionForm = (currentUser: any, ovocitos: any[], onClose:
       banco_semen_id: form.banco_semen_id ? Number(form.banco_semen_id) : null,
       razon_banco_semen: form.razon_banco_semen,
     };
+
+    // Adjuntar paciente seleccionado si está disponible
+    if (selectedPacienteId) {
+      payload.paciente = selectedPacienteId;
+    }
 
     try {
       // Crear fertilización (añadir headers de auth)
@@ -163,6 +173,9 @@ export const useFertilizacionProceso = () => {
           : null,
         razon_banco_semen: tieneBancoSeleccionado ? razonBanco || 'no_aplica' : 'no_aplica',
       };
+
+      // Adjuntar paciente seleccionado para vínculo directo
+      basePayload.paciente = selectedPacienteId;
 
       // Si hay un ovocito donado seleccionado, usarlo directamente
       if (ovocitoDonadoSeleccionado) {

@@ -33,11 +33,16 @@ export default function MedicoPacientesPage() {
   const es_director = currentUser?.is_director ?? false;
   async function marcarPacientesConTransferencia(lista: PacienteMinimal[], headers: any) {
     const ids: number[] = [];
-
+    // Hacer cada chequeo resiliente: si una llamada falla, continuar con el resto
     await Promise.all(
       lista.map(async (p) => {
-        const tiene = await pacienteTieneTransferencia(p.id, headers);
-        if (tiene) ids.push(p.id);
+        try {
+          const tiene = await pacienteTieneTransferencia(p.id, headers);
+          if (tiene) ids.push(p.id);
+        } catch (e) {
+          // En caso de error (e.g., backend caído), no bloquear toda la lista
+          console.warn('No se pudo verificar transferencia para paciente', p.id, e);
+        }
       })
     );
 

@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { usePacientesFetch } from '@/shared/hooks/usePacientesFetch';
 import { useOvocitosNoUsados } from '@/shared/hooks/useOvocitosNoUsados';
 import OvocitosNoUsadosTable from '../components/OvocitosNoUsadosTable';
 
 export default function GestionOvoPage() {
+  const navigate = useNavigate();
   const { pacientes, loading: loadingPacientes, error } = usePacientesFetch();
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
   const { ovocitos, loading: loadingOvocitos, refetch } = useOvocitosNoUsados(selectedPacienteId);
@@ -21,6 +23,21 @@ export default function GestionOvoPage() {
           >
             Gestión de Ovocitos por paciente
           </motion.h1>
+
+          <div className="mb-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <button
+              onClick={() => navigate('/operador/punciones')}
+              className="rounded bg-rose-500 px-4 py-2 text-white shadow hover:bg-rose-600"
+            >
+              Registrar Punción
+            </button>
+            <button
+              onClick={() => navigate('/operador')}
+              className="rounded border border-rose-300 px-4 py-2 text-rose-600 hover:bg-rose-50"
+            >
+              Volver al Panel
+            </button>
+          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 8 }}

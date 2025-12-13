@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePacientesPorEstado } from '../../../shared/hooks/usePacientesPorEstado';
 import { motion } from 'framer-motion';
 import RoleHomeButton from '../../../shared/components/RoleHomeButton';
@@ -11,6 +12,7 @@ import PuncionModal from '../components/PuncionModal';
 const ITEMS_PER_PAGE = 6;
 
 export default function HomePuncion() {
+  const navigate = useNavigate();
   const { pacientes, loading: loadingPacientes } = usePacientesPorEstado([
     'Monitoreos finalizados',
   ]);
@@ -50,7 +52,14 @@ export default function HomePuncion() {
             >
               Punciones
             </motion.h1>
-            <RoleHomeButton className="!static ml-4" />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate('/operador/gestion-ovocitos')}
+                className="rounded border border-rose-300 px-3 py-2 text-rose-700 hover:bg-rose-50"
+              >
+                Volver a Gestión de Ovocitos
+              </button>
+            </div>
           </div>
 
           <motion.section

@@ -61,7 +61,8 @@ export default function TreatmentDetails({ tratamientoId, paciente }: Props) {
     // Si no, puedes inferirlo por los datos presentes
     if (!tratamiento) return 'Desconocido';
     if (!tratamiento.activo) return 'Finalizado';
-    if (seguimiento) return 'Finalizado'; //
+    if (tratamiento.seguimiento_finalizado) return 'Finalizado';
+    if (seguimiento) return 'Seguimiento'; //
     if (transferencias.length > 0) return 'Transferencia'; //
     if (fertilizaciones.length > 0) return 'Fertilización';
     if (puncion) return 'Punción';

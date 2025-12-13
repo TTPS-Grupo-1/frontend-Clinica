@@ -8,7 +8,6 @@ import {
   fetchPacientesForMedico,
   fetchPacientesByName,
   fetchTodosLosPacientes,
-  fetchPacientesByNameDirector,
   pacienteTieneTransferencia,
 } from '../utils/pacienteHelpers';
 import type { RootState } from '@/store';

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams} from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { useOvocitosFetch } from '../../../shared/hooks/useOvocitosFetch';
@@ -17,7 +17,6 @@ export default function HistoriaClinicaPage() {
   );
   const [paciente, setPaciente] = useState<any | null>(null);
   const [loadingPaciente, setLoadingPaciente] = useState(false);
-  const navigate = useNavigate();
 
   // Obtener el rol del usuario desde Redux
   const userRole = useSelector((state: any) => state.auth.user?.rol);

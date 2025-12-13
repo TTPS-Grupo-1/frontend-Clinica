@@ -33,18 +33,16 @@ export default function OvocitosNoUsadosTable({ ovocitos, onUpdate }: OvocitosNo
         <table className="min-w-full overflow-hidden rounded-lg border bg-gray-100 text-xs sm:text-sm">
           <thead className="bg-cyan-300">
             <tr>
-              <th className="px-2 py-2 text-left sm:px-4">ID</th>
               <th className="px-2 py-2 text-left sm:px-4">Identificador</th>
               <th className="px-2 py-2 text-left sm:px-4">Madurez</th>
               <th className="px-2 py-2 text-left sm:px-4">Estado</th>
-              <th className="px-2 py-2 text-left sm:px-4">Fecha Extracción</th>
               <th className="px-2 py-2 text-left sm:px-4">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {ovocitos.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-4 text-center text-gray-500">
+                <td colSpan={4} className="py-4 text-center text-gray-500">
                   No hay ovocitos no usados.
                 </td>
               </tr>
@@ -60,7 +58,6 @@ export default function OvocitosNoUsadosTable({ ovocitos, onUpdate }: OvocitosNo
                       !isEditable ? 'opacity-60' : ''
                     }`}
                   >
-                    <td className="px-2 py-2 sm:px-4">{o.id_ovocito}</td>
                     <td className="max-w-[120px] px-2 py-2 font-mono break-all sm:max-w-[200px] sm:px-4">
                       {o.identificador}
                     </td>
@@ -77,11 +74,6 @@ export default function OvocitosNoUsadosTable({ ovocitos, onUpdate }: OvocitosNo
                       >
                         {o.tipo_estado || '-'}
                       </span>
-                    </td>
-                    <td className="px-2 py-2 sm:px-4">
-                      {o.fecha_extraccion
-                        ? new Date(o.fecha_extraccion).toLocaleDateString('es-AR')
-                        : '-'}
                     </td>
                     <td className="px-2 py-2 sm:px-4">
                       <div className="flex gap-2">

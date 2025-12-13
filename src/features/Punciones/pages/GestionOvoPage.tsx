@@ -1,15 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 import { usePacientesFetch } from '@/shared/hooks/usePacientesFetch';
-import { useOvocitosNoUsados } from '@/shared/hooks/useOvocitosNoUsados';
 import OvocitosNoUsadosTable from '../components/OvocitosNoUsadosTable';
+import type { Ovocito } from '@/types/Ovocito';
 
 export default function GestionOvoPage() {
   const navigate = useNavigate();
   const { pacientes, loading: loadingPacientes, error } = usePacientesFetch();
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | null>(null);
-  const { ovocitos, loading: loadingOvocitos, refetch } = useOvocitosNoUsados(selectedPacienteId);
+  const [ovocitos, setOvocitos] = useState<Ovocito[]>([]);
+  const [loadingOvocitos, setLoadingOvocitos] = useState(false);
+
+  const fetchOvocitos = useCallback(async () => {
+    if (!selectedPacienteId) {
+      setOvocitos([]);
+      return;
+    }
+
+    setLoadingOvocitos(true);
+    try {
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Token ${token}` } : {};
+
+      const response = await axios.get(
+        `/api/ovocitos/por-paciente/${selectedPacienteId}/`,
+        { headers }
+      );
+      setOvocitos(response.data.ovocitos || []);
+    } catch (err) {
+      console.error('Error fetching ovocitos:', err);
+      setOvocitos([]);
+    } finally {
+      setLoadingOvocitos(false);
+    }
+  }, [selectedPacienteId]);
+
+  useEffect(() => {
+    fetchOvocitos();
+  }, [fetchOvocitos]);
+
+  const refetch = fetchOvocitos;
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-pink-50 to-rose-100 pt-20 pb-8`}>

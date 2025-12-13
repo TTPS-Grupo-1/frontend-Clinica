@@ -33,7 +33,7 @@ export default function TransferenciaPage() {
     pacientes,
     loading: pacientesLoading,
     error: pacientesError,
-  } = usePacientesPorEstado(['Transferencia']);
+  } = usePacientesPorEstado(['Listo para transferencia']);
 
   // Cargar tratamientos y embriones del paciente seleccionado
   const {

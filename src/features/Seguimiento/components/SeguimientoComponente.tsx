@@ -83,6 +83,22 @@ const SeguimientoForm: FC<SeguimientoFormProps> = ({ onSave, loading, initialDat
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validar que al menos un campo esté completado
+        const hasData = 
+            formData.resultado_beta !== null ||
+            formData.hay_saco_gestacional === true ||
+            formData.embarazo_clinico === true ||
+            formData.nacido_vivo !== null ||
+            formData.causa.trim() !== '' ||
+            formData.cantidad_nacimientos !== null ||
+            formData.fecha_nacimiento !== '';
+        
+        if (!hasData) {
+            alert('Debe completar al menos un campo del seguimiento antes de guardar.');
+            return;
+        }
+        
         onSave(formData);
     };
 
@@ -113,7 +129,6 @@ const SeguimientoForm: FC<SeguimientoFormProps> = ({ onSave, loading, initialDat
                                 : ''
                     }
                     onChange={handleChange}
-                    required
                     className="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white p-3 text-gray-700 shadow-sm transition-all duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                 >
                     <option value="" className="text-gray-400">
@@ -184,50 +199,55 @@ const SeguimientoForm: FC<SeguimientoFormProps> = ({ onSave, loading, initialDat
                 </select>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
-                {/* Cantidad de Nacimientos */}
+            {/* Solo mostrar si nacido_vivo === true */}
+            {formData.nacido_vivo === true && (
+                <div className="grid grid-cols-2 gap-4">
+                    {/* Cantidad de Nacimientos */}
+                    <div>
+                        <label className="mb-2 block text-sm font-semibold text-gray-700">
+                            Cantidad de Nacimientos
+                        </label>
+                        <input
+                            type="number"
+                            name="cantidad_nacimientos"
+                            value={formData.cantidad_nacimientos || ''}
+                            onChange={handleChange}
+                            min="0"
+                            className="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white p-3 text-gray-700 shadow-sm transition-all focus:border-blue-500 focus:outline-none"
+                        />
+                    </div>
+
+                    {/* Fecha de Nacimiento */}
+                    <div>
+                        <label className="mb-2 block text-sm font-semibold text-gray-700">
+                            Fecha de Nacimiento
+                        </label>
+                        <input
+                            type="date"
+                            name="fecha_nacimiento"
+                            value={formData.fecha_nacimiento}
+                            onChange={handleChange}
+                            className="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white p-3 text-gray-700 shadow-sm transition-all focus:border-blue-500 focus:outline-none"
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Solo mostrar si nacido_vivo === false */}
+            {formData.nacido_vivo === false && (
                 <div>
                     <label className="mb-2 block text-sm font-semibold text-gray-700">
-                        Cantidad de Nacimientos
+                        Causa / Comentarios
                     </label>
-                    <input
-                        type="number"
-                        name="cantidad_nacimientos"
-                        value={formData.cantidad_nacimientos || ''}
-                        onChange={handleChange}
-                        min="0"
-                        className="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white p-3 text-gray-700 shadow-sm transition-all focus:border-blue-500 focus:outline-none"
+                    <textarea
+                        name="causa"
+                        value={formData.causa}
+                        onChange={handleChange as any}
+                        rows={3}
+                        className="mt-1 block w-full resize-none rounded-lg border-2 border-gray-300 bg-white p-3 text-gray-700 shadow-sm transition-all focus:border-blue-500 focus:outline-none"
                     />
                 </div>
-
-                {/* Fecha de Nacimiento */}
-                <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                        Fecha de Nacimiento
-                    </label>
-                    <input
-                        type="date"
-                        name="fecha_nacimiento"
-                        value={formData.fecha_nacimiento}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white p-3 text-gray-700 shadow-sm transition-all focus:border-blue-500 focus:outline-none"
-                    />
-                </div>
-            </div>
-
-            {/* Causa / Comentarios */}
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Causa / Comentarios (Opcional)
-                </label>
-                <textarea
-                    name="causa"
-                    value={formData.causa}
-                    onChange={handleChange as any}
-                    rows={3}
-                    className="mt-1 block w-full resize-none rounded-lg border-2 border-gray-300 bg-white p-3 text-gray-700 shadow-sm transition-all focus:border-blue-500 focus:outline-none"
-                />
-            </div>
+            )}
 
             {/* Botón Submit */}
             <button
